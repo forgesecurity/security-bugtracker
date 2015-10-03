@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://securitybugtracker/V1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://securitybugtracker/V1" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/">
+
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://securitybugtracker" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+			<xsd:import namespace="http://securitybugtracker/V1" schemaLocation="http://localhost/webissues-server-1.1.4/client/webservices.xsd"/>
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="addproject_input">
+		<wsdl:part name="addproject" element="tns:addproject"/>
+	</wsdl:message>
+	<wsdl:message name="addproject_output">
+		<wsdl:part name="addproject_Response" element="tns:addproject_Response"/>
+	</wsdl:message>
+	<wsdl:message name="deleteproject_input">
+		<wsdl:part name="deleteproject" element="tns:deleteproject"/>
+	</wsdl:message>
+	<wsdl:message name="deleteproject_output">
+		<wsdl:part name="deleteproject_Response" element="tns:deleteproject_Response"/>
+	</wsdl:message>
+
+
+	<wsdl:portType name="ws_securitybugtracker_PortType">
+		<wsdl:operation name="addproject">
+			<wsdl:documentation>WebService for addproject
+			</wsdl:documentation>
+			<wsdl:input message="tns:addproject_input"/>
+			<wsdl:output message="tns:addproject_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="deleteproject">
+			<wsdl:documentation>WebService for deleteproject
+			</wsdl:documentation>
+			<wsdl:input message="tns:deleteproject_input"/>
+			<wsdl:output message="tns:deleteproject_output"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="ws_securitybugtracker_Binding" type="tns:ws_securitybugtracker_PortType">
+		<soapbind:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="addproject">
+			<soapbind:operation soapAction="addproject" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="deleteproject">
+			<soapbind:operation soapAction="deleteproject" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="ws_securitybugtracker">
+		<wsdl:port name="ws_securitybugtrackerPort" binding="tns:ws_securitybugtracker_Binding">
+			<soapbind:address location="http://localhost/webissues-server-1.1.4/client/webservices.php"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:t="http://securitybugtracker/V1" targetNamespace="http://securitybugtracker/V1">
+	
+	
+	<xsd:element name="addproject" type="t:type_addproject"/>
+	
+	<xsd:complexType name="type_addproject">
+		<xsd:sequence>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="addproject_Response" type="t:type_addproject_Response"/>
+	
+	<xsd:complexType name="type_addproject_Response">
+		<xsd:sequence>
+			<xsd:element name="id_details" type="t:id_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="id_details">
+		<xsd:sequence>
+			<xsd:element name="id_project" type="xsd:int" nillable="false"/>
+			<xsd:element name="id_folder_bugs" type="xsd:int" nillable="false"/>
+			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false"/>
+			<xsd:element name="id_folder_codes" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="deleteproject" type="t:type_deleteproject"/>
+	
+	<xsd:complexType name="type_deleteproject">
+		<xsd:sequence>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="deleteproject_Response" type="t:type_deleteproject_Response"/>
+	
+	<xsd:complexType name="type_deleteproject_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_details">
+		<xsd:sequence>
+			<xsd:element name="type_acteur" type="xsd:string" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+
+</xsd:schema>
