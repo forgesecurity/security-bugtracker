@@ -31,6 +31,267 @@ class webservice_server
 	  fclose($fp);
 	}
 	
+	function adduser($req){
+	
+	  $id_user = 0;
+	  $req = (array) $req;
+	  
+	  $userManager = new System_Api_UserManager();
+	  try {
+	      $id_user = $userManager->addUser( $req["login"], $req["username"], $req["password"], false );
+	  } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	  }
+	  
+	  
+	  $tab = array(
+	    array(
+		'id_user' => $id_user,
+	    )
+	  );
+        
+	  return $tab;
+        }
+	
+	function addissue($req){
+	  
+	    $result = false;
+	    $req = (array) $req;
+	    $issueId = 0;
+	  
+	    $sessionManager = new System_Api_SessionManager();
+	    try {
+	      $sessionManager->login( "admin", "admin");
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	    
+	    $issueManager = new System_Api_IssueManager();
+	    $projectManager = new System_Api_ProjectManager();
+	    $typeManager = new System_Api_TypeManager();
+	    
+	    try {
+	      $folder = $projectManager->getFolder( $req["id_folder_bugs"] );
+	      $issueId = $issueManager->addIssue( $folder, $req["name"]);
+	      $issue = $issueManager->getIssue( $issueId );
+	      $issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+	    
+	      $type = $typeManager->getIssueTypeForFolder( $folder );
+	      $rows = $typeManager->getAttributeTypesForIssueType( $type );
+                        
+	      $parser = new System_Api_Parser();
+	      $parser->setProjectId( $folder[ 'project_id' ] );
+         
+	      $name_ws[0] = "assigned";
+	      $name_ws[1] = "state";
+	      $name_ws[2] = "raison";
+	      $name_ws[3] = "severity";
+	      $name_ws[4] = "version";
+	      
+	      foreach ( $rows as $idattribute => $attribute ) {
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
+                $issueManager->setValue( $issue, $attribute, $value );
+	      }
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	        
+	    $tab = array(
+		array(
+		'id_issue' => $issueId
+		)
+	    );
+        
+	    return $tab;
+	}
+	
+	function editissue($req){
+	  
+	    $result = false;
+	    $req = (array) $req;
+	  
+	    $sessionManager = new System_Api_SessionManager();
+	    try {
+	      $sessionManager->login( "admin", "admin");
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	    
+	    $issueManager = new System_Api_IssueManager();
+	    
+	    try {
+	    
+	      $issue = $issueManager->getIssue( $req["id_issue"] );
+	      $issueManager->renameIssue( $issue, $req["name"] );
+	      $desc = $issueManager->getDescription( $issue );
+	      $issueManager->editDescription( $desc, $req["description"], System_Const::TextWithMarkup );
+	    
+	      $rows = $issueManager->getAllAttributeValuesForIssue( $issue );
+	      $parser = new System_Api_Parser();
+	      $parser->setProjectId( $issue[ 'project_id' ] );
+         
+	      $name_ws[0] = "assigned";
+	      $name_ws[1] = "state";
+	      $name_ws[2] = "raison";
+	      $name_ws[3] = "severity";
+	      $name_ws[4] = "version";
+	      
+	      foreach ( $rows as $idattribute => $attribute ) {
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
+                $issueManager->setValue( $issue, $attribute, $value );
+	      }
+	      
+	      $result = true;
+	    } 
+	    catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	        
+	    $tab = array(
+		array(
+		'result' => $result
+		)
+	    );
+        
+	    return $tab;
+	}
+	
+	function deleteissue($req){
+	
+	    $result = false;
+	    $req = (array) $req;
+	    $issueManager = new System_Api_IssueManager();
+      
+	    $sessionManager = new System_Api_SessionManager();
+	    try {
+		$sessionManager->login( "admin", "admin");
+	    } catch ( System_Api_Error $ex ) {
+		$this->logp( $ex );
+	    }
+		
+	    try 
+	    {
+		$issue = $issueManager->getIssue( $req["id_issue"] );
+		$desc = $issueManager->getDescription( $issue );
+                $issueManager->deleteIssue( $issue );
+                $issueManager->deleteDescription( $descr );
+		$result = true;
+	    } catch ( System_Api_Error $ex ) {
+		$this->logp( $ex );
+	    }
+	    
+	    $tab = array(
+		array(
+		'result' => $result
+		)
+	    );
+	    
+	    return $tab;
+	}
+	
+	function addmember($req){
+	
+	  $result = false;
+	  $req = (array) $req;
+	  $projectManager = new System_Api_ProjectManager();
+	  
+	  $sessionManager = new System_Api_SessionManager();
+	  try {
+	    $sessionManager->login( "admin", "admin");
+	  } catch ( System_Api_Error $ex ) {
+	    $this->logp( $ex );
+	  }
+		
+	  $userManager = new System_Api_UserManager();
+	  switch($req["access"])
+	  {
+	    case "member":$req["access"] = System_Const::NormalAccess; break;
+	    case "admin":$req["access"] = System_Const::AdministratorAccess; break;
+	    default:$req["access"] = System_Const::NormalAccess; break;
+	  }
+	  
+	  try {
+	  $user = $userManager->getUser( $req["id_user"] );
+	  $project = $projectManager->getProject( $req["id_project"] );
+	  $userManager->grantMember( $user, $project, $req["access"] );
+	  $result = true;
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	  } 
+	  
+	  $tab = array(
+	    array(
+	      'result' => $result
+	      )
+	  );
+	    
+	  return $tab;
+	}
+	
+	function deletemember($req){
+	
+	  $result = false;
+	  $req = (array) $req;
+	  $projectManager = new System_Api_ProjectManager();
+	  
+	  $sessionManager = new System_Api_SessionManager();
+	  try {
+	    $sessionManager->login( "admin", "admin");
+	  } catch ( System_Api_Error $ex ) {
+	    $this->logp( $ex );
+	  }
+		
+	  $userManager = new System_Api_UserManager();
+	  
+	  try {
+	    $user = $userManager->getUser( $req["id_user"] );
+	    $project = $projectManager->getProject( $req["id_project"]);
+	    $userManager->grantMember( $user, $project, System_Const::NoAccess );
+	    $result = true;
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	  } 
+	  
+	  $tab = array(
+	    array(
+	      'result' => $result
+	      )
+	  );
+	    
+	  return $tab;
+	}
+	
+	function deleteproject($req){
+	
+	    $result = false;
+	    $req = (array) $req;
+	    $projectManager = new System_Api_ProjectManager();
+       
+	    try {
+		$sessionManager = new System_Api_SessionManager();
+		try {
+		    $sessionManager->login( "admin", "admin");
+		} catch ( System_Api_Error $ex ) {
+			$this->logp( $ex );
+		}
+		
+		$project = $projectManager->getProject( $req["id_project"] );
+		$projectManager->deleteProject( $project, System_Api_ProjectManager::ForceDelete );
+		$result = true;
+	    } catch ( System_Api_Error $ex ) {
+		$this->logp( $ex );
+	    }
+	    
+	    $tab = array(
+		array(
+		'result' => $result
+		)
+	    );
+	    
+	    return $tab;
+	}
+	
+	  
 	function addproject($req){
 	  
 	    $req = (array) $req;
@@ -84,7 +345,7 @@ class webservice_server
 		)
 	    );
         
-	  return $tab;
+	    return $tab;
 	}
 }
 

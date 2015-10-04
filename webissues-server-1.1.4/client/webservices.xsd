@@ -1,6 +1,158 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:t="http://securitybugtracker/V1" targetNamespace="http://securitybugtracker/V1">
 	
+	<xsd:element name="editissue" type="t:type_editissue"/>
+	
+	<xsd:complexType name="type_editissue">
+		<xsd:sequence>
+			<xsd:element name="id_issue" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="assigntomember" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="state" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="severity" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="version" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="editissue_Response" type="t:type_editissue_Response"/>
+	
+	<xsd:complexType name="type_editissue_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	
+	<xsd:element name="deleteissue" type="t:type_deleteissue"/>
+	
+	<xsd:complexType name="type_deleteissue">
+		<xsd:sequence>
+			<xsd:element name="id_issue" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="deleteissue_Response" type="t:type_deleteissue_Response"/>
+	
+	<xsd:complexType name="type_deleteissue_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	
+	
+	<xsd:element name="addissue" type="t:type_addissue"/>
+	
+	<xsd:complexType name="type_addissue">
+		<xsd:sequence>
+			<xsd:element name="id_folder_bugs" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="assigned" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="state" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="severity" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="version" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="addissue_Response" type="t:type_addissue_Response"/>
+	
+	<xsd:complexType name="type_addissue_Response">
+		<xsd:sequence>
+			<xsd:element name="result_addissue_details" type="t:result_addissue_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_addissue_details">
+		<xsd:sequence>
+			<xsd:element name="id_issue" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	<xsd:element name="adduser" type="t:type_adduser"/>
+	
+	<xsd:complexType name="type_adduser">
+		<xsd:sequence>
+			<xsd:element name="login" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="username" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="password" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="adduser_Response" type="t:type_adduser_Response"/>
+	
+	<xsd:complexType name="type_adduser_Response">
+		<xsd:sequence>
+			<xsd:element name="result_adduser_details" type="t:result_adduser_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_adduser_details">
+		<xsd:sequence>
+			<xsd:element name="id_user" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	<xsd:element name="addmember" type="t:type_addmember"/>
+	
+	<xsd:complexType name="type_addmember">
+		<xsd:sequence>
+			<xsd:element name="id_user" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="id_project" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="access" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="addmember_Response" type="t:type_addmember_Response"/>
+	
+	<xsd:complexType name="type_addmember_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	<xsd:element name="deletemember" type="t:type_deletemember"/>
+	
+	<xsd:complexType name="type_deletemember">
+		<xsd:sequence>
+			<xsd:element name="id_user" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="id_project" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="deletemember_Response" type="t:type_deletemember_Response"/>
+	
+	<xsd:complexType name="type_deletemember_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
 	
 	<xsd:element name="addproject" type="t:type_addproject"/>
 	
@@ -35,7 +187,7 @@
 	
 	<xsd:complexType name="type_deleteproject">
 		<xsd:sequence>
-			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="id_project" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -51,7 +203,7 @@
 
 	<xsd:complexType name="result_details">
 		<xsd:sequence>
-			<xsd:element name="type_acteur" type="xsd:string" nillable="false"/>
+			<xsd:element name="result" type="xsd:boolean" nillable="false"/>
 		</xsd:sequence>
 	</xsd:complexType>
 

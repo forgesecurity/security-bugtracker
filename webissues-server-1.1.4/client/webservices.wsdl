@@ -6,6 +6,42 @@
 			<xsd:import namespace="http://securitybugtracker/V1" schemaLocation="http://localhost/webissues-server-1.1.4/client/webservices.xsd"/>
 		</xsd:schema>
 	</wsdl:types>
+	<wsdl:message name="adduser_input">
+		<wsdl:part name="adduser" element="tns:adduser"/>
+	</wsdl:message>
+	<wsdl:message name="adduser_output">
+		<wsdl:part name="adduser_Response" element="tns:adduser_Response"/>
+	</wsdl:message>
+	<wsdl:message name="addmember_input">
+		<wsdl:part name="addmember" element="tns:addmember"/>
+	</wsdl:message>
+	<wsdl:message name="addmember_output">
+		<wsdl:part name="addmember_Response" element="tns:addmember_Response"/>
+	</wsdl:message>
+	<wsdl:message name="deletemember_input">
+		<wsdl:part name="deletemember" element="tns:deletemember"/>
+	</wsdl:message>
+	<wsdl:message name="deletemember_output">
+		<wsdl:part name="deletemember_Response" element="tns:deletemember_Response"/>
+	</wsdl:message>
+	<wsdl:message name="addissue_input">
+		<wsdl:part name="addissue" element="tns:addissue"/>
+	</wsdl:message>
+	<wsdl:message name="addissue_output">
+		<wsdl:part name="addissue_Response" element="tns:addissue_Response"/>
+	</wsdl:message>
+	<wsdl:message name="editissue_input">
+		<wsdl:part name="editissue" element="tns:editissue"/>
+	</wsdl:message>
+	<wsdl:message name="editissue_output">
+		<wsdl:part name="editissue_Response" element="tns:editissue_Response"/>
+	</wsdl:message>
+	<wsdl:message name="deleteissue_input">
+		<wsdl:part name="deleteissue" element="tns:deleteissue"/>
+	</wsdl:message>
+	<wsdl:message name="deleteissue_output">
+		<wsdl:part name="deleteissue_Response" element="tns:deleteissue_Response"/>
+	</wsdl:message>
 	<wsdl:message name="addproject_input">
 		<wsdl:part name="addproject" element="tns:addproject"/>
 	</wsdl:message>
@@ -21,6 +57,42 @@
 
 
 	<wsdl:portType name="ws_securitybugtracker_PortType">
+		<wsdl:operation name="adduser">
+			<wsdl:documentation>WebService for adduser
+			</wsdl:documentation>
+			<wsdl:input message="tns:adduser_input"/>
+			<wsdl:output message="tns:adduser_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="addmember">
+			<wsdl:documentation>WebService for addmember to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:addmember_input"/>
+			<wsdl:output message="tns:addmember_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="deletemember">
+			<wsdl:documentation>WebService for deletemember to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:deletemember_input"/>
+			<wsdl:output message="tns:deletemember_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="addissue">
+			<wsdl:documentation>WebService for addissue to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:addissue_input"/>
+			<wsdl:output message="tns:addissue_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="deleteissue">
+			<wsdl:documentation>WebService for deleteissue to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:deleteissue_input"/>
+			<wsdl:output message="tns:deleteissue_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="editissue">
+			<wsdl:documentation>WebService for editissue to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:editissue_input"/>
+			<wsdl:output message="tns:editissue_output"/>
+		</wsdl:operation>
 		<wsdl:operation name="addproject">
 			<wsdl:documentation>WebService for addproject
 			</wsdl:documentation>
@@ -36,6 +108,60 @@
 	</wsdl:portType>
 	<wsdl:binding name="ws_securitybugtracker_Binding" type="tns:ws_securitybugtracker_PortType">
 		<soapbind:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="adduser">
+			<soapbind:operation soapAction="adduser" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="addmember">
+			<soapbind:operation soapAction="addmember" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="deletemember">
+			<soapbind:operation soapAction="deletemember" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="addissue">
+			<soapbind:operation soapAction="addissue" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="editissue">
+			<soapbind:operation soapAction="editissue" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="deleteissue">
+			<soapbind:operation soapAction="deleteissue" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="addproject">
 			<soapbind:operation soapAction="addproject" style="document"/>
 			<wsdl:input>
