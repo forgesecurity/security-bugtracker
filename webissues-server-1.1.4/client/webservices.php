@@ -53,6 +53,57 @@ class webservice_server
 	  return $tab;
         }
 	
+	function addserver($req){
+	  
+	    $result = false;
+	    $req = (array) $req;
+	    $issueId = 0;
+	  
+	    $sessionManager = new System_Api_SessionManager();
+	    try {
+	      $sessionManager->login( "admin", "admin");
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	    
+	    $issueManager = new System_Api_IssueManager();
+	    $projectManager = new System_Api_ProjectManager();
+	    $typeManager = new System_Api_TypeManager();
+	    
+	    try {
+	      $folder = $projectManager->getFolder( $req["id_folder_servers"] );
+	      $issueId = $issueManager->addIssue( $folder, $req["name"]);
+	      $issue = $issueManager->getIssue( $issueId );
+	      $issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+	    
+	      $type = $typeManager->getIssueTypeForFolder( $folder );
+	      $rows = $typeManager->getAttributeTypesForIssueType( $type );
+                        
+	      $parser = new System_Api_Parser();
+	      $parser->setProjectId( $folder[ 'project_id' ] );
+         
+	      $name_ws[0] = "hostname";
+	      $name_ws[1] = "use";
+	      $name_ws[2] = "ipsaddress";
+	      
+	      foreach ( $rows as $idattribute => $attribute ) {
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
+                $issueManager->setValue( $issue, $attribute, $value );
+	      }
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	        
+	    $tab = array(
+		array(
+		'id_server' => $issueId
+		)
+	    );
+        
+	    return $tab;
+	}
+	
+	
 	function addissue($req){
 	  
 	    $result = false;
@@ -121,7 +172,9 @@ class webservice_server
 	    
 	    try {
 	    
+	      $folder = $projectManager->getFolder( $req["id_folder_bugs"] );
 	      $issue = $issueManager->getIssue( $req["id_issue"] );
+	      $issueManager->moveIssue( $issue, $folder );
 	      $issueManager->renameIssue( $issue, $req["name"] );
 	      $desc = $issueManager->getDescription( $issue );
 	      $issueManager->editDescription( $desc, $req["description"], System_Const::TextWithMarkup );
@@ -266,6 +319,7 @@ class webservice_server
 	    $result = false;
 	    $req = (array) $req;
 	    $projectManager = new System_Api_ProjectManager();
+	    $issueManager = new System_Api_IssueManager();
        
 	    try {
 		$sessionManager = new System_Api_SessionManager();
@@ -276,7 +330,26 @@ class webservice_server
 		}
 		
 		$project = $projectManager->getProject( $req["id_project"] );
-		$projectManager->deleteProject( $project, System_Api_ProjectManager::ForceDelete );
+		$folders = $projectManager->getFoldersForProject( $project );
+		
+		foreach ( $folders as $folder )
+		{
+		  $issues = $issueManager->getIssues( $folder );
+		  foreach ( $issues as $issue )
+		  {
+		    $desc = $issueManager->getDescription( $issue );
+		    $issueManager->deleteIssue( $issue );
+		    $issueManager->deleteDescription( $descr );
+		  }
+	      
+		  $projectManager->deleteFolder( $folder );
+		}
+            
+		$desc = $projectManager->getProjectDescription( $project );
+		$projectManager->deleteProjectDescription( $descr );
+		
+		//$projectManager->deleteProject( $project, System_Api_ProjectManager::ForceDelete );
+		$projectManager->deleteProject( $project);
 		$result = true;
 	    } catch ( System_Api_Error $ex ) {
 		$this->logp( $ex );
@@ -291,7 +364,46 @@ class webservice_server
 	    return $tab;
 	}
 	
+	function editproject($req){
 	  
+	    $result = false;
+	    $req = (array) $req;
+	    $typeManager = new System_Api_TypeManager();
+	    $projectManager = new System_Api_ProjectManager();
+        
+	    try {
+	    
+		$principal = System_Api_Principal::getCurrent();        
+		$sessionManager = new System_Api_SessionManager();
+		try {
+		    $sessionManager->login( "admin", "admin");
+		} catch ( System_Api_Error $ex ) {
+			$this->logp( $ex );
+		}
+
+		$project = $projectManager->getProject( $req["id_project"]);
+		$projectManager->renameProject( $project, $req["name"] );
+		$desc = $projectManager->getProjectDescription( $project );
+		    
+		if ( $req["description"] != '' ) {
+		    $projectManager->editProjectDescription( $desc, $req["description"], System_Const::TextWithMarkup);
+		}
+		
+		$result = true;
+		
+	    } catch ( System_Api_Error $ex ) {
+		$this->logp( $ex );
+	    }
+
+	    $tab = array(
+		array(
+		'result' => $result
+		)
+	    );
+	    
+	    return $tab;
+	}
+	
 	function addproject($req){
 	  
 	    $req = (array) $req;
@@ -302,6 +414,7 @@ class webservice_server
 	    $folderId1 = 1;
 	    $folderId2 = 2;
 	    $folderId3 = 3;
+	    $folderId3 = 4;
         
 	    try {
 	    
@@ -319,7 +432,7 @@ class webservice_server
 		} catch ( System_Api_Error $ex ) {
 			$this->logp( $ex );
 		}
-
+	    
 		$type = $typeManager->getIssueType(2);
 		$projectId = $projectManager->addProject($req["name"]);
 		$project = $projectManager->getProject( $projectId );
@@ -328,20 +441,28 @@ class webservice_server
 		    $projectManager->addProjectDescription( $project, $req["description"], System_Const::TextWithMarkup);
 		}
 		
+		include( 'securityplugin.conf.php' );
+		$type_folder_servers = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_SERVERS );
+		$type_folder_codes = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_CODES );
+		$type_folder_scans = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_SCANS );
+
 		$folderId1 = $projectManager->addFolder( $project, $type, "Bugs" );
-		$folderId2 = $projectManager->addFolder( $project, $type, "Servers" );
-		$folderId3 = $projectManager->addFolder( $project, $type, "Codes" );
+		$folderId2 = $projectManager->addFolder( $project, $type_folder_servers, "Servers" );
+		$folderId3 = $projectManager->addFolder( $project, $type_folder_codes, "Codes" );
+		$folderId4 = $projectManager->addFolder( $project, $type_folder_scans, "Scans" );
 		
 	    } catch ( System_Api_Error $ex ) {
 		$this->logp( $ex );
 	    }
+	    
 
 	    $tab = array(
 		array(
 		'id_project' => $projectId,
 		'id_folder_bugs' => $folderId1,
 		'id_folder_servers' => $folderId2,
-		'id_folder_codes' => $folderId3
+		'id_folder_codes' => $folderId3,
+		'id_folder_scans' => $folderId4
 		)
 	    );
         

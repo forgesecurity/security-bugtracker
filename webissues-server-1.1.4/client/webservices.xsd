@@ -1,6 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:t="http://securitybugtracker/V1" targetNamespace="http://securitybugtracker/V1">
 	
+  
+  
+	
+	<xsd:element name="addserver" type="t:type_addserver"/>
+	
+	<xsd:complexType name="type_addserver">
+		<xsd:sequence>
+			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="hostname" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="use" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="ipsaddress" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="addserver_Response" type="t:type_addserver_Response"/>
+	
+	<xsd:complexType name="type_addserver_Response">
+		<xsd:sequence>
+			<xsd:element name="result_addserver_details" type="t:result_addserver_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_addserver_details">
+		<xsd:sequence>
+			<xsd:element name="id_server" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+  
+  
+  
+  
+  
+  
 	<xsd:element name="editissue" type="t:type_editissue"/>
 	
 	<xsd:complexType name="type_editissue">
@@ -8,7 +48,7 @@
 			<xsd:element name="id_issue" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="assigntomember" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="assigned" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="state" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="severity" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="version" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
@@ -153,6 +193,26 @@
 	
 	
 	
+	<xsd:element name="editproject" type="t:type_editproject"/>
+	
+	<xsd:complexType name="type_editproject">
+		<xsd:sequence>
+			<xsd:element name="id_project" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	      </xsd:complexType>
+
+	<xsd:element name="editproject_Response" type="t:type_editproject_Response"/>
+	
+	<xsd:complexType name="type_editproject_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
 	
 	<xsd:element name="addproject" type="t:type_addproject"/>
 	
@@ -179,6 +239,7 @@
 			<xsd:element name="id_folder_bugs" type="xsd:int" nillable="false"/>
 			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false"/>
 			<xsd:element name="id_folder_codes" type="xsd:int" nillable="false"/>
+			<xsd:element name="id_folder_scans" type="xsd:int" nillable="false"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	

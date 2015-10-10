@@ -12,6 +12,12 @@
 	<wsdl:message name="adduser_output">
 		<wsdl:part name="adduser_Response" element="tns:adduser_Response"/>
 	</wsdl:message>
+	<wsdl:message name="addserver_input">
+		<wsdl:part name="addserver" element="tns:addserver"/>
+	</wsdl:message>
+	<wsdl:message name="addserver_output">
+		<wsdl:part name="addserver_Response" element="tns:addserver_Response"/>
+	</wsdl:message>
 	<wsdl:message name="addmember_input">
 		<wsdl:part name="addmember" element="tns:addmember"/>
 	</wsdl:message>
@@ -48,6 +54,12 @@
 	<wsdl:message name="addproject_output">
 		<wsdl:part name="addproject_Response" element="tns:addproject_Response"/>
 	</wsdl:message>
+	<wsdl:message name="editproject_input">
+		<wsdl:part name="editproject" element="tns:editproject"/>
+	</wsdl:message>
+	<wsdl:message name="editproject_output">
+		<wsdl:part name="editproject_Response" element="tns:editproject_Response"/>
+	</wsdl:message>
 	<wsdl:message name="deleteproject_input">
 		<wsdl:part name="deleteproject" element="tns:deleteproject"/>
 	</wsdl:message>
@@ -62,6 +74,12 @@
 			</wsdl:documentation>
 			<wsdl:input message="tns:adduser_input"/>
 			<wsdl:output message="tns:adduser_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="addserver">
+			<wsdl:documentation>WebService for addserver
+			</wsdl:documentation>
+			<wsdl:input message="tns:addserver_input"/>
+			<wsdl:output message="tns:addserver_output"/>
 		</wsdl:operation>
 		<wsdl:operation name="addmember">
 			<wsdl:documentation>WebService for addmember to a project
@@ -99,6 +117,12 @@
 			<wsdl:input message="tns:addproject_input"/>
 			<wsdl:output message="tns:addproject_output"/>
 		</wsdl:operation>
+		<wsdl:operation name="editproject">
+			<wsdl:documentation>WebService for editproject
+			</wsdl:documentation>
+			<wsdl:input message="tns:editproject_input"/>
+			<wsdl:output message="tns:editproject_output"/>
+		</wsdl:operation>
 		<wsdl:operation name="deleteproject">
 			<wsdl:documentation>WebService for deleteproject
 			</wsdl:documentation>
@@ -110,6 +134,15 @@
 		<soapbind:binding transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="adduser">
 			<soapbind:operation soapAction="adduser" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="addserver">
+			<soapbind:operation soapAction="addserver" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>
@@ -164,6 +197,15 @@
 		</wsdl:operation>
 		<wsdl:operation name="addproject">
 			<soapbind:operation soapAction="addproject" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="editproject">
+			<soapbind:operation soapAction="editproject" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>
