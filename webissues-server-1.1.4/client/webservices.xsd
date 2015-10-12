@@ -9,7 +9,6 @@
 	<xsd:complexType name="type_addserver">
 		<xsd:sequence>
 			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="hostname" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="use" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>

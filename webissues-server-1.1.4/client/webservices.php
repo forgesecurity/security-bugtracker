@@ -72,19 +72,20 @@ class webservice_server
 	    
 	    try {
 	      $folder = $projectManager->getFolder( $req["id_folder_servers"] );
-	      $issueId = $issueManager->addIssue( $folder, $req["name"]);
+	      $issueId = $issueManager->addIssue( $folder, $req["hostname"]);
 	      $issue = $issueManager->getIssue( $issueId );
 	      $issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
 	    
 	      $type = $typeManager->getIssueTypeForFolder( $folder );
 	      $rows = $typeManager->getAttributeTypesForIssueType( $type );
+	      $viewManager = new System_Api_ViewManager();
+	      $rows = $viewManager->sortByAttributeOrder( $type, $rows );
                         
 	      $parser = new System_Api_Parser();
 	      $parser->setProjectId( $folder[ 'project_id' ] );
          
-	      $name_ws[0] = "hostname";
+	      $name_ws[0] = "ipsaddress";
 	      $name_ws[1] = "use";
-	      $name_ws[2] = "ipsaddress";
 	      
 	      foreach ( $rows as $idattribute => $attribute ) {
                 $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
