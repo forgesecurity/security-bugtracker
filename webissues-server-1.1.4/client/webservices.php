@@ -20,7 +20,7 @@
 **************************************************************************/
 
 require_once( '../system/bootstrap.inc.php' );
-
+            
 class webservice_server
 {
 
@@ -52,6 +52,91 @@ class webservice_server
         
 	  return $tab;
         }
+	
+	function addscan($req){
+	  
+	    $result = false;
+	    $req = (array) $req;
+	    $issueId = 0;
+	  
+	    $sessionManager = new System_Api_SessionManager();
+	    try {
+	      $sessionManager->login( "admin", "admin");
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	    
+	    $issueManager = new System_Api_IssueManager();
+	    $projectManager = new System_Api_ProjectManager();
+	    $typeManager = new System_Api_TypeManager();
+	    
+	    try {
+	      $folder = $projectManager->getFolder( $req["id_folder_scans"] );
+	      $issueId = $issueManager->addIssue( $folder, $req["name"]);
+	      $issue = $issueManager->getIssue( $issueId );
+	      $issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+	    
+	      $type = $typeManager->getIssueTypeForFolder( $folder );
+	      $rows = $typeManager->getAttributeTypesForIssueType( $type );
+	      $viewManager = new System_Api_ViewManager();
+	      $rows = $viewManager->sortByAttributeOrder( $type, $rows );
+                        
+	      $parser = new System_Api_Parser();
+	      $parser->setProjectId( $folder[ 'project_id' ] );
+         
+	      $name_ws[0] = "time";
+	      $name_ws[1] = "tool";
+	      
+	      foreach ( $rows as $idattribute => $attribute ) {
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
+                $issueManager->setValue( $issue, $attribute, $value );
+	      }
+	      
+	      $project = $projectManager->getProject( $folder[ 'project_id' ] );
+	      $folder = $projectManager->getFolder( $req["id_folder_scans"] );
+	      $id_folder_servers = 0;
+	      $folders = $projectManager->getFoldersForProject( $project );
+	      foreach ( $folders as $idfolder => $folder ) {
+		if($folder["folder_name"] == "Servers")
+		{
+		  $id_folder_servers = $folder["folder_id"];
+		  break;
+		}
+	      }
+	      
+	      include("securityplugin.conf.php");
+	      
+	      $folder = $projectManager->getFolder( $id_folder_servers );
+	      $issues = $issueManager->getIssues($folder);
+	      foreach ( $issues as $idissue => $issue ) {
+		$attributes = $issueManager->getAttributeValuesForIssue( $issue );
+		foreach ( $attributes as $idattribute => $attribute ) {
+		  if($attribute["attr_id"] == $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS)
+		  {
+		    $this->logp( "IP ADDRESS FOUND =". $attribute["attr_value"]);
+		  }
+		}
+	      }
+	      
+	      
+	    } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+	        
+	    $tab = array(
+		array(
+		'id_scan' => $issueId
+		)
+	    );
+        
+	    return $tab;
+	}
+	
+	function deletescan($req){
+	
+		$req["id_issue"] = $req["id_scan"];
+		$this->deleteissue($req);
+	}
 	
 	function addserver($req){
 	  
@@ -102,6 +187,13 @@ class webservice_server
 	    );
         
 	    return $tab;
+	}
+	
+	
+	function deleteserver($req){
+	
+		$req["id_issue"] = $req["id_server"];
+		$this->deleteissue($req);
 	}
 	
 	

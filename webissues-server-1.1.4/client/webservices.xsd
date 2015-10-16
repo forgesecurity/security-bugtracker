@@ -4,6 +4,39 @@
   
   
 	
+	<xsd:element name="addscan" type="t:type_addscan"/>
+	
+	<xsd:complexType name="type_addscan">
+		<xsd:sequence>
+			<xsd:element name="id_folder_scans" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="tool" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="time" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="addscan_Response" type="t:type_addscan_Response"/>
+	
+	<xsd:complexType name="type_addscan_Response">
+		<xsd:sequence>
+			<xsd:element name="result_addscan_details" type="t:result_addscan_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_addscan_details">
+		<xsd:sequence>
+			<xsd:element name="id_scan" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+  
+	
+	
+	
+	
+	
 	<xsd:element name="addserver" type="t:type_addserver"/>
 	
 	<xsd:complexType name="type_addserver">
@@ -62,6 +95,49 @@
 			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	
+	
+	
+	
+	<xsd:element name="deletescan" type="t:type_deletescan"/>
+	
+	<xsd:complexType name="type_deletescan">
+		<xsd:sequence>
+			<xsd:element name="id_scan" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="deletescan_Response" type="t:type_deletescan_Response"/>
+	
+	<xsd:complexType name="type_deletescan_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	
+	<xsd:element name="deleteserver" type="t:type_deleteserver"/>
+	
+	<xsd:complexType name="type_deleteserver">
+		<xsd:sequence>
+			<xsd:element name="id_server" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="deleteserver_Response" type="t:type_deleteserver_Response"/>
+	
+	<xsd:complexType name="type_deleteserver_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	
 	
 	

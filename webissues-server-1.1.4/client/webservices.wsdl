@@ -12,6 +12,12 @@
 	<wsdl:message name="adduser_output">
 		<wsdl:part name="adduser_Response" element="tns:adduser_Response"/>
 	</wsdl:message>
+	<wsdl:message name="addscan_input">
+		<wsdl:part name="addscan" element="tns:addscan"/>
+	</wsdl:message>
+	<wsdl:message name="addscan_output">
+		<wsdl:part name="addscan_Response" element="tns:addscan_Response"/>
+	</wsdl:message>
 	<wsdl:message name="addserver_input">
 		<wsdl:part name="addserver" element="tns:addserver"/>
 	</wsdl:message>
@@ -48,6 +54,18 @@
 	<wsdl:message name="deleteissue_output">
 		<wsdl:part name="deleteissue_Response" element="tns:deleteissue_Response"/>
 	</wsdl:message>
+	<wsdl:message name="deleteserver_input">
+		<wsdl:part name="deleteserver" element="tns:deleteserver"/>
+	</wsdl:message>
+	<wsdl:message name="deleteserver_output">
+		<wsdl:part name="deleteserver_Response" element="tns:deleteserver_Response"/>
+	</wsdl:message>
+	<wsdl:message name="deletescan_input">
+		<wsdl:part name="deletescan" element="tns:deletescan"/>
+	</wsdl:message>
+	<wsdl:message name="deletescan_output">
+		<wsdl:part name="deletescan_Response" element="tns:deletescan_Response"/>
+	</wsdl:message>
 	<wsdl:message name="addproject_input">
 		<wsdl:part name="addproject" element="tns:addproject"/>
 	</wsdl:message>
@@ -81,6 +99,12 @@
 			<wsdl:input message="tns:addserver_input"/>
 			<wsdl:output message="tns:addserver_output"/>
 		</wsdl:operation>
+		<wsdl:operation name="addscan">
+			<wsdl:documentation>WebService for addscan
+			</wsdl:documentation>
+			<wsdl:input message="tns:addscan_input"/>
+			<wsdl:output message="tns:addscan_output"/>
+		</wsdl:operation>
 		<wsdl:operation name="addmember">
 			<wsdl:documentation>WebService for addmember to a project
 			</wsdl:documentation>
@@ -104,6 +128,18 @@
 			</wsdl:documentation>
 			<wsdl:input message="tns:deleteissue_input"/>
 			<wsdl:output message="tns:deleteissue_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="deletescan">
+			<wsdl:documentation>WebService for deletescan to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:deletescan_input"/>
+			<wsdl:output message="tns:deletescan_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="deleteserver">
+			<wsdl:documentation>WebService for deleteserver to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:deleteserver_input"/>
+			<wsdl:output message="tns:deleteserver_output"/>
 		</wsdl:operation>
 		<wsdl:operation name="editissue">
 			<wsdl:documentation>WebService for editissue to a project
@@ -134,6 +170,15 @@
 		<soapbind:binding transport="http://schemas.xmlsoap.org/soap/http"/>
 		<wsdl:operation name="adduser">
 			<soapbind:operation soapAction="adduser" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="addscan">
+			<soapbind:operation soapAction="addscan" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>
@@ -188,6 +233,24 @@
 		</wsdl:operation>
 		<wsdl:operation name="deleteissue">
 			<soapbind:operation soapAction="deleteissue" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="deletescan">
+			<soapbind:operation soapAction="deletescan" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="deleteserver">
+			<soapbind:operation soapAction="deleteserver" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>

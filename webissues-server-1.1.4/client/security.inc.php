@@ -49,6 +49,10 @@ class Client_Security extends System_Web_Component
 	    $type_folder_servers = $typeManager->getIssueType($id_type_folder_servers);
 	    $type_folder_codes = $typeManager->getIssueType($id_type_folder_codes);
 	    $type_folder_scans = $typeManager->getIssueType($id_type_folder_scans);
+	    
+	    
+	    
+	    /* ************************** FOLDER SERVERS ************************************** */
 	    /*
 	    $info1 = new System_Api_DefinitionInfo();
 	    $info1->setType( 'TEXT' );
@@ -78,9 +82,9 @@ class Client_Security extends System_Web_Component
 	    $info2->setMetadata( 'required', 1 );
 	    $info2->setMetadata( 'default', "" );
 	    
-	  //  $id_attribute_folder_hostname = $typeManager->addAttributeType( $type_folder_servers, "hostname", $info1->toString() );
-	    $id_attribute_folder_ipsaddress = $typeManager->addAttributeType( $type_folder_servers, "ips address", $info2->toString() );
-	    $id_attribute_folder_use = $typeManager->addAttributeType( $type_folder_servers, "use", $info1->toString() );
+	    //  $id_attribute_folder_hostname = $typeManager->addAttributeType( $type_folder_servers, "hostname", $info1->toString() );
+	    $id_attribute_folder_servers_ipsaddress = $typeManager->addAttributeType( $type_folder_servers, "ips address", $info2->toString() );
+	    $id_attribute_folder_servers_use = $typeManager->addAttributeType( $type_folder_servers, "use", $info1->toString() );
 	    
 	    $attributes_servers = $typeManager->getAttributeTypesForIssueType( $type_folder_servers );
 	    foreach ( $attributes_servers as $attribute )
@@ -95,19 +99,68 @@ class Client_Security extends System_Web_Component
 	    $info->setMetadata( 'sort-column', System_Api_Column::ID );
 	    
 	    $viewManager = new System_Api_ViewManager();
-        
-
 	    try {
 		    $viewManager->setViewSetting( $type_folder_servers, 'default_view', $info->toString() );
 	    } catch ( System_Api_Error $ex ) {
 		$this->form->getErrorHelper()->handleError( 'viewName', $ex );
 	    }
+	    /**********************************************************************************/
+	    
+	    
+	    
+	    /* ************************** FOLDER SCANS ************************************** */
+	    $info1 = new System_Api_DefinitionInfo();
+	    $info1->setType( 'ENUM' );
+	    $info1->setMetadata( 'items', array('openvas', 'dependency-check', 'openscat') );
+	    $info1->setMetadata( 'editable', 0 );
+	    $info1->setMetadata( 'multi-select', 0 );
+	    $info1->setMetadata( 'min-length', 1 );
+	    $info1->setMetadata( 'max-length', 30 );
+	    $info1->setMetadata( 'required', 1 );
+	    $info1->setMetadata( 'default', "openvas" );
+	    
+	    $info2->setType( 'ENUM' );
+	    $info2->setMetadata( 'items', array('now', 'in progress', 'finished') );
+	    $info2->setMetadata( 'editable', 0 );
+	    $info2->setMetadata( 'multi-select', 0 );
+	    $info2->setMetadata( 'min-length', 1 );
+	    $info2->setMetadata( 'max-length', 30 );
+	    $info2->setMetadata( 'required', 1 );
+	    $info2->setMetadata( 'default', "now" );
+	   
+	    
+	  //  $id_attribute_folder_hostname = $typeManager->addAttributeType( $type_folder_servers, "hostname", $info1->toString() );
+	    $id_attribute_folder_scans_tool = $typeManager->addAttributeType( $type_folder_scans, "tool", $info1->toString() );
+	    $id_attribute_folder_scans_time = $typeManager->addAttributeType( $type_folder_scans, "time", $info2->toString() );
+	    
+	    $attributes_servers = $typeManager->getAttributeTypesForIssueType( $type_folder_scans );
+	    foreach ( $attributes_servers as $attribute )
+	      $columns[ System_Api_Column::UserDefined + $attribute[ 'attr_id' ] ] = $attribute[ 'attr_name' ];
+            
+            
+	    $info = new System_Api_DefinitionInfo();
+	    $info->setType( 'VIEW' );
+
+	    $columns = array_keys( $columns );
+	    $info->setMetadata( 'columns', "1,0,".implode( ',', $columns ) );
+	    $info->setMetadata( 'sort-column', System_Api_Column::ID );
+	    
+	    $viewManager = new System_Api_ViewManager();
+	    try {
+		    $viewManager->setViewSetting( $type_folder_scans, 'default_view', $info->toString() );
+	    } catch ( System_Api_Error $ex ) {
+		$this->form->getErrorHelper()->handleError( 'viewName', $ex );
+	    }
+	    
+	    /**********************************************************************************/
             
             $fp = fopen("securityplugin.conf.php","w");
             fputs($fp,"<?php\n\n");
             //fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_HOSTNAME = $id_attribute_folder_hostname;\n");
-            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_USE = $id_attribute_folder_use;\n");
-            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_IPSADDRESS = $id_attribute_folder_ipsaddress;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE = $id_attribute_folder_servers_use;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS = $id_attribute_folder_servers_ipsaddress;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL = $id_attribute_folder_scans_tool;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME = $id_attribute_folder_scans_time;\n");
             fputs($fp,"\$CONF_ID_TYPE_FOLDER_SERVERS = $id_type_folder_servers;\n");
             fputs($fp,"\$CONF_ID_TYPE_FOLDER_CODES = $id_type_folder_codes;\n");
             fputs($fp,"\$CONF_ID_TYPE_FOLDER_SCANS = $id_type_folder_scans;\n\n");
