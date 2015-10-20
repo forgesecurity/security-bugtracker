@@ -13,6 +13,7 @@
 			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="tool" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="time" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="severity" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -42,8 +43,8 @@
 	<xsd:complexType name="type_addserver">
 		<xsd:sequence>
 			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
-			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="hostname" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="use" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="ipsaddress" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 		</xsd:sequence>

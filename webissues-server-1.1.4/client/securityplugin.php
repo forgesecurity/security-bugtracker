@@ -21,7 +21,7 @@
 
 require_once( '../system/bootstrap.inc.php' );
 
-class Client_Security extends System_Web_Component
+class Client_SecurityPlugin extends System_Web_Component
 {
     private $install_security = null;
     
@@ -32,6 +32,9 @@ class Client_Security extends System_Web_Component
 
     protected function execute()
     {
+        $this->view->setDecoratorClass( 'Common_FixedBlock' );
+        $this->view->setSlot( 'page_title', $this->tr( 'Security Plugin Configuration' ) );
+        
 	include( 'securityplugin.conf.php' );
 
 	$typeManager = new System_Api_TypeManager();
@@ -39,6 +42,31 @@ class Client_Security extends System_Web_Component
 	$issueManager = new System_Api_IssueManager();
 	
         $this->install_security = $this->request->getQueryString( 'install' );
+        $this->alertscanid = $this->request->getQueryString( 'alertscanid' );
+        
+        if(!empty($this->alertscanid))
+        {
+	    try {
+	      $issue = $issueManager->getIssue( $this->alertscanid );
+	      $projectid = $issue["project_id"];
+	      
+	      $project = $projectManager->getProject( $issue["project_id"] );
+	      $id_folder_scans = 0;
+	      $folders = $projectManager->getFoldersForProject( $project );
+	      foreach ( $folders as $idfolder => $folder ) {
+		if($folder["type_id"] == $CONF_ID_TYPE_FOLDER_SCANS) // REMPLACER PAR TYPE FOLDER = SERVER
+		{
+		  $id_folder_scans = $folder["folder_id"];
+		  break;
+		}
+	      }
+	      
+	      
+	      } catch ( System_Api_Error $ex ) {
+	      $this->logp( $ex );
+	    }
+        
+        }
 
         if ( $this->install_security == "yes" ) { 
             
@@ -119,19 +147,30 @@ class Client_Security extends System_Web_Component
 	    $info1->setMetadata( 'required', 1 );
 	    $info1->setMetadata( 'default', "openvas" );
 	    
+	    $info2 = new System_Api_DefinitionInfo();
 	    $info2->setType( 'ENUM' );
-	    $info2->setMetadata( 'items', array('now', 'in progress', 'finished') );
+	    $info2->setMetadata( 'items', array('stopped', 'in progress', 'finished') );
 	    $info2->setMetadata( 'editable', 0 );
 	    $info2->setMetadata( 'multi-select', 0 );
 	    $info2->setMetadata( 'min-length', 1 );
 	    $info2->setMetadata( 'max-length', 30 );
 	    $info2->setMetadata( 'required', 1 );
-	    $info2->setMetadata( 'default', "now" );
+	    $info2->setMetadata( 'default', "stopped" );
 	   
+	    $info3 = new System_Api_DefinitionInfo();
+	    $info3->setType( 'ENUM' );
+	    $info3->setMetadata( 'items', array('info', 'minor', 'medium', 'high') );
+	    $info3->setMetadata( 'editable', 0 );
+	    $info3->setMetadata( 'multi-select', 0 );
+	    $info3->setMetadata( 'min-length', 1 );
+	    $info3->setMetadata( 'max-length', 30 );
+	    $info3->setMetadata( 'required', 1 );
+	    $info3->setMetadata( 'default', "info" );
 	    
 	  //  $id_attribute_folder_hostname = $typeManager->addAttributeType( $type_folder_servers, "hostname", $info1->toString() );
 	    $id_attribute_folder_scans_tool = $typeManager->addAttributeType( $type_folder_scans, "tool", $info1->toString() );
 	    $id_attribute_folder_scans_time = $typeManager->addAttributeType( $type_folder_scans, "time", $info2->toString() );
+	    $id_attribute_folder_scans_severity = $typeManager->addAttributeType( $type_folder_scans, "severity", $info3->toString() );
 	    
 	    $attributes_servers = $typeManager->getAttributeTypesForIssueType( $type_folder_scans );
 	    foreach ( $attributes_servers as $attribute )
@@ -152,6 +191,51 @@ class Client_Security extends System_Web_Component
 		$this->form->getErrorHelper()->handleError( 'viewName', $ex );
 	    }
 	    
+	    
+	    
+	    $info1 = new System_Api_DefinitionInfo();
+	    $info1->setType( 'TEXT' );
+	    $info1->setMetadata( 'multi-line', 0 );
+	    $info1->setMetadata( 'min-length', 1 );
+	    $info1->setMetadata( 'max-length', 40 );
+	    $info1->setMetadata( 'required', 0 );
+	    $info1->setMetadata( 'default', "" );
+	    
+	    $id_attribute_folder_scans_targetid = $typeManager->addAttributeType( $type_folder_scans, "targetid", $info1->toString() );
+	    
+	    
+	    $info2 = new System_Api_DefinitionInfo();
+	    $info2->setType( 'TEXT' );
+	    $info2->setMetadata( 'multi-line', 0 );
+	    $info2->setMetadata( 'min-length', 1 );
+	    $info2->setMetadata( 'max-length', 40 );
+	    $info2->setMetadata( 'required', 0 );
+	    $info2->setMetadata( 'default', "" );
+	    
+	    $id_attribute_folder_scans_tasktid = $typeManager->addAttributeType( $type_folder_scans, "tasktid", $info2->toString() );
+	    
+	    
+	    $info3 = new System_Api_DefinitionInfo();
+	    $info3->setType( 'TEXT' );
+	    $info3->setMetadata( 'multi-line', 0 );
+	    $info3->setMetadata( 'min-length', 1 );
+	    $info3->setMetadata( 'max-length', 40 );
+	    $info3->setMetadata( 'required', 0 );
+	    $info3->setMetadata( 'default', "" );
+	    
+	    $id_attribute_folder_scans_reportid = $typeManager->addAttributeType( $type_folder_scans, "reportid", $info3->toString() );
+	    
+	    
+	    $info4 = new System_Api_DefinitionInfo();
+	    $info4->setType( 'TEXT' );
+	    $info4->setMetadata( 'multi-line', 0 );
+	    $info4->setMetadata( 'min-length', 1 );
+	    $info4->setMetadata( 'max-length', 40 );
+	    $info4->setMetadata( 'required', 0 );
+	    $info4->setMetadata( 'default', "" );
+	    
+	    $id_attribute_folder_scans_alertid = $typeManager->addAttributeType( $type_folder_scans, "alertid", $info4->toString() );
+	    
 	    /**********************************************************************************/
             
             $fp = fopen("securityplugin.conf.php","w");
@@ -161,6 +245,11 @@ class Client_Security extends System_Web_Component
             fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS = $id_attribute_folder_servers_ipsaddress;\n");
             fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL = $id_attribute_folder_scans_tool;\n");
             fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME = $id_attribute_folder_scans_time;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_SEVERITY = $id_attribute_folder_scans_severity;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TARGETID = $id_attribute_folder_scans_targetid;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID = $id_attribute_folder_scans_tasktid;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID = $id_attribute_folder_scans_reportid;\n");
+            fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID = $id_attribute_folder_scans_alertid;\n");
             fputs($fp,"\$CONF_ID_TYPE_FOLDER_SERVERS = $id_type_folder_servers;\n");
             fputs($fp,"\$CONF_ID_TYPE_FOLDER_CODES = $id_type_folder_codes;\n");
             fputs($fp,"\$CONF_ID_TYPE_FOLDER_SCANS = $id_type_folder_scans;\n\n");
@@ -169,14 +258,6 @@ class Client_Security extends System_Web_Component
         }
         
         elseif($this->install_security == "no" ) {
-            /*
-            echo "attribute folder servers = ".$CONF_ID_ATTRIBUTE_FOLDER_SERVERS;
-            echo "attribute folder servers = ".$CONF_ID_ATTRIBUTE_FOLDER_CODES;
-            echo "attribute folder servers = ".$CONF_ID_ATTRIBUTE_FOLDER_SCANS;
-            echo "type folder servers = ".$CONF_ID_TYPE_FOLDER_SERVERS;
-            echo "type folder servers = ".$CONF_ID_TYPE_FOLDER_CODES;
-            echo "type folder servers = ".$CONF_ID_TYPE_FOLDER_SCANS;
-            */
             
 	    $type_folder_servers = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_SERVERS );
 	    $type_folder_codes = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_CODES );
@@ -246,3 +327,5 @@ class Client_Security extends System_Web_Component
 
     }
 }
+
+System_Bootstrap::run( 'Common_Application', 'Client_SecurityPlugin' );

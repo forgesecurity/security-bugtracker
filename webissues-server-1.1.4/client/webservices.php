@@ -75,48 +75,140 @@ class webservice_server
 	      $issueId = $issueManager->addIssue( $folder, $req["name"]);
 	      $issue = $issueManager->getIssue( $issueId );
 	      $issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
-	    
-	      $type = $typeManager->getIssueTypeForFolder( $folder );
-	      $rows = $typeManager->getAttributeTypesForIssueType( $type );
-	      $viewManager = new System_Api_ViewManager();
-	      $rows = $viewManager->sortByAttributeOrder( $type, $rows );
-                        
+	                
 	      $parser = new System_Api_Parser();
 	      $parser->setProjectId( $folder[ 'project_id' ] );
-         
-	      $name_ws[0] = "time";
-	      $name_ws[1] = "tool";
 	      
-	      foreach ( $rows as $idattribute => $attribute ) {
-                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
-                $issueManager->setValue( $issue, $attribute, $value );
-	      }
+	      include("securityplugin.conf.php");
+		
+	      $attributetime = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
+	      $value = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], $req["time"] );
+              $issueManager->setValue( $issue, $attributetime, $value );
+             
+	      $attributetool = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL );
+	      $value = $parser->convertAttributeValue( $attributetool[ 'attr_def' ], $req["tool"] );
+              $issueManager->setValue( $issue, $attributetool, $value );
+              
+	      $attributeseve = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_SEVERITY );
+	      $value = $parser->convertAttributeValue( $attributeseve[ 'attr_def' ], $req["severity"] );
+              $issueManager->setValue( $issue, $attributeseve, $value );
 	      
 	      $project = $projectManager->getProject( $folder[ 'project_id' ] );
-	      $folder = $projectManager->getFolder( $req["id_folder_scans"] );
 	      $id_folder_servers = 0;
-	      $folders = $projectManager->getFoldersForProject( $project );
-	      foreach ( $folders as $idfolder => $folder ) {
-		if($folder["folder_name"] == "Servers")
+	      $projects[0] = $project;
+	      $folders = $projectManager->getFoldersForProjects( $projects );
+	      foreach ( $folders as $folder ) 
+	      {
+	      $this->logp("dump : ".print_r($folder));
+		    $this->logp( "idfolder = $idfolder and PROJECT ID = ".$folder['project_id']." and FOLDER ID =". $folder['type_id']. " and CONF ID = ".$CONF_ID_TYPE_FOLDER_SERVERS);
+		if($folder["type_id"] == $CONF_ID_TYPE_FOLDER_SERVERS)
 		{
 		  $id_folder_servers = $folder["folder_id"];
 		  break;
 		}
 	      }
 	      
-	      include("securityplugin.conf.php");
-	      
+	      $nbips = 0;
+	      $ipsaddress = array();
 	      $folder = $projectManager->getFolder( $id_folder_servers );
 	      $issues = $issueManager->getIssues($folder);
-	      foreach ( $issues as $idissue => $issue ) {
-		$attributes = $issueManager->getAttributeValuesForIssue( $issue );
+	      foreach ( $issues as $idissue => $bkpissue ) {
+		$attributes = $issueManager->getAttributeValuesForIssue( $bkpissue );
 		foreach ( $attributes as $idattribute => $attribute ) {
 		  if($attribute["attr_id"] == $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS)
 		  {
+		    $ipsaddress[$nbips] = $attribute["attr_value"];
+		    $nbips ++;
 		    $this->logp( "IP ADDRESS FOUND =". $attribute["attr_value"]);
 		  }
 		}
 	      }
+	      
+	      // vérifier le format de l'ip
+	      if($nbips > 0)
+	      {
+		$this->logp( "START SCAN");
+		$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<create_target><name>".$req["name"]."</name><hosts>".$ipsaddress[0]."</hosts></create_target>'");
+		// <create_target_response id="c7217909-a7e6-4e97-976d-21d2537b6e3f" status_text="OK, resource created" status="201"></create_target_response>
+		//preg_match("/<create_target_response id\=\\"([^\"]*)\\"/", $output);
+		preg_match('|<create_target_response id=\"([^"]*)\"|', $output, $matches);
+		$targetid = $matches[1];
+		$this->logp( "TARGET OUTPUT =". $output);
+		$this->logp( "TARGET ID =". $targetid);
+		
+		//$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<delete_target target_id=\"".$targetid."\"/>'");
+		
+		
+		$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<create_alert><name>webissue".$issueId."</name><condition>Always</condition><event>Task run status changed<data>Done<name>status</name></data></event><method>HTTP Get<data><name>URL</name>http://localhost:8080/webissues-server-1.1.4/client/securityplugin.php?alertscanid=".$issueId."</data></method></create_alert>'");
+		// <create_alert_response id="15b4873a-4952-4040-afb1-88db3410f83c" status_text="OK, resource created" status="201"></create_alert_response>
+		preg_match('|<create_alert_response id=\"([^"]*)\"|', $output, $matches);
+		$alertid = $matches[1];
+		$this->logp( "ALERT OUTPUT =". $output);
+		$this->logp( "ALERT ID =". $alertid);
+		
+		//$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<delete_alert alert_id="".$alertid.""/>'");
+		//<delete_alert_response status_text="Alert is in use" status="400"></delete_alert_response>
+
+		
+		$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<create_task><name>".$req["name"]."</name><comment>test</comment><config id=\"a0e8fed8-45c1-4890-bd08-671257f63308\"/><target id=\"".$targetid."\"/><alert id=\"".$alertid."\"/></create_task>'");
+		// <create_task_response id="cb144b4c-ef50-47f2-9403-81ac8fc7891f" status_text="OK, resource created" status="201"></create_task_response>
+		preg_match('|<create_task_response id=\"([^"]*)\"|', $output, $matches);
+		$taskid = $matches[1];
+		$this->logp( "TASK OUTPUT =". $output);
+		$this->logp( "TASK ID =". $taskid);
+		
+		//$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<delete_task task_id=\"".$taskid."\"/>'");
+				
+		
+		
+		$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<start_task task_id=\"".$taskid."\"/>'");
+		// <start_task_response status_text="OK, request submitted" status="202"><report_id>a3db7806-b3c8-4551-b4d1-cc5c2b8ea0a6</report_id></start_task_response>
+		preg_match('@<report_id>(.*)</report_id>.*@i', $output, $matches);
+		$reportid = $matches[1];
+		$this->logp( "REPORT OUTPUT =". $output);
+		$this->logp( "REPORT ID =". $reportid);
+		
+		//$output = shell_exec ("omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<delete_report report_id=\"".$reportid."\"/>'");
+
+
+            
+		$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TARGETID);
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $targetid );
+		$issueManager->setValue( $issue, $attribute, $value);
+		$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID);
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $taskid );
+		$issueManager->setValue( $issue, $attribute, $value );
+		$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID);
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $reportid );
+		$issueManager->setValue( $issue, $attribute, $value );
+		$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID);
+                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $targetid );
+		$issueManager->setValue( $issue, $attribute, $value );
+		
+		//$output = shell_exec ("omp --get-report ".$reportid." --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 > $reportid.xml");
+	      }
+	      
+	      /*
+	      linux-3ig5:~ # omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<create_target><name>test</name><hosts>127.0.0.1</hosts></create_target>'
+<create_target_response id="c7217909-a7e6-4e97-976d-21d2537b6e3f" status_text="OK, resource created" status="201"></create_target_response>
+
+linux-3ig5:~ # omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<delete_target target_id="c7217909-a7e6-4e97-976d-21d2537b6e3f"/>'
+<delete_target_response status_text="OK" status="200"></delete_target_response>
+
+linux-3ig5:~ # omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<create_task><name>test task</name><comment>test</comment><config id="a0e8fed8-45c1-4890-bd08-671257f63308"/><target id="15aff6dc-1cc2-40e5-a705-cefcec6bf71f"/></create_task>'
+<create_task_response id="cb144b4c-ef50-47f2-9403-81ac8fc7891f" status_text="OK, resource created" status="201"></create_task_response>
+
+linux-3ig5:~ # omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<delete_task task_id="cb144b4c-ef50-47f2-9403-81ac8fc7891f"/>'<delete_task_response status_text="OK" status="200"></delete_task_response>
+
+linux-3ig5:~ # omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<start_task task_id="4b222d6f-1115-463b-8ea5-7c19058886c7"/>'<start_task_response status_text="OK, request submitted" status="202"><report_id>a3db7806-b3c8-4551-b4d1-cc5c2b8ea0a6</report_id></start_task_response>
+
+linux-3ig5:~ # omp --get-tasks -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393
+4b222d6f-1115-463b-8ea5-7c19058886c7  Done         test task
+
+linux-3ig5:~ # omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --xml='<delete_report report_id="a3db7806-b3c8-4551-b4d1-cc5c2b8ea0a6"/>'
+<delete_report_response status_text="OK" status="200"></delete_report_response>
+*/
+
 	      
 	      
 	    } catch ( System_Api_Error $ex ) {
@@ -160,22 +252,20 @@ class webservice_server
 	      $issueId = $issueManager->addIssue( $folder, $req["hostname"]);
 	      $issue = $issueManager->getIssue( $issueId );
 	      $issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
-	    
-	      $type = $typeManager->getIssueTypeForFolder( $folder );
-	      $rows = $typeManager->getAttributeTypesForIssueType( $type );
-	      $viewManager = new System_Api_ViewManager();
-	      $rows = $viewManager->sortByAttributeOrder( $type, $rows );
-                        
+	         
 	      $parser = new System_Api_Parser();
 	      $parser->setProjectId( $folder[ 'project_id' ] );
-         
-	      $name_ws[0] = "ipsaddress";
-	      $name_ws[1] = "use";
 	      
-	      foreach ( $rows as $idattribute => $attribute ) {
-                $value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
-                $issueManager->setValue( $issue, $attribute, $value );
-	      }
+	      include("securityplugin.conf.php");
+
+	      $attributeips = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS );
+	      $value = $parser->convertAttributeValue( $attributeips[ 'attr_def' ], $req["ipsaddress"] );
+              $issueManager->setValue( $issue, $attributeips, $value );
+             
+	      $attributeuse = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE );
+	      $value = $parser->convertAttributeValue( $attributeuse[ 'attr_def' ], $req["use"] );
+              $issueManager->setValue( $issue, $attributeuse, $value );
+              
 	    } catch ( System_Api_Error $ex ) {
 	      $this->logp( $ex );
 	    }
