@@ -58,22 +58,37 @@ the mainly additions to webissues are using webservices to launch security test 
    </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 ```
+- launch a security scan with openvas :
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:addscan>
+         <id_folder_scans>76</id_folder_scans>
+         <name>test openvas soapui</name>
+         <description>test openvas soapui</description>
+         <tool>openvas</tool>
+         <filter>medium</filter>
+         <!--Optional:-->
+         <id_config_openvas>?</id_config_openvas>
+      </v1:addscan>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+```xml
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://securitybugtracker/V1">
+   <SOAP-ENV:Body>
+      <ns1:addscan_Response>
+         <result_addscan_details>
+            <id_scan>1154</id_scan>
+         </result_addscan_details>
+      </ns1:addscan_Response>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
 
-- is a tool in development for learning static analysis of source code, currently, you can for example, computing and printing :
-- the Abstract Syntax Tree of a small program : 
+- view detected bug with the IHM of webissues: 
 
-![ScreenShot](https://raw.githubusercontent.com/eric-therond/accassias/master/documentation/ast_example1.png)
-
-- the Control Flow Graph : 
-
-![ScreenShot](https://raw.githubusercontent.com/eric-therond/accassias/master/documentation/cfg_example1.png)
-
-- the generated machine code :
-
-![ScreenShot](https://raw.githubusercontent.com/eric-therond/accassias/master/documentation/code_example1.png)
-
-For more explanations, you can read user and developer manuals :
-- https://github.com/eric-therond/accassias/blob/master/documentation/user_manual.pdf
-- https://github.com/eric-therond/accassias/blob/master/documentation/developer_manual.pdf
+![ScreenShot](https://raw.githubusercontent.com/eric-therond/security-bugtracker/master/documentation/bugs.png)
 
 
