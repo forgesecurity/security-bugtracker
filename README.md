@@ -3,8 +3,9 @@ Security-bugtracker is a tool based on :
 - openvas security scanner : http://www.openvas.org/
 - dependency check : https://github.com/jeremylong/DependencyCheck
 
-the mainly additions to webissues are using webservices to use security test tools and track linked bugs.
+the mainly additions to webissues are using webservices to launch security test tools and track linked bugs.
 
+ - add a project :
 ```xml
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
@@ -31,6 +32,33 @@ the mainly additions to webissues are using webservices to use security test too
    </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 ```
+ - add a server :
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:addserver>
+         <id_folder_servers>74</id_folder_servers>
+         <hostname>test</hostname>
+         <description>test</description>
+         <use>Développement</use>
+         <ipsaddress>127.0.0.1</ipsaddress>
+      </v1:addserver>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+```xml
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://securitybugtracker/V1">
+   <SOAP-ENV:Body>
+      <ns1:addserver_Response>
+         <result_addserver_details>
+            <id_server>1150</id_server>
+         </result_addserver_details>
+      </ns1:addserver_Response>
+   </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
 - is a tool in development for learning static analysis of source code, currently, you can for example, computing and printing :
 - the Abstract Syntax Tree of a small program : 
 
