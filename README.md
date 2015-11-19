@@ -3,7 +3,7 @@ Security-bugtracker is a tool based on :
 - openvas security scanner : http://www.openvas.org/
 - dependency check : https://github.com/jeremylong/DependencyCheck
 
-the mainly additions to webissues are using webservices to launch security test tools and track linked bugs.
+the main additions to webissues are the use of webservices to run security test tools and track bugs.
 
  - add a project :
 ```xml
@@ -58,7 +58,7 @@ the mainly additions to webissues are using webservices to launch security test 
    </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 ```
-- launch a security scan with openvas :
+- run a security scan with openvas :
 ```xml
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
