@@ -23,8 +23,6 @@ require_once( '../system/bootstrap.inc.php' );
 
 class Client_SecurityPlugin extends System_Web_Component
 {
-	//private $install_security = null;
-
 	protected function __construct()
 	{
 		parent::__construct();
@@ -44,165 +42,26 @@ class Client_SecurityPlugin extends System_Web_Component
 
 		include( 'securityplugin.conf.php' );
 		$this->install_security = $this->request->getQueryString( 'install' );
-		$this->alertscanid = (int) $this->request->getQueryString( 'alertscanid' );
 
 		$typeManager = new System_Api_TypeManager();
 		$projectManager = new System_Api_ProjectManager();
 		$issueManager = new System_Api_IssueManager();
 		$userManager = new System_Api_UserManager();
 
-		if(!empty($this->alertscanid))
-		{
-			if(!System_Api_Principal::getCurrent()->isAuthenticated())
-			{
-				$sessionManager = new System_Api_SessionManager();
-				try {
-					$sessionManager->loginAs( "admin");
-				} catch ( System_Api_Error $ex ) {
-					$this->logp( $ex );
-				}
-			}
-
-			try {
-
-				$issuescan = $issueManager->getIssue( $this->alertscanid );
-				$project = $projectManager->getProject( $issuescan["project_id"] );
-				$id_folder_bugs = 0;
-				$projects[0] = $project;
-				$folders = $projectManager->getFoldersForProjects( $projects );
-				foreach ( $folders as $folder ) {
-					if($folder["type_id"] == 2) // 2 = TYPE_ID BUGS
-					{
-						$id_folder_bugs = $folder["folder_id"];
-						break;
-					}
-				}
-
-				$attributes = $issueManager->getAttributeValuesForIssue( $issuescan );
-				foreach ( $attributes as $attribute ) {
-					switch($attribute["attr_id"])
-					{
-						case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_SEVERITY: $severity = $attribute["attr_value"]; break;
-						case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TARGETID: $targetid = $attribute["attr_value"]; break;
-						case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID: $taskid = $attribute["attr_value"]; break;
-						case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID: $reportid = $attribute["attr_value"]; break;
-						case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID: $alertid = $attribute["attr_value"]; break;
-						default: break;
-					}
-				}
-
-				switch($severity)
-				{
-					case 'info':$severity = 1;break;
-					case 'minor':$severity = 1;break;
-					case 'medium':$severity = 2;break;
-					case 'high':$severity = 3;break;
-					default:$severity = 1;break;
-				}
-
-				//$reportid = "6538b6d3-04d2-40cb-82c5-ae8c2fc56a71";
-				$outputxml = shell_exec ("".$CONF_OPENVAS_PATH_OMP." --get-report ".$reportid." --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393");      
-				/*$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<delete_target target_id=\"".$targetid."\"/>'");
-				  $output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<delete_alert alert_id="".$alertid.""/>'");
-				  $output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<delete_task task_id=\"".$taskid."\"/>'");
-				  $output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<delete_report report_id=\"".$reportid."\"/>'");
-				 */
-
-				$this->logp( "outputxml = ".$outputxml );
-				$report = new SimpleXMLElement($outputxml);
-				if(isset($report->report->results->result))
-				{
-					foreach ($report->report->results->result as $result) {
-						if(isset($result->threat))
-						{
-							switch($result->threat)
-							{
-								case 'Log':$threat = 1;break;
-								case 'Low':$threat = 1;break;
-								case 'Medium':$threat = 2;break;
-								case 'High':$threat = 3;break;
-								default:$threat = 1;break; 
-							}
-						}
-
-						$this->logp( "threat = ".$threat );
-						$this->logp( "name = ".$result->name );
-						if($threat >= $severity)
-						{
-
-							$admin = null;
-							$members = $userManager->getMembers($project);
-							foreach ($members as $member) {
-								if($member["project_access"] == System_Const::AdministratorAccess)
-								{
-									$admin = $member;
-									break;
-								}
-							}
-
-							if($admin != null)
-							{
-								$user = $userManager->getUser($admin["user_id"]);
-
-								$folder = $projectManager->getFolder( $id_folder_bugs );
-								$issueId = $issueManager->addIssue( $folder, $result->name);
-								$issue = $issueManager->getIssue( $issueId );
-								$issueManager->addDescription( $issue, $result->description, System_Const::TextWithMarkup );
-
-								$type = $typeManager->getIssueTypeForFolder( $folder );
-								$rows = $typeManager->getAttributeTypesForIssueType( $type );
-
-								$parser = new System_Api_Parser();
-								$parser->setProjectId( $folder[ 'project_id' ] );
-
-								$name_ws[0] = $user["user_name"];
-								$name_ws[1] = "Actif";
-								$name_ws[2] = "";
-								$name_ws[3] = $threat;
-								$name_ws[4] = "";
-
-								foreach ( $rows as $idattribute => $attribute ) {
-									$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $name_ws[$idattribute] );
-									$issueManager->setValue( $issue, $attribute, $value );
-								}
-							}
-						}
-					}
-
-					$parser = new System_Api_Parser();
-					$parser->setProjectId( $issuescan["project_id"] );
-
-					$attributetime = $typeManager->getAttributeTypeForIssue( $issuescan, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
-					$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], "finished" );
-					$issueManager->setValue( $issuescan, $attributetime, $valuetime );
-				}
-
-			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
-			}
-
-		}
-
 		if($this->install_security == "yes")
 		{
 			$this->form = new System_Web_Form( 'installation', $this );
 			$this->form->addField( 'openvas_admin_login', "admin" );
 			$this->form->addField( 'openvas_admin_password', "" );
-			$this->form->addField( 'openvas_config_id', "" );
-			$this->form->addField( 'openvas_path_omp', "/usr/local/bin/omp" );
 
 			if ( $this->form->loadForm() ) {
 				if ( $this->form->isSubmittedWith( 'ok' ) && !$this->form->hasErrors() ) {
 
 					$openvas_admin_login = $this->request->getFormField( 'openvas_admin_login' );
 					$openvas_admin_password = $this->request->getFormField( 'openvas_admin_password' );
-					$openvas_config_id = $this->request->getFormField( 'openvas_config_id' );
-					$openvas_path_omp = $this->request->getFormField( 'openvas_path_omp' );
 
-					if (preg_match('/^[A-Za-z0-9_.\/\\\]*$/i', $openvas_path_omp) &&
-							preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_admin_login) &&
-							preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_admin_password) &&
-							preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_config_id))
+					if (preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_admin_login) &&
+							preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_admin_password))
 					{
 
 						$this->install_security = "do";
@@ -238,7 +97,6 @@ class Client_SecurityPlugin extends System_Web_Component
 						$info2->setMetadata( 'required', 1 );
 						$info2->setMetadata( 'default', "" );
 
-						//  $id_attribute_folder_hostname = $typeManager->addAttributeType( $type_folder_servers, "hostname", $info1->toString() );
 						$id_attribute_folder_servers_ipsaddress = $typeManager->addAttributeType( $type_folder_servers, "ips address", $info2->toString() );
 						$id_attribute_folder_servers_use = $typeManager->addAttributeType( $type_folder_servers, "use", $info1->toString() );
 
@@ -257,6 +115,40 @@ class Client_SecurityPlugin extends System_Web_Component
 						$viewManager = new System_Api_ViewManager();
 						try {
 							$viewManager->setViewSetting( $type_folder_servers, 'default_view', $info->toString() );
+						} catch ( System_Api_Error $ex ) {
+							$this->form->getErrorHelper()->handleError( 'viewName', $ex );
+						}
+						// ********************************************************************************
+
+
+
+
+
+						// **************************** FOLDER CODES ************************************** 
+						$info1 = new System_Api_DefinitionInfo();
+						$info1->setType( 'TEXT' );
+						$info1->setMetadata( 'multi-line', 0 );
+						$info1->setMetadata( 'min-length', 1 );
+						$info1->setMetadata( 'max-length', 40 );
+						$info1->setMetadata( 'required', 0 );
+						$info1->setMetadata( 'default', "" );
+
+						$id_attribute_folder_codes_path = $typeManager->addAttributeType( $type_folder_codes, "code", $info1->toString() );
+
+						$attributes_codes = $typeManager->getAttributeTypesForIssueType( $type_folder_codes );
+						foreach ( $attributes_codes as $attribute )
+							$columns[ System_Api_Column::UserDefined + $attribute[ 'attr_id' ] ] = $attribute[ 'attr_name' ];
+
+						$info = new System_Api_DefinitionInfo();
+						$info->setType( 'VIEW' );
+
+						$columns = array_keys( $columns );
+						$info->setMetadata( 'columns', "1,0,".implode( ',', $columns ) );
+						$info->setMetadata( 'sort-column', System_Api_Column::ID );
+
+						$viewManager = new System_Api_ViewManager();
+						try {
+							$viewManager->setViewSetting( $type_folder_codes, 'default_view', $info->toString() );
 						} catch ( System_Api_Error $ex ) {
 							$this->form->getErrorHelper()->handleError( 'viewName', $ex );
 						}
@@ -295,7 +187,6 @@ class Client_SecurityPlugin extends System_Web_Component
 						$info3->setMetadata( 'required', 1 );
 						$info3->setMetadata( 'default', "info" );
 
-						//  $id_attribute_folder_hostname = $typeManager->addAttributeType( $type_folder_servers, "hostname", $info1->toString() );
 						$id_attribute_folder_scans_tool = $typeManager->addAttributeType( $type_folder_scans, "tool", $info1->toString() );
 						$id_attribute_folder_scans_time = $typeManager->addAttributeType( $type_folder_scans, "time", $info2->toString() );
 						$id_attribute_folder_scans_severity = $typeManager->addAttributeType( $type_folder_scans, "severity", $info3->toString() );
@@ -367,11 +258,9 @@ class Client_SecurityPlugin extends System_Web_Component
 						// *********************************************************************************
 						$fp = fopen("securityplugin.conf.php","w");
 						fputs($fp,"<?php\n\n");
-						//fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_HOSTNAME = $id_attribute_folder_hostname;\n");
 						fputs($fp,"\$CONF_OPENVAS_ADMIN_LOGIN = \"$openvas_admin_login\";\n");
 						fputs($fp,"\$CONF_OPENVAS_ADMIN_PASSWORD = \"$openvas_admin_password\";\n");
-						fputs($fp,"\$CONF_OPENVAS_CONFIG_ID = \"$openvas_config_id\";\n");
-						fputs($fp,"\$CONF_OPENVAS_PATH_OMP = \"$openvas_path_omp\";\n");
+						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH = \"$id_attribute_folder_codes_path\";\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE = $id_attribute_folder_servers_use;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS = $id_attribute_folder_servers_ipsaddress;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL = $id_attribute_folder_scans_tool;\n");

@@ -84,6 +84,18 @@
 	<wsdl:message name="deleteproject_output">
 		<wsdl:part name="deleteproject_Response" element="tns:deleteproject_Response"/>
 	</wsdl:message>
+	<wsdl:message name="getparamsfromalertid_input">
+		<wsdl:part name="getparamsfromalertid" element="tns:getparamsfromalertid"/>
+	</wsdl:message>
+	<wsdl:message name="getparamsfromalertid_output">
+		<wsdl:part name="getparamsfromalertid_Response" element="tns:getparamsfromalertid_Response"/>
+	</wsdl:message>
+	<wsdl:message name="finishscan_input">
+		<wsdl:part name="finishscan" element="tns:finishscan"/>
+	</wsdl:message>
+	<wsdl:message name="finishscan_output">
+		<wsdl:part name="finishscan_Response" element="tns:finishscan_Response"/>
+	</wsdl:message>
 
 
 	<wsdl:portType name="ws_securitybugtracker_PortType">
@@ -164,6 +176,12 @@
 			</wsdl:documentation>
 			<wsdl:input message="tns:deleteproject_input"/>
 			<wsdl:output message="tns:deleteproject_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="getparamsfromalertid">
+			<wsdl:documentation>WebService for getparamsfromalertid
+			</wsdl:documentation>
+			<wsdl:input message="tns:getparamsfromalertid_input"/>
+			<wsdl:output message="tns:getparamsfromalertid_output"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="ws_securitybugtracker_Binding" type="tns:ws_securitybugtracker_PortType">
@@ -278,6 +296,15 @@
 		</wsdl:operation>
 		<wsdl:operation name="deleteproject">
 			<soapbind:operation soapAction="deleteproject" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getparamsfromalertid">
+			<soapbind:operation soapAction="getparamsfromalertid" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>

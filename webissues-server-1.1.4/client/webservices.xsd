@@ -163,10 +163,6 @@
 	</xsd:complexType>
 	
 	
-	
-	
-	
-	
 	<xsd:element name="addissue" type="t:type_addissue"/>
 	
 	<xsd:complexType name="type_addissue">
@@ -344,6 +340,57 @@
 			<xsd:element name="result" type="xsd:boolean" nillable="false"/>
 		</xsd:sequence>
 	</xsd:complexType>
+	
+	
+
+	<xsd:element name="getparamsfromalertid" type="t:type_getparamsfromalertid"/>
+	
+	<xsd:complexType name="type_getparamsfromalertid">
+		<xsd:sequence>
+			<xsd:element name="id_alert" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="getparamsfromalertid_Response" type="t:type_getparamsfromalertid_Response"/>
+	
+	<xsd:complexType name="type_getparamsfromalertid_Response">
+		<xsd:sequence>
+			<xsd:element name="getparamsfromalertid_details" type="t:getparamsfromalertid_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="getparamsfromalertid_details">
+		<xsd:sequence>
+			<xsd:element name="id_folder_bugs" type="xsd:int" nillable="false"/>
+			<xsd:element name="id_target" type="xsd:string" nillable="false"/>
+			<xsd:element name="id_task" type="xsd:string" nillable="false"/>
+			<xsd:element name="id_report" type="xsd:string" nillable="false"/>
+			<xsd:element name="id_alert" type="xsd:string" nillable="false"/>
+			<xsd:element name="severity" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+
+	<xsd:element name="finishscan" type="t:type_finishscan"/>
+	
+	<xsd:complexType name="type_finishscan">
+		<xsd:sequence>
+			<xsd:element name="id_scan" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="finishscan_Response" type="t:type_finishscan_Response"/>
+	
+	<xsd:complexType name="type_finishscan_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
 
 
 </xsd:schema>

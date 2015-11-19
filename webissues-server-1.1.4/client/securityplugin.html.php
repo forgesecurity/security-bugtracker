@@ -22,8 +22,6 @@ echo ' | ' . $this->imageAndTextLink( '/client/securityplugin.php?install=no' , 
 <?php $form->renderFormOpen(); ?>
 <?php $form->renderText( $this->tr( 'openvas_admin_login:' ), 'openvas_admin_login', array( 'size' => 80 ) ); ?>
 <?php $form->renderText( $this->tr( 'openvas_admin_password:' ), 'openvas_admin_password', array( 'size' => 80 ) ); ?>
-<?php $form->renderText( $this->tr( 'openvas_config_id:' ), 'openvas_config_id', array( 'size' => 80 ) ); ?>
-<?php $form->renderText( $this->tr( 'openvas_path_omp:' ), 'openvas_path_omp', array( 'size' => 80 ) ); ?>
 <div class="form-submit">
 <?php $form->renderSubmit( $this->tr( 'OK' ), 'ok' ); ?>
 <?php $form->renderSubmit( $this->tr( 'Cancel' ), 'cancel' ); ?>

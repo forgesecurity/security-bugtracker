@@ -21,6 +21,12 @@
 
 require_once( '../system/bootstrap.inc.php' );
 
+class type_run_openvas
+{
+	public $target;
+	public $id_scan;
+}
+
 class webservice_server
 {
 	function authws()
@@ -68,9 +74,258 @@ class webservice_server
 		return $tab;
 	}
 
+	function find_targets($req, $type)
+	{
+		include("securityplugin.conf.php");
+
+		$issueManager = new System_Api_IssueManager();
+		$projectManager = new System_Api_ProjectManager();
+
+		$id_type = $CONF_ID_TYPE_FOLDER_SERVERS;
+		$id_attribute = $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS;
+		if($type == "static")
+		{
+			$id_type = $CONF_ID_TYPE_FOLDER_CODES;
+			$id_attribute = $CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH;
+		}
+
+		$folderscan = $projectManager->getFolder( $req["id_folder_scans"] );
+		$project = $projectManager->getProject( $folderscan[ 'project_id' ] );
+		$id_folder_targets = 0;
+		$projects[0] = $project;
+		$folders = $projectManager->getFoldersForProjects( $projects );
+		foreach ( $folders as $folder ) 
+		{
+			if($folder["type_id"] == $id_type)
+			{
+				$id_folder_targets = $folder["folder_id"];
+				break;
+			}
+		}
+
+		if($id_folder_targets > 0)
+		{
+			$nbtargets = 0;
+			$targets = array();
+			$foldertargets = $projectManager->getFolder( $id_folder_targets );
+			$targets = $issueManager->getIssues($foldertargets);
+			foreach ( $targets as $idtarget => $target ) {
+				$attributes = $issueManager->getAttributeValuesForIssue( $target );
+				foreach ( $attributes as $idattribute => $attribute ) {
+					if($attribute["attr_id"] == $id_attribute)
+					{
+						$targets[$nbtargets] = $attribute["attr_value"];
+						$nbtargets ++;
+					}
+				}
+			}
+		}
+
+		return $targets;
+	}
+
+	function getparamsfromalertid($req)
+	{
+		$req = (array) $req;
+
+		$id_folder_bugs = 0;
+		$id_target = 0;
+		$id_task = 0;
+		$id_report = 0;
+		$id_alert = 0;
+		$severity = 0;
+
+		if($this->authws())
+		{
+			$typeManager = new System_Api_TypeManager();
+			$projectManager = new System_Api_ProjectManager();
+			$issueManager = new System_Api_IssueManager();
+			$userManager = new System_Api_UserManager();
+
+			/*
+			   if(!System_Api_Principal::getCurrent()->isAuthenticated())
+			   {
+			   $sessionManager = new System_Api_SessionManager();
+			   try {
+			   $sessionManager->loginAs( "admin");
+			   } catch ( System_Api_Error $ex ) {
+			   $this->logp( $ex );
+			   }
+			   }
+			 */
+
+			include("securityplugin.conf.php");
+
+			try {
+
+				$issuescan = $issueManager->getIssue( $req["alertid"] );
+				$project = $projectManager->getProject( $issuescan["project_id"] );
+				$id_folder_bugs = 0;
+				$projects[0] = $project;
+				$folders = $projectManager->getFoldersForProjects( $projects );
+				foreach ( $folders as $folder ) {
+					if($folder["type_id"] == 2) // 2 = TYPE_ID BUGS
+					{
+						$id_folder_bugs = $folder["folder_id"];
+						break;
+					}
+				}
+
+				if($id_folder_bugs > 0)
+				{
+					$attributes = $issueManager->getAttributeValuesForIssue( $issuescan );
+					foreach ( $attributes as $attribute ) {
+						switch($attribute["attr_id"])
+						{
+							case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_SEVERITY: $severity = $attribute["attr_value"]; break;
+							case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TARGETID: $targetid = $attribute["attr_value"]; break;
+							case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID: $taskid = $attribute["attr_value"]; break;
+							case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID: $reportid = $attribute["attr_value"]; break;
+							case $CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID: $alertid = $attribute["attr_value"]; break;
+							default: break;
+						}
+					}
+				}
+
+				switch($severity)
+				{
+					case 'info':$severity = 1;break;
+					case 'minor':$severity = 1;break;
+					case 'medium':$severity = 2;break;
+					case 'high':$severity = 3;break;
+					default:$severity = 1;break;
+				}
+			} 
+			catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		$tab = array(
+				array(
+					'id_folder_bugs' => $id_folder_bugs,
+					'id_target' => $targetid,
+					'id_task' => $taskid,
+					'id_report' => $reportid,
+					'id_alert' => $alertid,
+					'severity' => $severity
+				     )
+			    );
+
+		return $tab;
+	}
+
+	function stop_openvas($req){
+
+		$req = (array) $req;
+
+		$issueManager = new System_Api_IssueManager();
+		$typeManager = new System_Api_TypeManager();
+
+		include("securityplugin.conf.php");
+
+		try {
+
+			$parser = new System_Api_Parser();
+			$parser->setProjectId( $issuescan["project_id"] );
+
+			$attributetime = $typeManager->getAttributeTypeForIssue( $issuescan, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
+			$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], "finished" );
+			$issueManager->setValue( $issuescan, $attributetime, $valuetime );
+
+		}  
+		catch ( System_Api_Error $ex ) {
+			$this->logp( $ex );
+		}
+	}
+
+	function run_openvas($req, $targets){
+
+		$issueId = 0;
+
+		$issueManager = new System_Api_IssueManager();
+		$projectManager = new System_Api_ProjectManager();
+		$typeManager = new System_Api_TypeManager();
+
+		include("securityplugin.conf.php");
+
+		$id_config_openvas = $CONF_ID_OPENVAS;
+		if(isset($req["id_config_openvas"]) && !empty($req["id_config_openvas"]))
+			$id_config_openvas = $req["id_config_openvas"];
+
+		try {
+			if(empty($req["time"]))
+				$req["time"] = "stopped";
+
+			if(count($targets) > 0)
+			{
+				$folderscan = $projectManager->getFolder( $req["id_folder_scans"] );
+				$issueId = $issueManager->addIssue( $folderscan, $req["name"]);
+				$issue = $issueManager->getIssue( $issueId );
+				$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+
+				$parser = new System_Api_Parser();
+				$parser->setProjectId( $folderscan[ 'project_id' ] );
+
+				$attributetime = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
+				$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], $req["time"] );
+
+				$attributetool = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL );
+				$valuetool = $parser->convertAttributeValue( $attributetool[ 'attr_def' ], $req["tool"] );
+
+				$attributeseve = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_SEVERITY );
+				$valueseve = $parser->convertAttributeValue( $attributeseve[ 'attr_def' ], $req["filter"] );
+
+				$issueManager->setValue( $issue, $attributetime, $valuetime );
+				$issueManager->setValue( $issue, $attributetool, $valuetool );
+				$issueManager->setValue( $issue, $attributeseve, $valueseve );
+
+				$run_openvas = new type_run_openvas();
+				$run_openvas->target = '127.0.0.1';
+				$run_openvas->id_scan = $issueId;
+
+				ini_set('default_socket_timeout', 600);
+
+				$clientsoap = new SoapClient("http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.php?wsdl");
+
+				$param = new SoapParam($run_openvas, 'tns:run_openvas"');
+				$result = $clientsoap->__call('run_openvas',array('run_openvas'=>$param));
+
+				$id_target = $result->result_run_openvas_details->id_target;
+				$id_task = $result->result_run_openvas_details->id_task;
+				$id_report = $result->result_run_openvas_details->id_report;
+				$id_alert = $result->result_run_openvas_details->id_alert;      
+
+				if(!empty($id_target) && !empty($id_task) && !empty($id_report) && !empty($id_alert))
+				{
+					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TARGETID);
+					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_target );
+					$issueManager->setValue( $issue, $attribute, $value);
+					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID);
+					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_task );
+					$issueManager->setValue( $issue, $attribute, $value );
+					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID);
+					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_report );
+					$issueManager->setValue( $issue, $attribute, $value );
+					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID);
+					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_alert );
+					$issueManager->setValue( $issue, $attribute, $value );
+
+					$attributetime = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
+					$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], "in progress" );
+					$issueManager->setValue( $issue, $attributetime, $valuetime );
+				}
+			}
+		}
+		catch ( System_Api_Error $ex ) {
+			$this->logp( $ex );
+		}
+
+		return $issueId;
+	}
+
 	function addscan($req){
 
-		$result = false;
 		$req = (array) $req;
 		$issueId = 0;
 
@@ -80,120 +335,34 @@ class webservice_server
 			$projectManager = new System_Api_ProjectManager();
 			$typeManager = new System_Api_TypeManager();
 
-			include("securityplugin.conf.php");
-
-			$id_config_openvas = $CONF_ID_OPENVAS;
-			if(isset($req["id_config_openvas"]) && !empty($req["id_config_openvas"]))
-				$id_config_openvas = $req["id_config_openvas"];
-
-			try {
-
-				$folderscan = $projectManager->getFolder( $req["id_folder_scans"] );
-
-				$project = $projectManager->getProject( $folderscan[ 'project_id' ] );
-				$id_folder_servers = 0;
-				$projects[0] = $project;
-				$folders = $projectManager->getFoldersForProjects( $projects );
-				foreach ( $folders as $folder ) 
-				{
-					if($folder["type_id"] == $CONF_ID_TYPE_FOLDER_SERVERS)
-					{
-						$id_folder_servers = $folder["folder_id"];
-						break;
-					}
-				}
-
-				$nbips = 0;
-				$ipsaddress = array();
-				$folderservers = $projectManager->getFolder( $id_folder_servers );
-				$servers = $issueManager->getIssues($folderservers);
-				foreach ( $servers as $idserver => $server ) {
-					$attributes = $issueManager->getAttributeValuesForIssue( $server );
-					foreach ( $attributes as $idattribute => $attribute ) {
-						if($attribute["attr_id"] == $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS)
-						{
-							$ipsaddress[$nbips] = $attribute["attr_value"];
-							$nbips ++;
-						}
-					}
-				}
-
-				if(empty($req["time"]))
-					$req["time"] = "stopped";
-
-				if($id_folder_servers > 0 && $nbips > 0)
-				{
-					$issueId = $issueManager->addIssue( $folderscan, $req["name"]);
-					$issue = $issueManager->getIssue( $issueId );
-					$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
-
-					$parser = new System_Api_Parser();
-					$parser->setProjectId( $folderscan[ 'project_id' ] );
-
-					$attributetime = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
-					$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], $req["time"] );
-
-					$attributetool = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL );
-					$valuetool = $parser->convertAttributeValue( $attributetool[ 'attr_def' ], $req["tool"] );
-
-					$attributeseve = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_SEVERITY );
-					$valueseve = $parser->convertAttributeValue( $attributeseve[ 'attr_def' ], $req["filter"] );
-
-					$issueManager->setValue( $issue, $attributetime, $valuetime );
-					$issueManager->setValue( $issue, $attributetool, $valuetool );
-					$issueManager->setValue( $issue, $attributeseve, $valueseve );
-
-					$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<create_target><name>webissue".$issueId."</name><hosts>".$ipsaddress[0]."</hosts></create_target>'");
-					preg_match('|<create_target_response id=\"([^"]*)\"|', $output, $matches);
-					$targetid = $matches[1];
-
-					if($targetid != null)
-					{
-						$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<create_alert><name>webissue".$issueId."</name><condition>Always</condition><event>Task run status changed<data>Done<name>status</name></data></event><method>HTTP Get<data><name>URL</name>http://localhost:8080/webissues-server-1.1.4/client/securityplugin.php?alertscanid=".$issueId."</data></method></create_alert>'");
-						preg_match('|<create_alert_response id=\"([^"]*)\"|', $output, $matches);
-						$alertid = $matches[1];
-					}
-
-					if(isset($alertid))
-					{
-						$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<create_task><name>webissue".$issueId."</name><comment>test</comment><config id=\"".$CONF_OPENVAS_CONFIG_ID."\"/><target id=\"".$targetid."\"/><alert id=\"".$alertid."\"/></create_task>'");
-						preg_match('|<create_task_response id=\"([^"]*)\"|', $output, $matches);
-						$taskid = $matches[1];
-					}
-
-					if(isset($taskid))
-					{
-						$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<start_task task_id=\"".$taskid."\"/>'");
-						preg_match('@<report_id>(.*)</report_id>.*@i', $output, $matches);
-						$reportid = $matches[1];
-					}
-
-					if(isset($reportid))
-					{
-						$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TARGETID);
-						$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $targetid );
-						$issueManager->setValue( $issue, $attribute, $value);
-						$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID);
-						$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $taskid );
-						$issueManager->setValue( $issue, $attribute, $value );
-						$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID);
-						$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $reportid );
-						$issueManager->setValue( $issue, $attribute, $value );
-						$attribute = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID);
-						$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $targetid );
-						$issueManager->setValue( $issue, $attribute, $value );
-
-						$attributetime = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
-						$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], "in progress" );
-						$issueManager->setValue( $issue, $attributetime, $valuetime );
-
-					}
-					else
-						$issueId = 0;
-				} 
-			}
-			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+			switch($req["tool"])
+			{
+				case "openvas": 
+					$targets = $this->find_targets($req, "dynamic");
+					$issueId = $this->run_openvas($req, $targets);
+					break;
+				case "dependencycheck": 
+					$targets = $this->find_targets($req, "static");
+					//$this->run_dependencycheck();
+					break;
+				case "sensorlabs": 
+					$targets = $this->find_targets($req, "static");
+					//$this->run_sensorlabs();
+					break;
+				case "bddsecurity": 
+					$targets = $this->find_targets($req, "static");
+					//$this->run_bddsecurity();
+					break;
+				case "openscat": 
+					$targets = $this->find_targets($req, "static");
+					//$this->run_openscat();
+					break;
+				case "sonar": 
+					$targets = $this->find_targets($req, "static");
+					//$this->run_sonar();
+					break;
+				default: 
+					break;
 			}
 		}
 
@@ -306,28 +475,58 @@ class webservice_server
 			$issueManager = new System_Api_IssueManager();
 			$projectManager = new System_Api_ProjectManager();
 			$typeManager = new System_Api_TypeManager();
+			$userManager = new System_Api_UserManager();
 
 			try {
 				$folder = $projectManager->getFolder( $req["id_folder_bugs"] );
-				$issueId = $issueManager->addIssue( $folder, $req["name"]);
-				$issue = $issueManager->getIssue( $issueId );
-				$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
 
-				$type = $typeManager->getIssueTypeForFolder( $folder );
-				$rows = $typeManager->getAttributeTypesForIssueType( $type );
+				$duplicate = false;
+				$issues = $issueManager->getIssues($folder);
+				foreach ($issues as $issue) {
+					if($issue["issue_name"] == $req["name"]) 
+					{
+						$duplicate = true;
+						break;
+					}
+				}
 
-				$parser = new System_Api_Parser();
-				$parser->setProjectId( $folder[ 'project_id' ] );
+				if(!$duplicate)
+				{
+					$issueId = $issueManager->addIssue( $folder, $req["name"]);
+					$issue = $issueManager->getIssue( $issueId );
+					$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
 
-				$name_ws[0] = "assigned";
-				$name_ws[1] = "state";
-				$name_ws[2] = "raison";
-				$name_ws[3] = "severity";
-				$name_ws[4] = "version";
+					$type = $typeManager->getIssueTypeForFolder( $folder );
+					$rows = $typeManager->getAttributeTypesForIssueType( $type );
 
-				foreach ( $rows as $idattribute => $attribute ) {
-					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
-					$issueManager->setValue( $issue, $attribute, $value );
+					$parser = new System_Api_Parser();
+					$parser->setProjectId( $folder[ 'project_id' ] );
+
+					$name_ws[0] = "assigned";
+					$name_ws[1] = "state";
+					$name_ws[2] = "raison";
+					$name_ws[3] = "severity";
+					$name_ws[4] = "version";
+
+					if(empty($req["assigned"]))
+					{
+						$admin = null;
+						$members = $userManager->getMembers($folder["project_id"]);
+						foreach ($members as $member) {
+							if($member["project_access"] == System_Const::AdministratorAccess)
+							{
+								$admin = $member;
+								$user = $userManager->getUser($admin["user_id"]);
+								$req["assigned"] = $user["user_name"];
+								break;
+							}
+						}
+					}
+
+					foreach ( $rows as $idattribute => $attribute ) {
+						$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$idattribute]] );
+						$issueManager->setValue( $issue, $attribute, $value );
+					}	
 				}
 			} catch ( System_Api_Error $ex ) {
 				$this->logp( $ex );
@@ -542,10 +741,10 @@ class webservice_server
 		$req = (array) $req;
 
 		$projectId = 0;
-		$folderId1 = 1;
-		$folderId2 = 2;
-		$folderId3 = 3;
-		$folderId3 = 4;
+		$folderId1 = 0;
+		$folderId2 = 0;
+		$folderId3 = 0;
+		$folderId4 = 0;
 
 		if($this->authws())
 		{
