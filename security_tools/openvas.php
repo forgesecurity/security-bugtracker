@@ -57,8 +57,9 @@ if(!empty($alertscanid))
 	$credentials = array('login' => $CONF_WEBISSUES_OPENVAS_LOGIN, 'password' => $CONF_WEBISSUES_OPENVAS_PASSWORD);
 
 	ini_set('default_socket_timeout', 600);
-	$clientsoap = new SoapClient("http://localhost:8080/webissues-server-1.1.4/client/webservices.php?wsdl", $credentials);
-	$param = new SoapParam($getparamsfromalertid, 'tns:getparamsfromalertid"');
+	ini_set('soap.wsdl_cache_enabled', 0);
+	$clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
+	$param = new SoapParam($getparamsfromalertid, 'tns:getparamsfromalertid');
 	$result = $clientsoap->__call('getparamsfromalertid',array('getparamsfromalertid'=>$param));
 
 	$id_folder_bugs = $result->getparamsfromalertid_details->id_folder_bugs;
@@ -81,34 +82,37 @@ if(!empty($alertscanid))
 	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<delete_task task_id=\"".$id_task."\"/>'");
 	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<delete_report report_id=\"".$id_report."\"/>'");
 
-	$report = new SimpleXMLElement($outputxml);
-	if(isset($report->report->results->result))
+	if(!empty($outputxml))
 	{
-		foreach ($report->report->results->result as $result) {
-			if(isset($result->threat))
-			{
-				switch($result->threat)
+		$report = new SimpleXMLElement($outputxml);
+		if(isset($report->report->results->result))
+		{
+			foreach ($report->report->results->result as $result) {
+				if(isset($result->threat))
 				{
-					case 'Log':$threat = 1;break;
-					case 'Low':$threat = 1;break;
-					case 'Medium':$threat = 2;break;
-					case 'High':$threat = 3;break;
-					default:$threat = 1;break; 
+					switch($result->threat)
+					{
+						case 'Log':$threat = 1;break;
+						case 'Low':$threat = 1;break;
+						case 'Medium':$threat = 2;break;
+						case 'High':$threat = 3;break;
+						default:$threat = 1;break; 
+					}
 				}
-			}
 
-			if($threat >= $severity)
-			{
-				$addissue = new type_addissue();
-				$addissue->id_folder_bugs = $id_folder_bugs;
-				$addissue->name = $result->name;
-				$addissue->description = $result->description;
-				$addissue->assigned = "";
-				$addissue->state = "Actif";
-				$addissue->severity = $threat;
+				if($threat >= $severity)
+				{
+					$addissue = new type_addissue();
+					$addissue->id_folder_bugs = $id_folder_bugs;
+					$addissue->name = $result->name;
+					$addissue->description = $result->description;
+					$addissue->assigned = "";
+					$addissue->state = "Actif";
+					$addissue->severity = $threat;
 
-				$param = new SoapParam($addissue, 'tns:addissue"');
-				$result = $clientsoap->__call('addissue',array('addissue'=>$param));
+					$param = new SoapParam($addissue, 'tns:addissue');
+					$result = $clientsoap->__call('addissue',array('addissue'=>$param));
+				}
 			}
 		}
 	}
@@ -116,7 +120,7 @@ if(!empty($alertscanid))
 	$finishscan = new type_finishscan();
 	$finishscan->id_scan = $alertscanid;
 
-	$param = new SoapParam($finishscan, 'tns:finishscan"');
+	$param = new SoapParam($finishscan, 'tns:finishscan');
 	$result = $clientsoap->__call('finishscan',array('finishscan'=>$param));
 }
 
@@ -148,7 +152,7 @@ class openvas_webservice_server
 
 		if(!empty($targetid))
 		{
-			$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<create_alert><name>webissue".$issueId."</name><condition>Always</condition><event>Task run status changed<data>Done<name>status</name></data></event><method>HTTP Get<data><name>URL</name>http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.php?alertscanid=".$issueId."</data></method></create_alert>'");
+			$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p 9393 --xml='<create_alert><name>webissue".$issueId."</name><condition>Always</condition><event>Task run status changed<data>Done<name>status</name></data></event><method>HTTP Get<data><name>URL</name>".$CONF_OPENVAS_ALERT_URL."?alertscanid=".$issueId."</data></method></create_alert>'");
 			preg_match('|<create_alert_response id=\"([^"]*)\"|', $output, $matches);
 			if(isset($matches[1]))
 				$alertid = $matches[1];
