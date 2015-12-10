@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="e7051070-f3fb-414a-9ceb-2111c3407d58" activeEnvironment="Default" name="BUG" resourceRoot="" soapui-version="5.2.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="17a25a42-df25-45c1-80f4-5a96f3f7a90d" wsaVersion="NONE" name="ws_securitybugtracker_Binding" type="wsdl" bindingName="{http://securitybugtracker/V1}ws_securitybugtracker_Binding" soapVersion="1_1" anonymous="optional" definition="file:/srv/www/htdocs/webissues-server-1.1.4/client/webservices.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/srv/www/htdocs/webissues-server-1.1.4/client/webservices.wsdl"><con:part><con:url>file:/srv/www/htdocs/webissues-server-1.1.4/client/webservices.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://securitybugtracker/V1" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://securitybugtracker/V1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/">
+<con:soapui-project id="d5343e55-a3ab-439b-b29f-2f6170e3130e" activeEnvironment="Default" name="BUG" resourceRoot="" soapui-version="5.2.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="0772c8d1-ea87-4029-a745-4617dd25c8b3" wsaVersion="NONE" name="ws_securitybugtracker_Binding" type="wsdl" bindingName="{http://securitybugtracker/V1}ws_securitybugtracker_Binding" soapVersion="1_1" anonymous="optional" definition="file:/srv/www/htdocs/webissues-server-1.1.4/client/webservices.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/srv/www/htdocs/webissues-server-1.1.4/client/webservices.wsdl"><con:part><con:url>file:/srv/www/htdocs/webissues-server-1.1.4/client/webservices.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://securitybugtracker/V1" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://securitybugtracker/V1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
     <xsd:schema targetNamespace="http://securitybugtracker">
       <xsd:import namespace="http://securitybugtracker/V1" schemaLocation="http://localhost:8080/webissues-server-1.1.4/client/webservices.xsd"/>
@@ -17,11 +17,35 @@
   <wsdl:message name="addscan_output">
     <wsdl:part name="addscan_Response" element="tns:addscan_Response"/>
   </wsdl:message>
+  <wsdl:message name="addcode_input">
+    <wsdl:part name="addcode" element="tns:addcode"/>
+  </wsdl:message>
+  <wsdl:message name="addcode_output">
+    <wsdl:part name="addcode_Response" element="tns:addcode_Response"/>
+  </wsdl:message>
+  <wsdl:message name="editcode_input">
+    <wsdl:part name="editcode" element="tns:editcode"/>
+  </wsdl:message>
+  <wsdl:message name="editcode_output">
+    <wsdl:part name="editcode_Response" element="tns:editcode_Response"/>
+  </wsdl:message>
   <wsdl:message name="addserver_input">
     <wsdl:part name="addserver" element="tns:addserver"/>
   </wsdl:message>
   <wsdl:message name="addserver_output">
     <wsdl:part name="addserver_Response" element="tns:addserver_Response"/>
+  </wsdl:message>
+  <wsdl:message name="editserver_input">
+    <wsdl:part name="editserver" element="tns:editserver"/>
+  </wsdl:message>
+  <wsdl:message name="editserver_output">
+    <wsdl:part name="editserver_Response" element="tns:editserver_Response"/>
+  </wsdl:message>
+  <wsdl:message name="getserverfromname_input">
+    <wsdl:part name="getserverfromname" element="tns:getserverfromname"/>
+  </wsdl:message>
+  <wsdl:message name="getserverfromname_output">
+    <wsdl:part name="getserverfromname_Response" element="tns:getserverfromname_Response"/>
   </wsdl:message>
   <wsdl:message name="addmember_input">
     <wsdl:part name="addmember" element="tns:addmember"/>
@@ -58,6 +82,12 @@
   </wsdl:message>
   <wsdl:message name="deleteserver_output">
     <wsdl:part name="deleteserver_Response" element="tns:deleteserver_Response"/>
+  </wsdl:message>
+  <wsdl:message name="deletecode_input">
+    <wsdl:part name="deletecode" element="tns:deletecode"/>
+  </wsdl:message>
+  <wsdl:message name="deletecode_output">
+    <wsdl:part name="deletecode_Response" element="tns:deletecode_Response"/>
   </wsdl:message>
   <wsdl:message name="deletescan_input">
     <wsdl:part name="deletescan" element="tns:deletescan"/>
@@ -106,6 +136,26 @@
       <wsdl:input message="tns:addserver_input"/>
       <wsdl:output message="tns:addserver_output"/>
     </wsdl:operation>
+    <wsdl:operation name="addcode">
+      <wsdl:documentation>WebService for addcode</wsdl:documentation>
+      <wsdl:input message="tns:addcode_input"/>
+      <wsdl:output message="tns:addcode_output"/>
+    </wsdl:operation>
+    <wsdl:operation name="editcode">
+      <wsdl:documentation>WebService for editcode</wsdl:documentation>
+      <wsdl:input message="tns:editcode_input"/>
+      <wsdl:output message="tns:editcode_output"/>
+    </wsdl:operation>
+    <wsdl:operation name="editserver">
+      <wsdl:documentation>WebService for editserver</wsdl:documentation>
+      <wsdl:input message="tns:editserver_input"/>
+      <wsdl:output message="tns:editserver_output"/>
+    </wsdl:operation>
+    <wsdl:operation name="getserverfromname">
+      <wsdl:documentation>WebService for getserverfromname to a project</wsdl:documentation>
+      <wsdl:input message="tns:getserverfromname_input"/>
+      <wsdl:output message="tns:getserverfromname_output"/>
+    </wsdl:operation>
     <wsdl:operation name="addscan">
       <wsdl:documentation>WebService for addscan</wsdl:documentation>
       <wsdl:input message="tns:addscan_input"/>
@@ -126,6 +176,11 @@
       <wsdl:input message="tns:addissue_input"/>
       <wsdl:output message="tns:addissue_output"/>
     </wsdl:operation>
+    <wsdl:operation name="editissue">
+      <wsdl:documentation>WebService for editissue to a project</wsdl:documentation>
+      <wsdl:input message="tns:editissue_input"/>
+      <wsdl:output message="tns:editissue_output"/>
+    </wsdl:operation>
     <wsdl:operation name="deleteissue">
       <wsdl:documentation>WebService for deleteissue to a project</wsdl:documentation>
       <wsdl:input message="tns:deleteissue_input"/>
@@ -141,10 +196,10 @@
       <wsdl:input message="tns:deleteserver_input"/>
       <wsdl:output message="tns:deleteserver_output"/>
     </wsdl:operation>
-    <wsdl:operation name="editissue">
-      <wsdl:documentation>WebService for editissue to a project</wsdl:documentation>
-      <wsdl:input message="tns:editissue_input"/>
-      <wsdl:output message="tns:editissue_output"/>
+    <wsdl:operation name="deletecode">
+      <wsdl:documentation>WebService for deletecode to a project</wsdl:documentation>
+      <wsdl:input message="tns:deletecode_input"/>
+      <wsdl:output message="tns:deletecode_output"/>
     </wsdl:operation>
     <wsdl:operation name="addproject">
       <wsdl:documentation>WebService for addproject</wsdl:documentation>
@@ -165,6 +220,11 @@
       <wsdl:documentation>WebService for getparamsfromalertid</wsdl:documentation>
       <wsdl:input message="tns:getparamsfromalertid_input"/>
       <wsdl:output message="tns:getparamsfromalertid_output"/>
+    </wsdl:operation>
+    <wsdl:operation name="finishscan">
+      <wsdl:documentation>WebService for finishscan</wsdl:documentation>
+      <wsdl:input message="tns:finishscan_input"/>
+      <wsdl:output message="tns:finishscan_output"/>
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="ws_securitybugtracker_Binding" type="tns:ws_securitybugtracker_PortType">
@@ -187,8 +247,44 @@
         <soapbind:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="addcode">
+      <soapbind:operation soapAction="addcode" style="document"/>
+      <wsdl:input>
+        <soapbind:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soapbind:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editcode">
+      <soapbind:operation soapAction="editcode" style="document"/>
+      <wsdl:input>
+        <soapbind:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soapbind:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="addserver">
       <soapbind:operation soapAction="addserver" style="document"/>
+      <wsdl:input>
+        <soapbind:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soapbind:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getserverfromname">
+      <soapbind:operation soapAction="getserverfromname" style="document"/>
+      <wsdl:input>
+        <soapbind:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soapbind:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="editserver">
+      <soapbind:operation soapAction="editserver" style="document"/>
       <wsdl:input>
         <soapbind:body use="literal"/>
       </wsdl:input>
@@ -259,6 +355,15 @@
         <soapbind:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="deletecode">
+      <soapbind:operation soapAction="deletecode" style="document"/>
+      <wsdl:input>
+        <soapbind:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soapbind:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="addproject">
       <soapbind:operation soapAction="addproject" style="document"/>
       <wsdl:input>
@@ -295,6 +400,15 @@
         <soapbind:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="finishscan">
+      <soapbind:operation soapAction="finishscan" style="document"/>
+      <wsdl:input>
+        <soapbind:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soapbind:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="ws_securitybugtracker">
     <wsdl:port name="ws_securitybugtrackerPort" binding="tns:ws_securitybugtracker_Binding">
@@ -324,6 +438,42 @@
       <xsd:element name="id_scan" type="xsd:int" nillable="false"/>
     </xsd:sequence>
   </xsd:complexType>
+  <xsd:element name="addcode" type="t:type_addcode"/>
+  <xsd:complexType name="type_addcode">
+    <xsd:sequence>
+      <xsd:element name="id_folder_codes" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="code" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="addcode_Response" type="t:type_addcode_Response"/>
+  <xsd:complexType name="type_addcode_Response">
+    <xsd:sequence>
+      <xsd:element name="result_addcode_details" type="t:result_addcode_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="result_addcode_details">
+    <xsd:sequence>
+      <xsd:element name="id_code" type="xsd:int" nillable="false"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="editcode" type="t:type_editcode"/>
+  <xsd:complexType name="type_editcode">
+    <xsd:sequence>
+      <xsd:element name="id_code" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="id_folder_codes" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="code" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="editcode_Response" type="t:type_editcode_Response"/>
+  <xsd:complexType name="type_editcode_Response">
+    <xsd:sequence>
+      <xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
   <xsd:element name="addserver" type="t:type_addserver"/>
   <xsd:complexType name="type_addserver">
     <xsd:sequence>
@@ -343,6 +493,41 @@
   <xsd:complexType name="result_addserver_details">
     <xsd:sequence>
       <xsd:element name="id_server" type="xsd:int" nillable="false"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="getserverfromname" type="t:type_getserverfromname"/>
+  <xsd:complexType name="type_getserverfromname">
+    <xsd:sequence>
+      <xsd:element name="id_folder_servers" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="hostname" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="getserverfromname_Response" type="t:type_getserverfromname_Response"/>
+  <xsd:complexType name="type_getserverfromname_Response">
+    <xsd:sequence>
+      <xsd:element name="result_getserverfromname_details" type="t:result_getserverfromname_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="result_getserverfromname_details">
+    <xsd:sequence>
+      <xsd:element name="id_server" type="xsd:int" nillable="false"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="editserver" type="t:type_editserver"/>
+  <xsd:complexType name="type_editserver">
+    <xsd:sequence>
+      <xsd:element name="id_server" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="id_folder_servers" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="hostname" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="use" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="ipsaddress" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="editserver_Response" type="t:type_editserver_Response"/>
+  <xsd:complexType name="type_editserver_Response">
+    <xsd:sequence>
+      <xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:element name="editissue" type="t:type_editissue"/>
@@ -384,6 +569,18 @@
   </xsd:complexType>
   <xsd:element name="deleteserver_Response" type="t:type_deleteserver_Response"/>
   <xsd:complexType name="type_deleteserver_Response">
+    <xsd:sequence>
+      <xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="deletecode" type="t:type_deletecode"/>
+  <xsd:complexType name="type_deletecode">
+    <xsd:sequence>
+      <xsd:element name="id_code" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="deletecode_Response" type="t:type_deletecode_Response"/>
+  <xsd:complexType name="type_deletecode_Response">
     <xsd:sequence>
       <xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -556,7 +753,17 @@
       <xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint></con:endpoints><con:operation id="cf8a8a4c-4f6d-4993-8225-94864aad9843" isOneWay="false" action="addissue" name="addissue" bindingOperationName="addissue" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="eeb818fe-92ca-4218-a654-cee485684de7" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint></con:endpoints><con:operation id="580eacda-b2a2-4f99-9639-7e8b0c5a6898" isOneWay="false" action="addcode" name="addcode" bindingOperationName="addcode" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="a09e5e41-3deb-4fc6-874e-2c07e1d7302e" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:addcode>
+         <id_folder_codes>79</id_folder_codes>
+         <name>java release 1</name>
+         <description>java release 1</description>
+         <code>/home/java/lib</code>
+      </v1:addcode>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>admin</con:username><con:password>admin</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="addcode"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="03fe7f7a-1a77-4906-8051-960611418ef3" isOneWay="false" action="addissue" name="addissue" bindingOperationName="addissue" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="93e2f2dd-14f0-4dce-9062-71be53b6256f" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:addissue>
@@ -570,7 +777,7 @@
          <version>?</version>
       </v1:addissue>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addissue"/></con:call></con:operation><con:operation id="4b6567af-b80c-4643-9e9f-0283e4492694" isOneWay="false" action="addmember" name="addmember" bindingOperationName="addmember" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="9f742274-6065-42ec-b80c-5580ad25b457" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addissue"/></con:call></con:operation><con:operation id="da690e1f-ea92-44d8-9b5c-16af68e5dd4f" isOneWay="false" action="addmember" name="addmember" bindingOperationName="addmember" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="5df777c3-b059-4229-a91c-8bda3b190584" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:addmember>
@@ -579,7 +786,7 @@
          <access>?</access>
       </v1:addmember>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addmember"/></con:call></con:operation><con:operation id="394926fe-2efe-4cb6-83b3-ea464eeef5c5" isOneWay="false" action="addproject" name="addproject" bindingOperationName="addproject" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c481f2bc-a08d-4302-a96c-3db6f6b3c37c" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addmember"/></con:call></con:operation><con:operation id="d97df56f-6488-4fa8-824e-b6271ab83a8d" isOneWay="false" action="addproject" name="addproject" bindingOperationName="addproject" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="3d3b100c-cae6-4c38-be20-f4c37d5568a7" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:addproject>
@@ -587,20 +794,20 @@
          <description>?</description>
       </v1:addproject>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addproject"/></con:call></con:operation><con:operation id="960e347e-c09e-44f5-addd-91147fc7b3aa" isOneWay="false" action="addscan" name="addscan" bindingOperationName="addscan" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="b16911fc-5331-4f80-ae2e-2e2ca3254bc1" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addproject"/></con:call></con:operation><con:operation id="b238fb44-3ddc-4f5e-8004-4ce9b00aef7c" isOneWay="false" action="addscan" name="addscan" bindingOperationName="addscan" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="61a6700b-6df7-4a25-b937-e7ea2d012a2b" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:addscan>
-         <id_folder_scans>76</id_folder_scans>
-         <name>new test 2</name>
-         <description>new test 2</description>
-         <tool>openvas</tool>
-         <filter>medium</filter>
+         <id_folder_scans>?</id_folder_scans>
+         <name>?</name>
+         <description>?</description>
+         <tool>?</tool>
+         <filter>?</filter>
          <!--Optional:-->
          <id_config_openvas>?</id_config_openvas>
       </v1:addscan>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:credentials><con:username>admin</con:username><con:password>admin</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="addscan"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="9a08b977-94a3-4501-993c-50ce0710f376" isOneWay="false" action="addserver" name="addserver" bindingOperationName="addserver" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d535d570-92b7-405b-a600-34703e2ddeff" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addscan"/></con:call></con:operation><con:operation id="a73c8100-27d6-4567-95a2-beeef50f306e" isOneWay="false" action="addserver" name="addserver" bindingOperationName="addserver" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="0dfab85b-d452-45a5-a259-c48e2736c44f" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:addserver>
@@ -611,7 +818,7 @@
          <ipsaddress>?</ipsaddress>
       </v1:addserver>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addserver"/></con:call></con:operation><con:operation id="7aef0a06-4567-4280-a368-c9022b143516" isOneWay="false" action="adduser" name="adduser" bindingOperationName="adduser" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="7630f78a-01b4-48db-ba22-814c37db8ba7" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="addserver"/></con:call></con:operation><con:operation id="953e4b8b-f821-49ba-8717-4482e1a1eabe" isOneWay="false" action="adduser" name="adduser" bindingOperationName="adduser" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="0506584f-caf7-422f-8d9b-860591964b67" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:adduser>
@@ -620,14 +827,21 @@
          <password>?</password>
       </v1:adduser>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="adduser"/></con:call></con:operation><con:operation id="f1e5b8c8-1632-4e76-9cb3-dc9046a13f49" isOneWay="false" action="deleteissue" name="deleteissue" bindingOperationName="deleteissue" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6b2aae24-b0fa-4498-9afc-00c895e3f482" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="adduser"/></con:call></con:operation><con:operation id="376951ec-6c2c-4256-941d-86dddeaf81d5" isOneWay="false" action="deletecode" name="deletecode" bindingOperationName="deletecode" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="e17c664b-1f9b-470b-923f-d9f491fd900d" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:deletecode>
+         <id_code>1659</id_code>
+      </v1:deletecode>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>admin</con:username><con:password>admin</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="deletecode"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation id="cbbaf697-5463-450b-a742-3895c1941715" isOneWay="false" action="deleteissue" name="deleteissue" bindingOperationName="deleteissue" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="fffb3430-cd58-446f-a7e6-48b5e2140c09" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:deleteissue>
          <id_issue>?</id_issue>
       </v1:deleteissue>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deleteissue"/></con:call></con:operation><con:operation id="c23d7f7c-d985-43d7-8ba5-d51d154710ab" isOneWay="false" action="deletemember" name="deletemember" bindingOperationName="deletemember" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="19c7cdb3-3f60-47d1-951d-f845a4ed9edf" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deleteissue"/></con:call></con:operation><con:operation id="ed849c0b-4dbc-4934-ba90-af7d9c9b1dbe" isOneWay="false" action="deletemember" name="deletemember" bindingOperationName="deletemember" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="22e88828-176e-412d-91c8-de3a44a7dcd1" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:deletemember>
@@ -635,28 +849,39 @@
          <id_project>?</id_project>
       </v1:deletemember>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deletemember"/></con:call></con:operation><con:operation id="881ee906-7645-4586-8150-8024e46a3297" isOneWay="false" action="deleteproject" name="deleteproject" bindingOperationName="deleteproject" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="575ea241-121d-4737-8caa-03dfa20487ef" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deletemember"/></con:call></con:operation><con:operation id="3cf14f9a-a5ec-4088-b451-1476b904aa9a" isOneWay="false" action="deleteproject" name="deleteproject" bindingOperationName="deleteproject" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="c50edf84-3d94-44c2-a8af-e6713f9e0387" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:deleteproject>
          <id_project>?</id_project>
       </v1:deleteproject>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deleteproject"/></con:call></con:operation><con:operation id="cad74f40-fb5d-4bb3-ac4f-8b0c8e576d37" isOneWay="false" action="deletescan" name="deletescan" bindingOperationName="deletescan" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="f2f48775-fb78-4529-a954-01578fbe56a3" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deleteproject"/></con:call></con:operation><con:operation id="9a66ae2a-da78-44e8-abbd-952fb5dfe7d7" isOneWay="false" action="deletescan" name="deletescan" bindingOperationName="deletescan" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="231851d5-2744-4667-a76c-55eadcc75c4b" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:deletescan>
          <id_scan>?</id_scan>
       </v1:deletescan>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deletescan"/></con:call></con:operation><con:operation id="b1a74af6-a3d0-4d40-80ea-f55fc633ea68" isOneWay="false" action="deleteserver" name="deleteserver" bindingOperationName="deleteserver" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d92113f3-dd1a-480f-9256-1d97b6faf2a9" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deletescan"/></con:call></con:operation><con:operation id="328d6254-1e32-4e00-b101-0354aa125719" isOneWay="false" action="deleteserver" name="deleteserver" bindingOperationName="deleteserver" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ca2aeb91-8c78-40a8-8890-4cce4066b3e7" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:deleteserver>
          <id_server>?</id_server>
       </v1:deleteserver>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deleteserver"/></con:call></con:operation><con:operation id="b34016e2-aa48-4250-8586-cea69ace0d69" isOneWay="false" action="editissue" name="editissue" bindingOperationName="editissue" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="86d42ef6-2612-4d35-8800-b73f29431ce8" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="deleteserver"/></con:call></con:operation><con:operation id="c00e9672-b63f-4655-a7c7-dab3384dd77a" isOneWay="false" action="editcode" name="editcode" bindingOperationName="editcode" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="3668645a-a6ab-4013-a3fd-78be523f76dd" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:editcode>
+         <id_code>?</id_code>
+         <id_folder_codes>?</id_folder_codes>
+         <name>?</name>
+         <description>?</description>
+         <code>?</code>
+      </v1:editcode>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="editcode"/></con:call></con:operation><con:operation id="669b2df5-18b6-4d60-9446-0f9503c3c3f5" isOneWay="false" action="editissue" name="editissue" bindingOperationName="editissue" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="aa7df447-2a69-4d42-92f6-271888fa100a" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:editissue>
@@ -671,7 +896,7 @@
          <version>?</version>
       </v1:editissue>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="editissue"/></con:call></con:operation><con:operation id="5e04a4d9-645d-47da-a36a-bc95241e532c" isOneWay="false" action="editproject" name="editproject" bindingOperationName="editproject" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="eb4768c0-3580-4854-a981-5384b3d0586b" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="editissue"/></con:call></con:operation><con:operation id="41c97435-6949-4c3e-9840-86a7c4108a1b" isOneWay="false" action="editproject" name="editproject" bindingOperationName="editproject" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="389b759b-01d7-417b-9956-454c6a07e42e" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:editproject>
@@ -680,11 +905,38 @@
          <description>?</description>
       </v1:editproject>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="editproject"/></con:call></con:operation><con:operation id="11fba721-8129-450c-ab82-6944e784ada4" isOneWay="false" action="getparamsfromalertid" name="getparamsfromalertid" bindingOperationName="getparamsfromalertid" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="1e9c529b-04bf-4380-9f71-89a6872f0d0f" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="editproject"/></con:call></con:operation><con:operation id="dfe6acb9-3fdc-47a6-9642-140a3657cf31" isOneWay="false" action="editserver" name="editserver" bindingOperationName="editserver" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="ecbe53d4-0393-4331-8df5-722bf85d69b4" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:editserver>
+         <id_server>?</id_server>
+         <id_folder_servers>?</id_folder_servers>
+         <hostname>?</hostname>
+         <description>?</description>
+         <use>?</use>
+         <ipsaddress>?</ipsaddress>
+      </v1:editserver>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="editserver"/></con:call></con:operation><con:operation id="2100323c-9e2c-4835-8142-28229298242b" isOneWay="false" action="finishscan" name="finishscan" bindingOperationName="finishscan" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="146f04d2-edd3-4dd1-804c-e831f54094f1" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:finishscan>
+         <id_scan>?</id_scan>
+      </v1:finishscan>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="finishscan"/></con:call></con:operation><con:operation id="065fe34d-2dc6-42fa-b5f6-c436bec5ae8b" isOneWay="false" action="getparamsfromalertid" name="getparamsfromalertid" bindingOperationName="getparamsfromalertid" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="10eadf88-9174-48f9-9004-b8ff57b318db" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:getparamsfromalertid>
          <id_alert>?</id_alert>
       </v1:getparamsfromalertid>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="getparamsfromalertid"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="getparamsfromalertid"/></con:call></con:operation><con:operation id="4eabf077-d89a-45a3-a15e-736033d88e63" isOneWay="false" action="getserverfromname" name="getserverfromname" bindingOperationName="getserverfromname" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="8f15bb23-d067-4e09-ae70-6e3c1e651779" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/webservices.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <v1:getserverfromname>
+         <id_folder_servers>?</id_folder_servers>
+         <hostname>?</hostname>
+      </v1:getserverfromname>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="getserverfromname"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
