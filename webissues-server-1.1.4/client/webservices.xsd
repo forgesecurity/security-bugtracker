@@ -36,6 +36,64 @@
 	
 	
 	
+		
+	
+	
+	<xsd:element name="addcode" type="t:type_addcode"/>
+	
+	<xsd:complexType name="type_addcode">
+		<xsd:sequence>
+			<xsd:element name="id_folder_codes" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="code" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="addcode_Response" type="t:type_addcode_Response"/>
+	
+	<xsd:complexType name="type_addcode_Response">
+		<xsd:sequence>
+			<xsd:element name="result_addcode_details" type="t:result_addcode_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_addcode_details">
+		<xsd:sequence>
+			<xsd:element name="id_code" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	
+	
+	<xsd:element name="editcode" type="t:type_editcode"/>
+	
+	<xsd:complexType name="type_editcode">
+		<xsd:sequence>
+			<xsd:element name="id_code" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="id_folder_codes" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="code" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="editcode_Response" type="t:type_editcode_Response"/>
+	
+	<xsd:complexType name="type_editcode_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
 	
 	
 	<xsd:element name="addserver" type="t:type_addserver"/>
@@ -68,8 +126,56 @@
 	
 	
 	
+	
+	<xsd:element name="getserverfromname" type="t:type_getserverfromname"/>
+	
+	<xsd:complexType name="type_getserverfromname">
+		<xsd:sequence>
+			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="hostname" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="getserverfromname_Response" type="t:type_getserverfromname_Response"/>
+	
+	<xsd:complexType name="type_getserverfromname_Response">
+		<xsd:sequence>
+			<xsd:element name="result_getserverfromname_details" type="t:result_getserverfromname_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_getserverfromname_details">
+		<xsd:sequence>
+			<xsd:element name="id_server" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
   
   
+  
+	<xsd:element name="editserver" type="t:type_editserver"/>
+	
+	<xsd:complexType name="type_editserver">
+		<xsd:sequence>
+			<xsd:element name="id_server" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="hostname" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="use" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="ipsaddress" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="editserver_Response" type="t:type_editserver_Response"/>
+	
+	<xsd:complexType name="type_editserver_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
   
   
   
@@ -142,6 +248,25 @@
 	
 	
 	
+	
+	
+	
+	<xsd:element name="deletecode" type="t:type_deletecode"/>
+	
+	<xsd:complexType name="type_deletecode">
+		<xsd:sequence>
+			<xsd:element name="id_code" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="deletecode_Response" type="t:type_deletecode_Response"/>
+	
+	<xsd:complexType name="type_deletecode_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
 	
 	
 	

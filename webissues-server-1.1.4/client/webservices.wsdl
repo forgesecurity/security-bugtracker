@@ -18,11 +18,35 @@
 	<wsdl:message name="addscan_output">
 		<wsdl:part name="addscan_Response" element="tns:addscan_Response"/>
 	</wsdl:message>
+	<wsdl:message name="addcode_input">
+		<wsdl:part name="addcode" element="tns:addcode"/>
+	</wsdl:message>
+	<wsdl:message name="addcode_output">
+		<wsdl:part name="addcode_Response" element="tns:addcode_Response"/>
+	</wsdl:message>
+	<wsdl:message name="editcode_input">
+		<wsdl:part name="editcode" element="tns:editcode"/>
+	</wsdl:message>
+	<wsdl:message name="editcode_output">
+		<wsdl:part name="editcode_Response" element="tns:editcode_Response"/>
+	</wsdl:message>
 	<wsdl:message name="addserver_input">
 		<wsdl:part name="addserver" element="tns:addserver"/>
 	</wsdl:message>
 	<wsdl:message name="addserver_output">
 		<wsdl:part name="addserver_Response" element="tns:addserver_Response"/>
+	</wsdl:message>
+	<wsdl:message name="editserver_input">
+		<wsdl:part name="editserver" element="tns:editserver"/>
+	</wsdl:message>
+	<wsdl:message name="editserver_output">
+		<wsdl:part name="editserver_Response" element="tns:editserver_Response"/>
+	</wsdl:message>
+	<wsdl:message name="getserverfromname_input">
+		<wsdl:part name="getserverfromname" element="tns:getserverfromname"/>
+	</wsdl:message>
+	<wsdl:message name="getserverfromname_output">
+		<wsdl:part name="getserverfromname_Response" element="tns:getserverfromname_Response"/>
 	</wsdl:message>
 	<wsdl:message name="addmember_input">
 		<wsdl:part name="addmember" element="tns:addmember"/>
@@ -59,6 +83,12 @@
 	</wsdl:message>
 	<wsdl:message name="deleteserver_output">
 		<wsdl:part name="deleteserver_Response" element="tns:deleteserver_Response"/>
+	</wsdl:message>
+	<wsdl:message name="deletecode_input">
+		<wsdl:part name="deletecode" element="tns:deletecode"/>
+	</wsdl:message>
+	<wsdl:message name="deletecode_output">
+		<wsdl:part name="deletecode_Response" element="tns:deletecode_Response"/>
 	</wsdl:message>
 	<wsdl:message name="deletescan_input">
 		<wsdl:part name="deletescan" element="tns:deletescan"/>
@@ -111,6 +141,30 @@
 			<wsdl:input message="tns:addserver_input"/>
 			<wsdl:output message="tns:addserver_output"/>
 		</wsdl:operation>
+		<wsdl:operation name="addcode">
+			<wsdl:documentation>WebService for addcode
+			</wsdl:documentation>
+			<wsdl:input message="tns:addcode_input"/>
+			<wsdl:output message="tns:addcode_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="editcode">
+			<wsdl:documentation>WebService for editcode
+			</wsdl:documentation>
+			<wsdl:input message="tns:editcode_input"/>
+			<wsdl:output message="tns:editcode_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="editserver">
+			<wsdl:documentation>WebService for editserver
+			</wsdl:documentation>
+			<wsdl:input message="tns:editserver_input"/>
+			<wsdl:output message="tns:editserver_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="getserverfromname">
+			<wsdl:documentation>WebService for getserverfromname to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:getserverfromname_input"/>
+			<wsdl:output message="tns:getserverfromname_output"/>
+		</wsdl:operation>
 		<wsdl:operation name="addscan">
 			<wsdl:documentation>WebService for addscan
 			</wsdl:documentation>
@@ -135,6 +189,12 @@
 			<wsdl:input message="tns:addissue_input"/>
 			<wsdl:output message="tns:addissue_output"/>
 		</wsdl:operation>
+		<wsdl:operation name="editissue">
+			<wsdl:documentation>WebService for editissue to a project
+			</wsdl:documentation>
+			<wsdl:input message="tns:editissue_input"/>
+			<wsdl:output message="tns:editissue_output"/>
+		</wsdl:operation>
 		<wsdl:operation name="deleteissue">
 			<wsdl:documentation>WebService for deleteissue to a project
 			</wsdl:documentation>
@@ -153,11 +213,11 @@
 			<wsdl:input message="tns:deleteserver_input"/>
 			<wsdl:output message="tns:deleteserver_output"/>
 		</wsdl:operation>
-		<wsdl:operation name="editissue">
-			<wsdl:documentation>WebService for editissue to a project
+		<wsdl:operation name="deletecode">
+			<wsdl:documentation>WebService for deletecode to a project
 			</wsdl:documentation>
-			<wsdl:input message="tns:editissue_input"/>
-			<wsdl:output message="tns:editissue_output"/>
+			<wsdl:input message="tns:deletecode_input"/>
+			<wsdl:output message="tns:deletecode_output"/>
 		</wsdl:operation>
 		<wsdl:operation name="addproject">
 			<wsdl:documentation>WebService for addproject
@@ -183,6 +243,12 @@
 			<wsdl:input message="tns:getparamsfromalertid_input"/>
 			<wsdl:output message="tns:getparamsfromalertid_output"/>
 		</wsdl:operation>
+		<wsdl:operation name="finishscan">
+			<wsdl:documentation>WebService for finishscan
+			</wsdl:documentation>
+			<wsdl:input message="tns:finishscan_input"/>
+			<wsdl:output message="tns:finishscan_output"/>
+		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="ws_securitybugtracker_Binding" type="tns:ws_securitybugtracker_PortType">
 		<soapbind:binding transport="http://schemas.xmlsoap.org/soap/http"/>
@@ -204,8 +270,44 @@
 				<soapbind:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="addcode">
+			<soapbind:operation soapAction="addcode" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="editcode">
+			<soapbind:operation soapAction="editcode" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="addserver">
 			<soapbind:operation soapAction="addserver" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getserverfromname">
+			<soapbind:operation soapAction="getserverfromname" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="editserver">
+			<soapbind:operation soapAction="editserver" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>
@@ -276,6 +378,15 @@
 				<soapbind:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="deletecode">
+			<soapbind:operation soapAction="deletecode" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
 		<wsdl:operation name="addproject">
 			<soapbind:operation soapAction="addproject" style="document"/>
 			<wsdl:input>
@@ -305,6 +416,15 @@
 		</wsdl:operation>
 		<wsdl:operation name="getparamsfromalertid">
 			<soapbind:operation soapAction="getparamsfromalertid" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="finishscan">
+			<soapbind:operation soapAction="finishscan" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>

@@ -158,7 +158,7 @@ class webservice_server
 
 			try {
 
-				$issuescan = $issueManager->getIssue( $req["alertid"] );
+				$issuescan = $issueManager->getIssue( $req["id_alert"] );
 				$project = $projectManager->getProject( $issuescan["project_id"] );
 				$id_folder_bugs = 0;
 				$projects[0] = $project;
@@ -215,28 +215,43 @@ class webservice_server
 		return $tab;
 	}
 
-	function stop_openvas($req){
+	function finishscan($req){
 
+		$result = false;
 		$req = (array) $req;
 
-		$issueManager = new System_Api_IssueManager();
-		$typeManager = new System_Api_TypeManager();
+		if($this->authws())
+		{
+			$issueManager = new System_Api_IssueManager();
+			$typeManager = new System_Api_TypeManager();
 
-		include("securityplugin.conf.php");
+			$issuescan = $issueManager->getIssue( $req["id_scan"] );
 
-		try {
+			include("securityplugin.conf.php");
 
-			$parser = new System_Api_Parser();
-			$parser->setProjectId( $issuescan["project_id"] );
+			try {
 
-			$attributetime = $typeManager->getAttributeTypeForIssue( $issuescan, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
-			$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], "finished" );
-			$issueManager->setValue( $issuescan, $attributetime, $valuetime );
+				$parser = new System_Api_Parser();
+				$parser->setProjectId( $issuescan["project_id"] );
 
-		}  
-		catch ( System_Api_Error $ex ) {
-			$this->logp( $ex );
+				$attributetime = $typeManager->getAttributeTypeForIssue( $issuescan, $CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME );
+				$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], "finished" );
+				$issueManager->setValue( $issuescan, $attributetime, $valuetime );
+				$result = true;
+
+			}  
+			catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
 		}
+
+		$tab = array(
+				array(
+					'result' => $result
+				     )
+			    );
+
+		return $tab;
 	}
 
 	function run_openvas($req, $targets){
@@ -286,9 +301,9 @@ class webservice_server
 
 				ini_set('default_socket_timeout', 600);
 
-				$clientsoap = new SoapClient("http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.php?wsdl");
+				$clientsoap = new SoapClient($CONF_OPENVAS_WS_ENDPOINT."?wsdl");
 
-				$param = new SoapParam($run_openvas, 'tns:run_openvas"');
+				$param = new SoapParam($run_openvas, 'tns:run_openvas');
 				$result = $clientsoap->__call('run_openvas',array('run_openvas'=>$param));
 
 				$id_target = $result->result_run_openvas_details->id_target;
@@ -377,14 +392,27 @@ class webservice_server
 
 	function deletescan($req){
 
+		$req = (array) $req;
 		$req["id_issue"] = $req["id_scan"];
-		$this->deleteissue($req);
+		$tab = $this->deleteissue($req);
+		return $tab;
 	}
 
 	function deleteserver($req){
 
+		$req = (array) $req;
 		$req["id_issue"] = $req["id_server"];
-		$this->deleteissue($req);
+		$tab = $this->deleteissue($req);
+		return $tab;
+
+	}
+
+	function deletecode($req){
+
+		$req = (array) $req;
+		$req["id_issue"] = $req["id_code"];
+		$tab = $this->deleteissue($req);
+		return $tab;
 
 	}
 
@@ -417,6 +445,121 @@ class webservice_server
 		return $tab;
 	}
 
+	function addcode($req){
+
+		$result = false;
+		$req = (array) $req;
+		$issueId = 0;
+
+		if($this->authws())
+		{ 
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+			$typeManager = new System_Api_TypeManager();
+
+			try {
+
+
+				if(preg_match('/^[A-Za-z0-9_\-\:\/\.&?\=]*$/i', $req["code"]))
+				{
+					$folder = $projectManager->getFolder( $req["id_folder_codes"] );
+
+					$duplicate = false;
+					$issues = $issueManager->getIssues($folder);
+					foreach ($issues as $issue) {
+						if($issue["issue_name"] == $req["name"]) 
+						{
+							$duplicate = true;
+							$req["id_code"] = $issue["issue_id"];
+							$res = $this->editcode($req);
+							if($res[0]["result"])
+								$issueId = $issue["issue_id"];
+
+							break;
+						}
+					}
+
+					if(!$duplicate)
+					{
+						$parser = new System_Api_Parser();
+						$parser->setProjectId( $folder[ 'project_id' ] );
+
+						include("securityplugin.conf.php");
+
+						$issueId = $issueManager->addIssue( $folder, $req["name"]);
+						$issue = $issueManager->getIssue( $issueId );
+						$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+
+						$attributecode = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH );
+						$value = $parser->convertAttributeValue( $attributecode[ 'attr_def' ], $req["code"] );
+						$issueManager->setValue( $issue, $attributecode, $value );
+					}
+				}
+
+			} catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		$tab = array(
+				array(
+					'id_code' => $issueId
+				     )
+			    );
+
+		return $tab;
+	}
+
+
+	function editcode($req){
+
+		$result = false;
+		$req = (array) $req;
+
+		if($this->authws())
+		{
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+			$typeManager = new System_Api_TypeManager();
+
+			try {
+
+				if(preg_match('/^[A-Za-z0-9_\-\:\/\.&?\=]*$/i', $req["code"]))
+				{
+					$folder = $projectManager->getFolder( $req["id_folder_codes"] );
+					$code = $issueManager->getIssue( $req["id_code"] );
+					$issueManager->moveIssue( $code, $folder );
+					$issueManager->renameIssue( $code, $req["name"] );
+					$desc = $issueManager->getDescription( $code );
+					$issueManager->editDescription( $desc, $req["description"], System_Const::TextWithMarkup );
+
+
+					$parser = new System_Api_Parser();
+					$parser->setProjectId( $folder[ 'project_id' ] );
+
+					include("securityplugin.conf.php");
+
+					$attributecode = $typeManager->getAttributeTypeForIssue( $code, $CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH );
+					$value = $parser->convertAttributeValue( $attributecode[ 'attr_def' ], $req["code"] );
+					$issueManager->setValue( $code, $attributecode, $value );
+
+					$result = true;
+				}
+			} 
+			catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		$tab = array(
+				array(
+					'result' => $result
+				     )
+			    );
+
+		return $tab;
+	}
+
 	function addserver($req){
 
 		$result = false;
@@ -430,25 +573,50 @@ class webservice_server
 			$typeManager = new System_Api_TypeManager();
 
 			try {
-				if(filter_var($req["ipsaddress"], FILTER_VALIDATE_IP))
+				$ips_ok = true;
+				$ips = explode(",", $req["ipsaddress"]);
+				foreach($ips as $ip)
+					if(!filter_var($ip, FILTER_VALIDATE_IP))
+						$ips_ok = false;
+
+				if($ips_ok)
 				{
 					$folder = $projectManager->getFolder( $req["id_folder_servers"] );
-					$parser = new System_Api_Parser();
-					$parser->setProjectId( $folder[ 'project_id' ] );
 
-					include("securityplugin.conf.php");
+					$duplicate = false;
+					$issues = $issueManager->getIssues($folder);
+					foreach ($issues as $issue) {
+						if($issue["issue_name"] == $req["hostname"]) 
+						{
+							$duplicate = true;
+							$req["id_server"] = $issue["issue_id"];
+							$res = $this->editserver($req);
+							if($res[0]["result"])
+								$issueId = $issue["issue_id"];
 
-					$issueId = $issueManager->addIssue( $folder, $req["hostname"]);
-					$issue = $issueManager->getIssue( $issueId );
-					$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+							break;
+						}
+					}
 
-					$attributeuse = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE );
-					$value = $parser->convertAttributeValue( $attributeuse[ 'attr_def' ], $req["use"] );
-					$issueManager->setValue( $issue, $attributeuse, $value );
+					if(!$duplicate)
+					{
+						$parser = new System_Api_Parser();
+						$parser->setProjectId( $folder[ 'project_id' ] );
 
-					$attributeips = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS );
-					$value = $parser->convertAttributeValue( $attributeips[ 'attr_def' ], $req["ipsaddress"] );
-					$issueManager->setValue( $issue, $attributeips, $value );
+						include("securityplugin.conf.php");
+
+						$issueId = $issueManager->addIssue( $folder, $req["hostname"]);
+						$issue = $issueManager->getIssue( $issueId );
+						$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+
+						$attributeuse = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE );
+						$value = $parser->convertAttributeValue( $attributeuse[ 'attr_def' ], $req["use"] );
+						$issueManager->setValue( $issue, $attributeuse, $value );
+
+						$attributeips = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS );
+						$value = $parser->convertAttributeValue( $attributeips[ 'attr_def' ], $req["ipsaddress"] );
+						$issueManager->setValue( $issue, $attributeips, $value );
+					}
 				}
 
 			} catch ( System_Api_Error $ex ) {
@@ -459,6 +627,103 @@ class webservice_server
 		$tab = array(
 				array(
 					'id_server' => $issueId
+				     )
+			    );
+
+		return $tab;
+	}
+
+	function getserverfromname($req){
+
+		$result = false;
+		$req = (array) $req;
+		$issueId = 0;
+
+		if($this->authws())
+		{ 
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+
+			try {
+				$folder = $projectManager->getFolder( $req["id_folder_servers"] );
+
+				$duplicate = false;
+				$issues = $issueManager->getIssues($folder);
+				foreach ($issues as $issue) {
+					if($issue["issue_name"] == $req["hostname"]) 
+					{
+						$issueId = $issue["issue_id"];
+						break;
+					}
+				}
+
+			} catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		$tab = array(
+				array(
+					'id_server' => $issueId
+				     )
+			    );
+
+		return $tab;
+	}
+
+	function editserver($req){
+
+		$result = false;
+		$req = (array) $req;
+
+		if($this->authws())
+		{
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+			$typeManager = new System_Api_TypeManager();
+
+			try {
+
+				$ips_ok = true;
+				$ips = explode(",", $req["ipsaddress"]);
+				foreach($ips as $ip)
+					if(!filter_var($ip, FILTER_VALIDATE_IP))
+						$ips_ok = false;
+
+				if($ips_ok)
+				{
+					$folder = $projectManager->getFolder( $req["id_folder_servers"] );
+					$server = $issueManager->getIssue( $req["id_server"] );
+					$issueManager->moveIssue( $server, $folder );
+					$issueManager->renameIssue( $server, $req["hostname"] );
+					$desc = $issueManager->getDescription( $server );
+					$issueManager->editDescription( $desc, $req["description"], System_Const::TextWithMarkup );
+
+
+					$parser = new System_Api_Parser();
+					$parser->setProjectId( $folder[ 'project_id' ] );
+
+					include("securityplugin.conf.php");
+
+					$attributeuse = $typeManager->getAttributeTypeForIssue( $server, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE );
+					$value = $parser->convertAttributeValue( $attributeuse[ 'attr_def' ], $req["use"] );
+					$issueManager->setValue( $server, $attributeuse, $value );
+
+					$attributeips = $typeManager->getAttributeTypeForIssue( $server, $CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS );
+					$value = $parser->convertAttributeValue( $attributeips[ 'attr_def' ], $req["ipsaddress"] );
+					$issueManager->setValue( $server, $attributeips, $value );
+
+					$result = true;
+				}
+			} 
+			catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		$tab = array(
+				array(
+					'result' => $result
 				     )
 			    );
 

@@ -51,17 +51,20 @@ class Client_SecurityPlugin extends System_Web_Component
 		if($this->install_security == "yes")
 		{
 			$this->form = new System_Web_Form( 'installation', $this );
-			$this->form->addField( 'openvas_admin_login', "admin" );
-			$this->form->addField( 'openvas_admin_password', "" );
+			$this->form->addField( 'openvas_ws_login', "admin" );
+			$this->form->addField( 'openvas_ws_password', "" );
+			$this->form->addField( 'openvas_ws_endpoint', "" );
 
 			if ( $this->form->loadForm() ) {
 				if ( $this->form->isSubmittedWith( 'ok' ) && !$this->form->hasErrors() ) {
 
-					$openvas_admin_login = $this->request->getFormField( 'openvas_admin_login' );
-					$openvas_admin_password = $this->request->getFormField( 'openvas_admin_password' );
+					$openvas_ws_login = $this->request->getFormField( 'openvas_ws_login' );
+					$openvas_ws_password = $this->request->getFormField( 'openvas_ws_password' );
+					$openvas_ws_endpoint = $this->request->getFormField( 'openvas_ws_endpoint' );
 
-					if (preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_admin_login) &&
-							preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_admin_password))
+					if (preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_ws_login) &&
+							preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_ws_password) &&
+							preg_match('/^[A-Za-z0-9_\-\:\/\.&?\=]*$/i', $openvas_ws_endpoint))
 					{
 
 						$this->install_security = "do";
@@ -258,9 +261,10 @@ class Client_SecurityPlugin extends System_Web_Component
 						// *********************************************************************************
 						$fp = fopen("securityplugin.conf.php","w");
 						fputs($fp,"<?php\n\n");
-						fputs($fp,"\$CONF_OPENVAS_ADMIN_LOGIN = \"$openvas_admin_login\";\n");
-						fputs($fp,"\$CONF_OPENVAS_ADMIN_PASSWORD = \"$openvas_admin_password\";\n");
-						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH = \"$id_attribute_folder_codes_path\";\n");
+						fputs($fp,"\$CONF_OPENVAS_WS_LOGIN = \"$openvas_ws_login\";\n");
+						fputs($fp,"\$CONF_OPENVAS_WS_PASSWORD = \"$openvas_ws_password\";\n");
+						fputs($fp,"\$CONF_OPENVAS_WS_ENDPOINT = \"$openvas_ws_endpoint\";\n");
+						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH = $id_attribute_folder_codes_path;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE = $id_attribute_folder_servers_use;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS = $id_attribute_folder_servers_ipsaddress;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL = $id_attribute_folder_scans_tool;\n");
