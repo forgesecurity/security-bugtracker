@@ -6,8 +6,8 @@
 
 <div style="float: right">
 <?php
-    echo $this->imageAndTextLink( '/client/securityplugin.php?install=yes', '/common/images/edit-modify-16.png', $this->tr( 'Install Plugin' ) );
-    echo ' | ' . $this->imageAndTextLink( '/client/securityplugin.php?install=no' , '/common/images/edit-delete-16.png', $this->tr( 'Uninstall Plugin' ) );
+echo $this->imageAndTextLink( '/client/securityplugin.php?install=yes', '/common/images/edit-modify-16.png', $this->tr( 'Install Plugin' ) );
+echo ' | ' . $this->imageAndTextLink( '/client/securityplugin.php?install=no' , '/common/images/edit-delete-16.png', $this->tr( 'Uninstall Plugin' ) );
 ?>
 </div>
 
