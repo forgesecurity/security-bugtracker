@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project id="4c8e4c44-971e-4389-bceb-4a7ebbd623b9" activeEnvironment="Default" name="OPENVAS" resourceRoot="" soapui-version="5.2.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="f6f5bf53-1d0e-40db-8360-099af3688d14" wsaVersion="NONE" name="ws_securitybugtracker_Binding" type="wsdl" bindingName="{http://securitybugtracker/V1}ws_securitybugtracker_Binding" soapVersion="1_1" anonymous="optional" definition="file:/srv/www/htdocs/webissues-server-1.1.4/client/security_tools/openvas.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/srv/www/htdocs/webissues-server-1.1.4/client/security_tools/openvas.wsdl"><con:part><con:url>file:/srv/www/htdocs/webissues-server-1.1.4/client/security_tools/openvas.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://securitybugtracker/V1" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://securitybugtracker/V1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/">
+<con:soapui-project id="2280d6d2-8f88-491f-87fc-cdc7d9e295bb" activeEnvironment="Default" name="OPENVAS" resourceRoot="" soapui-version="5.2.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="c62fbc9f-b13f-4a1e-9b60-d43867bae8b0" wsaVersion="NONE" name="ws_securitybugtracker_Binding" type="wsdl" bindingName="{http://securitybugtracker/V1}ws_securitybugtracker_Binding" soapVersion="1_1" anonymous="optional" definition="file:/srv/www/htdocs/webissues-server-1.1.4/client/security_tools/openvas/openvas.wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="file:/srv/www/htdocs/webissues-server-1.1.4/client/security_tools/openvas/openvas.wsdl"><con:part><con:url>file:/srv/www/htdocs/webissues-server-1.1.4/client/security_tools/openvas/openvas.wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://securitybugtracker/V1" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://securitybugtracker/V1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/">
   <wsdl:types>
     <xsd:schema targetNamespace="http://securitybugtracker">
-      <xsd:import namespace="http://securitybugtracker/V1" schemaLocation="http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.xsd"/>
+      <xsd:import namespace="http://securitybugtracker/V1" schemaLocation="http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas/openvas.xsd"/>
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="run_openvas_input">
@@ -32,10 +32,10 @@
   </wsdl:binding>
   <wsdl:service name="ws_securitybugtracker">
     <wsdl:port name="ws_securitybugtrackerPort" binding="tns:ws_securitybugtracker_Binding">
-      <soapbind:address location="http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.php"/>
+      <soapbind:address location="http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas/openvas.php"/>
     </wsdl:port>
   </wsdl:service>
-</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="http://securitybugtracker/V1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:t="http://securitybugtracker/V1">
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas/openvas.xsd</con:url><con:content><![CDATA[<xsd:schema targetNamespace="http://securitybugtracker/V1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:t="http://securitybugtracker/V1">
   <xsd:element name="run_openvas" type="t:type_run_openvas"/>
   <xsd:complexType name="type_run_openvas">
     <xsd:sequence>
@@ -57,13 +57,13 @@
       <xsd:element name="id_alert" type="xsd:string" nillable="false"/>
     </xsd:sequence>
   </xsd:complexType>
-</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.php</con:endpoint></con:endpoints><con:operation id="624db77f-75cc-4fa7-9a88-d9a51c25d38d" isOneWay="false" action="run_openvas" name="run_openvas" bindingOperationName="run_openvas" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="3f75f9a5-9e11-48ce-88e6-9cb6f602d8b0" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas/openvas.php</con:endpoint></con:endpoints><con:operation id="73830f3c-b06b-4114-bbf2-5150b718e1f0" isOneWay="false" action="run_openvas" name="run_openvas" bindingOperationName="run_openvas" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="2c64d297-204f-4478-9aff-dc1c5984435c" name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas/openvas.php</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
       <v1:run_openvas>
          <!--1 to 100 repetitions:-->
-         <target>?</target>
-         <id_scan>?</id_scan>
+         <target>fff</target>
+         <id_scan>122</id_scan>
       </v1:run_openvas>
    </soapenv:Body>
-</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="run_openvas"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="run_openvas"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/></con:soapui-project>

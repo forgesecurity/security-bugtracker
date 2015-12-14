@@ -6,8 +6,8 @@
 
 <div style="float: right">
 <?php
-echo $this->imageAndTextLink( '/client/securityplugin.php?install=yes', '/common/images/edit-modify-16.png', $this->tr( 'Install Plugin' ) );
-echo ' | ' . $this->imageAndTextLink( '/client/securityplugin.php?install=no' , '/common/images/edit-delete-16.png', $this->tr( 'Uninstall Plugin' ) );
+    echo $this->imageAndTextLink( '/client/securityplugin.php?install=yes', '/common/images/edit-modify-16.png', $this->tr( 'Install Plugin' ) );
+    echo ' | ' . $this->imageAndTextLink( '/client/securityplugin.php?install=no' , '/common/images/edit-delete-16.png', $this->tr( 'Uninstall Plugin' ) );
 ?>
 </div>
 
@@ -32,5 +32,5 @@ echo ' | ' . $this->imageAndTextLink( '/client/securityplugin.php?install=no' , 
 <?php elseif( empty($install_security) && !empty($alertscanid) ): ?>
 <div class="comment-text">Scan openvas finished</div>
 <?php else: ?>
-<div class="comment-text">Error</div>
+<div class="comment-text">Choose an option</div>
 <?php endif ?>
