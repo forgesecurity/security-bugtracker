@@ -24,6 +24,12 @@
 	<wsdl:message name="addcode_output">
 		<wsdl:part name="addcode_Response" element="tns:addcode_Response"/>
 	</wsdl:message>
+	<wsdl:message name="getcodes_input">
+		<wsdl:part name="getcodes" element="tns:getcodes"/>
+	</wsdl:message>
+	<wsdl:message name="getcodes_output">
+		<wsdl:part name="getcodes_Response" element="tns:getcodes_Response"/>
+	</wsdl:message>
 	<wsdl:message name="editcode_input">
 		<wsdl:part name="editcode" element="tns:editcode"/>
 	</wsdl:message>
@@ -153,6 +159,12 @@
 			<wsdl:input message="tns:editcode_input"/>
 			<wsdl:output message="tns:editcode_output"/>
 		</wsdl:operation>
+		<wsdl:operation name="getcodes">
+			<wsdl:documentation>WebService for getcodes
+			</wsdl:documentation>
+			<wsdl:input message="tns:getcodes_input"/>
+			<wsdl:output message="tns:getcodes_output"/>
+		</wsdl:operation>
 		<wsdl:operation name="editserver">
 			<wsdl:documentation>WebService for editserver
 			</wsdl:documentation>
@@ -281,6 +293,15 @@
 		</wsdl:operation>
 		<wsdl:operation name="editcode">
 			<soapbind:operation soapAction="editcode" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getcodes">
+			<soapbind:operation soapAction="getcodes" style="document"/>
 			<wsdl:input>
 				<soapbind:body use="literal"/>
 			</wsdl:input>

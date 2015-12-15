@@ -70,6 +70,34 @@
 	
 	
 	
+	<xsd:element name="getcodes" type="t:type_getcodes"/>
+	
+	<xsd:complexType name="type_getcodes">
+		<xsd:sequence>
+			<xsd:element name="id_folder_codes" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="getcodes_Response" type="t:type_getcodes_Response"/>
+	
+	<xsd:complexType name="type_getcodes_Response">
+		<xsd:sequence>
+			<xsd:element name="result_getcodes_details" type="t:result_getcodes_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_getcodes_details">
+		<xsd:sequence>
+			<xsd:element name="id_code" type="xsd:int" nillable="false"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="code" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
 	
 	<xsd:element name="editcode" type="t:type_editcode"/>
 	

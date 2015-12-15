@@ -43,18 +43,16 @@ $credentials = array('login' => $CONF_WEBISSUES_OPENVAS_LOGIN, 'password' => $CO
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 $addserver = new type_addserver();
 
-$fp1 = fopen("servers_folders.txt", "r");
-$fp2 = fopen("servers_hostnames.txt", "r");
-$fp3 = fopen("servers_ips.txt", "r");
-if ($fp1 && $fp2 && $fp3)
+$fp1 = fopen("servers_hostnames.txt", "r");
+$fp2 = fopen("servers_ips.txt", "r");
+if ($fp1 && $fp2)
 {
-	while (!feof($fp1) && !feof($fp2) && !feof($fp3))
+	while (!feof($fp1) && !feof($fp2))
 	{
-		$folder = fgets($fp1);
-		$hostname = fgets($fp2);
-		$ips = str_replace($CONF_FILE_IP_SEPARATOR, $CONF_WEBISSUES_IP_SEPARATOR, fgets($fp3));
+		$hostname = fgets($fp1);
+		$ips = str_replace($CONF_FILE_IP_SEPARATOR, $CONF_WEBISSUES_IP_SEPARATOR, fgets($fp2));
 
-		$addserver->id_folder_servers = (int) $folder;
+		$addserver->id_folder_servers = (int) $CONF_WEBISSUES_FOLDER_SERVERS;
 		$addserver->hostname = $hostname;
 		$addserver->description = $hostname;
 		$addserver->use = "Production";
@@ -66,13 +64,12 @@ if ($fp1 && $fp2 && $fp3)
 
 	fclose($fp1);
 	fclose($fp2);
-	fclose($fp3);
 }
 
 $addscan = new type_addscan();
 $addscan->id_folder_scans = $CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->name = "scan_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->description = "scan_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->name = "scan_openvas_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->description = "scan_openvas_".$CONF_WEBISSUES_FOLDER_SCANS;
 $addscan->tool = "openvas";
 $addscan->filter = "medium";
 

@@ -10,4 +10,6 @@
 \BOOKMARK [1][-]{section.2.4}{add a code}{chapter.2}% 10
 \BOOKMARK [1][-]{section.2.5}{scan the targets}{chapter.2}% 11
 \BOOKMARK [2][-]{subsection.2.5.1}{Dynamic scan with openvas}{section.2.5}% 12
-\BOOKMARK [1][-]{section.2.6}{Results}{chapter.2}% 13
+\BOOKMARK [2][-]{subsection.2.5.2}{Static scan with dependency-check}{section.2.5}% 13
+\BOOKMARK [1][-]{section.2.6}{Results}{chapter.2}% 14
+\BOOKMARK [0][-]{chapter.3}{Jobs}{}% 15

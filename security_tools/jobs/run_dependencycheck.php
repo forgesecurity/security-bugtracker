@@ -54,32 +54,26 @@ class type_addissue
 	public $version;
 }
 
+class type_getcodes
+{
+	public $id_folder_codes;
+}
+
 $credentials = array('login' => $CONF_WEBISSUES_DCHECK_LOGIN, 'password' => $CONF_WEBISSUES_DCHECK_PASSWORD);
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 
-$addscan = new type_addscan();
-$addscan->id_folder_scans = $CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->name = "scan_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->description = "scan_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->tool = "dependency-check";
-$addscan->filter = "medium"; // $severity = 2;
-$severity = 2;
-
 $addcode = new type_addcode();
 
-$codes = "";
-$fp1 = fopen("codes_folders.txt", "r");
-$fp2 = fopen("codes_names.txt", "r");
-$fp3 = fopen("codes_paths.txt", "r");
-if ($fp1 && $fp2 && $fp3)
+$fp1 = fopen("codes_names.txt", "r");
+$fp2 = fopen("codes_paths.txt", "r");
+if ($fp1 && $fp2)
 {
-	while (!feof($fp1) && !feof($fp2) && !feof($fp3))
+	while (!feof($fp1) && !feof($fp2))
 	{
-		$folder = fgets($fp1);
-		$name = fgets($fp2);
-		$code = fgets($fp3);
+		$name = fgets($fp1);
+		$code = fgets($fp2);
 
-		$addcode->id_folder_codes = (int) $folder;
+		$addcode->id_folder_codes = $CONF_WEBISSUES_FOLDER_CODES;
 		$addcode->name = $name;
 		$addcode->description = $name;
 		$addcode->code = $code;
@@ -88,6 +82,43 @@ if ($fp1 && $fp2 && $fp3)
 		{ 
 			$param = new SoapParam($addcode, 'tns:type_addcode');
 			$result = $clientsoap->__call('addcode', array('type_addcode'=>$param));
+		}
+	}
+}
+
+fclose($fp1);
+fclose($fp2);
+
+$addscan = new type_addscan();
+$addscan->id_folder_scans = (int) $CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->name = "scan_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->description = "scan_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->tool = "dependency-check";
+$addscan->filter = "medium"; // $severity = 2;
+$severity = 2;
+
+$param = new SoapParam($addscan, 'tns:type_addscan');
+$result = $clientsoap->__call('addscan', array('type_addscan'=>$param));
+
+if($result)
+{
+	$id_scan = $result->result_addscan_details->id_scan;
+
+	$getcodes = new type_getcodes();
+	$getcodes->id_folder_codes = $CONF_WEBISSUES_FOLDER_CODES;
+	$param = new SoapParam($addcode, 'tns:type_getcodes');
+	$results = $clientsoap->__call('getcodes', array('type_getcodes'=>$param));
+
+	if($results)
+	{
+		if(isset($results->result_getcodes_details) && count($results->result_getcodes_details) > 1)
+			$results = $results->result_getcodes_details;
+
+		foreach($results as $resultcode)
+		{
+			$id_code = $resultcode->id_code;
+			$name = $resultcode->name;
+			$code = $resultcode->code;
 
 			$out = shell_exec("$CONF_DEPENDENCYCHECK_BIN --app temp --format XML --scan $code --out $code/dependency-check-report.xml"); 
 			$outputxml = file_get_contents("$code/dependency-check-report.xml");
@@ -126,6 +157,7 @@ if ($fp1 && $fp2 && $fp3)
 
 								if($lastthreat >= $severity)
 								{
+									$description = "vulnerable target : $code\n\n".$description;
 									$addissue = new type_addissue();
 									$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
 									$addissue->name = "known vulnerabilities in ".$dependency->fileName;
@@ -143,23 +175,13 @@ if ($fp1 && $fp2 && $fp3)
 				}
 			}
 		}
+
+		$finishscan = new type_finishscan();
+		$finishscan->id_scan = $id_scan;
+
+		$param = new SoapParam($finishscan, 'tns:finishscan');
+		$result = $clientsoap->__call('finishscan',array('finishscan'=>$param));
 	}
-
-	fclose($fp1);
-	fclose($fp2);
-	fclose($fp3);
-}
-
-$param = new SoapParam($addscan, 'tns:type_addscan');
-$result = $clientsoap->__call('addscan', array('type_addscan'=>$param));
-
-if($result)
-{
-	$finishscan = new type_finishscan();
-	$finishscan->id_scan = $result->result_addscan_details->id_scan;
-
-	$param = new SoapParam($finishscan, 'tns:finishscan');
-	$result = $clientsoap->__call('finishscan',array('finishscan'=>$param));
 }
 
 ?>

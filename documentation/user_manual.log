@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/TeX Live for SUSE Linux) (format=pdflatex 2015.9.16)  14 DEC 2015 08:29
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/TeX Live for SUSE Linux) (format=pdflatex 2015.9.16)  15 DEC 2015 15:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -62,6 +62,12 @@ Package babel Info: Making ? an active character on input line 243.
 \labelwidthFB=\skip44
 \leftmarginFB=\skip45
 \parindentFFN=\dimen105
+)
+(/usr/share/texmf/tex/generic/babel-english/english.ldf
+Language: english 2012/08/20 v3.3p English support from the babel system
+\l@canadian = a dialect from \language\l@american 
+\l@australian = a dialect from \language\l@british 
+\l@newzealand = a dialect from \language\l@british 
 ))
 (/usr/share/texmf/tex/latex/carlisle/scalefnt.sty)
 (/usr/share/texmf/tex/latex/graphics/keyval.sty
@@ -361,23 +367,23 @@ File: lstmisc.sty 2007/02/22 1.4 (Carsten Heinz)
 ) (./user_manual.aux)
 \openout1 = `user_manual.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 75.
-LaTeX Font Info:    ... okay on input line 75.
-LaTeX Info: Redefining \degres on input line 75.
-LaTeX Info: Redefining \dots on input line 75.
-LaTeX Info: Redefining \up on input line 75.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 76.
+LaTeX Font Info:    ... okay on input line 76.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 76.
+LaTeX Font Info:    ... okay on input line 76.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 76.
+LaTeX Font Info:    ... okay on input line 76.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 76.
+LaTeX Font Info:    ... okay on input line 76.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 76.
+LaTeX Font Info:    ... okay on input line 76.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 76.
+LaTeX Font Info:    ... okay on input line 76.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 76.
+LaTeX Font Info:    ... okay on input line 76.
+LaTeX Info: Redefining \degres on input line 76.
+LaTeX Info: Redefining \dots on input line 76.
+LaTeX Info: Redefining \up on input line 76.
 
 (/usr/share/texmf/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -444,7 +450,7 @@ e
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 \AtBeginShipoutBox=\box37
-Package hyperref Info: Link coloring OFF on input line 75.
+Package hyperref Info: Link coloring OFF on input line 76.
 (/usr/share/texmf/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
@@ -453,19 +459,19 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count126
 )
-LaTeX Info: Redefining \ref on input line 75.
-LaTeX Info: Redefining \pageref on input line 75.
-LaTeX Info: Redefining \nameref on input line 75.
+LaTeX Info: Redefining \ref on input line 76.
+LaTeX Info: Redefining \pageref on input line 76.
+LaTeX Info: Redefining \nameref on input line 76.
  (./user_manual.out) (./user_manual.out)
 \@outlinefile=\write3
 \openout3 = `user_manual.out'.
 
-LaTeX Font Info:    Try loading font information for T1+phv on input line 78.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 79.
  (/usr/share/texmf/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <20.74> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 84.
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 85.
  [1
 
 {/usr/share/texmf/fonts/map/pdftex/updmap/pdftex.map}] (./user_manual.toc
@@ -481,123 +487,149 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.96 \chapter
+l.97 \chapter
              {Installation} [1
 
 ]
-Chapitre 1.
-<sec1.png, id=83, 591.20876pt x 536.0025pt>
+Chapter 1.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 103.
+
+(/usr/share/texmf/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 103.
+
+<sec1.png, id=93, 591.20876pt x 536.0025pt>
 File: sec1.png Graphic file (type png)
  <use sec1.png>
-Package pdftex.def Info: sec1.png used on input line 110.
+Package pdftex.def Info: sec1.png used on input line 112.
 (pdftex.def)             Requested size: 354.72798pt x 321.60397pt.
  [2
 
  <./sec1.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 116--120
+Underfull \hbox (badness 10000) in paragraph at lines 118--121
 
  []
 
-LaTeX Font Info:    Try loading font information for T1+cmtt on input line 120.
+LaTeX Font Info:    Try loading font information for T1+cmtt on input line 121.
 
 (/usr/share/texmf/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-) [3]
-<sec2.png, id=123, 1013.28563pt x 221.32687pt>
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <7> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 140.
+ [3]
+<sec2.png, id=137, 1013.28563pt x 221.32687pt>
 File: sec2.png Graphic file (type png)
  <use sec2.png>
-Package pdftex.def Info: sec2.png used on input line 194.
+Package pdftex.def Info: sec2.png used on input line 193.
 (pdftex.def)             Requested size: 506.64159pt x 110.66315pt.
 
-Overfull \hbox (24.76613pt too wide) in paragraph at lines 188--198
+Underfull \hbox (badness 10000) in paragraph at lines 188--197
+
+ []
+
+
+Overfull \hbox (24.76613pt too wide) in paragraph at lines 188--197
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 188--198
+Underfull \hbox (badness 10000) in paragraph at lines 188--197
 
  []
 
-<sec3.png, id=124, 791.95876pt x 268.75406pt>
+<sec3.png, id=138, 791.95876pt x 268.75406pt>
 File: sec3.png Graphic file (type png)
  <use sec3.png>
-Package pdftex.def Info: sec3.png used on input line 203.
+Package pdftex.def Info: sec3.png used on input line 202.
 (pdftex.def)             Requested size: 395.97841pt x 134.3767pt.
  [4 <./sec2.png> <./sec3.png>]
-Chapitre 2.
+Chapter 2.
 [5
 
-] [6] <sec4.png, id=223, 954.56625pt x 174.6525pt>
+] [6] [7] <sec4.png, id=264, 954.56625pt x 174.6525pt>
 File: sec4.png Graphic file (type png)
  <use sec4.png>
-Package pdftex.def Info: sec4.png used on input line 349.
+Package pdftex.def Info: sec4.png used on input line 368.
 (pdftex.def)             Requested size: 477.28197pt x 87.32603pt.
 
-<sec5.png, id=224, 924.45375pt x 173.89969pt>
+<sec5.png, id=265, 924.45375pt x 173.89969pt>
 File: sec5.png Graphic file (type png)
  <use sec5.png>
-Package pdftex.def Info: sec5.png used on input line 352.
+Package pdftex.def Info: sec5.png used on input line 371.
 (pdftex.def)             Requested size: 462.22574pt x 86.94962pt.
 
-<sec6.png, id=225, 966.61125pt x 180.675pt>
+<sec6.png, id=266, 966.61125pt x 180.675pt>
 File: sec6.png Graphic file (type png)
  <use sec6.png>
-Package pdftex.def Info: sec6.png used on input line 355.
+Package pdftex.def Info: sec6.png used on input line 374.
 (pdftex.def)             Requested size: 483.30444pt x 90.33727pt.
 
-<sec7.png, id=226, 1013.28563pt x 221.32687pt>
+<sec7.png, id=267, 1013.28563pt x 221.32687pt>
 File: sec7.png Graphic file (type png)
  <use sec7.png>
-Package pdftex.def Info: sec7.png used on input line 358.
+Package pdftex.def Info: sec7.png used on input line 377.
 (pdftex.def)             Requested size: 506.64159pt x 110.66315pt.
 
-Overfull \hbox (1.42899pt too wide) in paragraph at lines 347--361
+Overfull \hbox (1.42899pt too wide) in paragraph at lines 366--380
 []
  []
 
 
-Overfull \hbox (24.76613pt too wide) in paragraph at lines 347--361
+Overfull \hbox (24.76613pt too wide) in paragraph at lines 366--380
 []
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 347--361
+Underfull \hbox (badness 10000) in paragraph at lines 366--380
 
  []
 
-[7 <./sec4.png> <./sec5.png>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 365.
- [8 <./sec6.png> <./sec7.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 365.
+[8 <./sec4.png> <./sec5.png> <./sec6.png> <./sec7.png>]
+Chapter 3.
+
+Underfull \hbox (badness 10000) in paragraph at lines 382--387
+
+ []
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 388.
+[9
+
+]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 388.
  (./user_manual.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 365.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 365.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 388.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 388.
 Package rerunfilecheck Info: File `user_manual.out' has not changed.
-(rerunfilecheck)             Checksum: 789AC247C8D86FAD6A0DFE3D4D1E8A85;737.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 365.
+(rerunfilecheck)             Checksum: 316D5403239174863AF0F0BE6A60C0A5;864.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 388.
  ) 
 Here is how much of TeX's memory you used:
- 10733 strings out of 493315
- 150142 string characters out of 6145893
- 527474 words of memory out of 5000000
- 13899 multiletter control sequences out of 15000+600000
+ 10803 strings out of 493315
+ 151262 string characters out of 6145893
+ 492895 words of memory out of 5000000
+ 13955 multiletter control sequences out of 15000+600000
  25527 words of font info for 38 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 41i,6n,56p,271b,1942s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 41i,6n,56p,278b,1942s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-t1.enc}{/usr/share/texmf/
-fonts/enc/dvips/base/8r.enc}</usr/share/texmf/fonts/type1/public/cm-super/sfbx1
-000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/
-texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/pu
-blic/cm-super/sfbx2074.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx24
-88.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm0500.pfb></usr/share/t
-exmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/pub
-lic/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt080
-0.pfb></usr/share/texmf/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texmf/f
-onts/type1/urw/helvetic/uhvr8a.pfb>
-Output written on user_manual.pdf (9 pages, 382300 bytes).
+fonts/enc/dvips/base/8r.enc}</usr/share/texmf/fonts/type1/public/amsfonts/cm/cm
+sy10.pfb></usr/share/texmf/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share
+/texmf/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf/fonts/type1/p
+ublic/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1
+440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx2074.pfb></usr/share/
+texmf/fonts/type1/public/cm-super/sfbx2488.pfb></usr/share/texmf/fonts/type1/pu
+blic/cm-super/sfrm0500.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm07
+00.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/t
+exmf/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf/fonts/type1/pub
+lic/cm-super/sftt0800.pfb></usr/share/texmf/fonts/type1/urw/helvetic/uhvb8a.pfb
+></usr/share/texmf/fonts/type1/urw/helvetic/uhvr8a.pfb>
+Output written on user_manual.pdf (10 pages, 415059 bytes).
 PDF statistics:
- 339 PDF objects out of 1000 (max. 8388607)
- 306 compressed objects within 4 object streams
- 161 named destinations out of 1000 (max. 500000)
- 140 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 370 PDF objects out of 1000 (max. 8388607)
+ 333 compressed objects within 4 object streams
+ 168 named destinations out of 1000 (max. 500000)
+ 156 words of extra memory for PDF output out of 10000 (max. 10000000)
 

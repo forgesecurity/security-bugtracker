@@ -2,7 +2,7 @@
 
 \usepackage[latin1]{inputenc} % accents
 \usepackage[T1]{fontenc}      % caractères français
-\usepackage[francais]{babel}  % langue
+\usepackage[frenchb, english]{babel}  % langue
 \usepackage{graphicx}         % images
 \usepackage{verbatim}         % texte préformaté
 \usepackage{listings}
@@ -10,7 +10,7 @@
 \usepackage[margin=0.8in]{geometry}
 \usepackage[table]{xcolor}
 \usepackage{xcolor}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{color}
 
 \definecolor{mygreen}{rgb}{0,0.6,0}
@@ -29,7 +29,7 @@
   extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
   frame=single,	                   % adds a frame around the code
   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-  keywordstyle=\color{blue},       % keyword style
+  keywordstyle=\color{white},       % keyword style
   language=Octave,                 % the language of the code
   otherkeywords={*,...},            % if you want to add more keywords to the set
   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
@@ -64,6 +64,7 @@
 \lstdefinestyle{DOS}
 {
     backgroundcolor=\color{black},
+    identifierstyle=\color{white},
     basicstyle=\scriptsize\color{white}\ttfamily
 }
 
@@ -97,14 +98,15 @@ Eric Therond
 
   \section{Overview}
 
-\textit{Security-bugtracker} is a tool based on three dependencies at this time :
+\textit{Security-bugtracker} is currently a tool based on three dependencies :
 \begin{itemize}
-\item webissues : http://webissues.mimec.org/
-\item openvas : http://www.openvas.org/
-\item dependency-check : https://github.com/jeremylong/DependencyCheck
+\item webissues : a bug tracker\\http://webissues.mimec.org/
+\item openvas : a dynamic security vulnerabilities assessment tool\\http://www.openvas.org/
+\item dependency-check : a static security vulnerabilities assessment tool\\https://github.com/jeremylong/DependencyCheck
 \end{itemize}
 \vspace{5mm}
-Each of this tool can be installed on different or same server.
+Each of this tool can be installed on different or same server.\\
+The aim of this project is to produce automated security tests and track detected default in a bugtracker.
 \vspace{5mm}
 \begin{center}
 \includegraphics[scale=0.60]{sec1.png}
@@ -114,8 +116,7 @@ Each of this tool can be installed on different or same server.
   
   \section{Openvas}
 See the documentation on the official web site : http://www.openvas.org/install-source.html\\
-On the same server install a web server and php, then copy the following module of this project :\\
-/security-bugtracker/security\_tools/openvas\\
+On the same server install a web server and php, then copy the following module of this project to the directory of your web server :/security-bugtracker/security\_tools/openvas\\
 Then edit /security-bugracker/security\_tools/openvas/openvas.conf.php :\\
 \begin{lstlisting}[style=customc]
 <?php
@@ -125,43 +126,39 @@ $CONF_WS_OPENVAS_PASSWORD = "test";
 $CONF_WEBISSUES_OPENVAS_LOGIN = "openvas";
 $CONF_WEBISSUES_OPENVAS_PASSWORD = "openvas";
 $CONF_WEBISSUES_WS_ENDPOINT = "http://localhost:8080/webissues-server-1.1.4/client/webservices.php";
-$CONF_OPENVAS_ALERT_URL = "http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas.php";
+$CONF_OPENVAS_ALERT_URL = "http://localhost:8080/webissues-server-1.1.4/client/security_tools/openvas/openvas.php";
 $CONF_OPENVAS_ADMIN_LOGIN = "admin";
 $CONF_OPENVAS_ADMIN_PASSWORD = "0825839c-0d3f-4417-a118-954a78e2553c";
 $CONF_OPENVAS_CONFIG_ID = "a0e8fed8-45c1-4890-bd08-671257f63308";
 $CONF_OPENVAS_PATH_OMP = "/usr/local/bin/omp";
+$CONF_OPENVAS_PORT_OMP = "9393";
 
 ?>
 \end{lstlisting}\
 \begin{itemize}
-\item CONF\_WS\_OPENVAS\_LOGIN
-\item CONF\_WS\_OPENVAS\_PASSWORD
+\item \scriptsize{CONF\_WS\_OPENVAS\_LOGIN}
+\item \scriptsize{CONF\_WS\_OPENVAS\_PASSWORD}
 \end{itemize}
-are the credentials for this module.
-\vspace{5mm}
+are the credentials for the web services of this module.
 \begin{itemize}
-\item CONF\_WEBISSUES\_OPENVAS\_LOGIN
-\item CONF\_WEBISSUES\_OPENVAS\_PASSWORD
-\item CONF\_WEBISSUES\_WS\_ENDPOINT
+\item \scriptsize{CONF\_WEBISSUES\_OPENVAS\_LOGIN}
+\item \scriptsize{CONF\_WEBISSUES\_OPENVAS\_PASSWORD}
+\item \scriptsize{CONF\_WEBISSUES\_WS\_ENDPOINT}
 \end{itemize}
  will be completed later.
-\vspace{5mm}
 \begin{itemize}
-\item CONF\_OPENVAS\_ALERT\_URL
+\item \scriptsize{CONF\_OPENVAS\_ALERT\_URL}
 \end{itemize}
  is the address of this module on this web server.
-\vspace{5mm}
 \begin{itemize}
-\item CONF\_OPENVAS\_ADMIN\_LOGIN
-\item CONF\_OPENVAS\_ADMIN\_PASSWORD
+\item \scriptsize{CONF\_OPENVAS\_ADMIN\_LOGIN}
+\item \scriptsize{CONF\_OPENVAS\_ADMIN\_PASSWORD}
 \end{itemize}
  are the openvas admin credentials.
-\vspace{5mm}
 \begin{itemize}
-\item CONF\_OPENVAS\_CONFIG\_ID
+\item \scriptsize{CONF\_OPENVAS\_CONFIG\_ID}
 \end{itemize}
 is the default config id for run a scan with openvas, check your config with this openvas command
-\vspace{5mm}
 \begin{lstlisting}[style=DOS]
 linux-3ig5:/home/eric/security-bugracker/documentation # omp -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393 --get-configs
 8715c877-47a0-438d-98a3-27c7a6ab2196  Discovery
@@ -174,40 +171,41 @@ a0e8fed8-45c1-4890-bd08-671257f63308  Full and very deep Clone 1
 2d3f051c-55ba-11e3-bf43-406186ea4fc5  Host Discovery
 bbca7412-a950-11e3-9109-406186ea4fc5  System Discovery
 \end{lstlisting}
-\vspace{5mm}
 \begin{itemize}
-\item CONF\_OPENVAS\_PATH\_OMP
+\item \scriptsize{CONF\_OPENVAS\_PATH\_OMP}
 \end{itemize}
 is the path of your omp binary on this server.
+\begin{itemize}
+\item \scriptsize{CONF\_OPENVAS\_PORT\_OMP}
+\end{itemize}
+is the tcp port which on openvas / omp is running
   \newpage
 
   \section{Dependency-check}
 See the documentation on the official web site : https://github.com/jeremylong/DependencyCheck
   
   \section{Webissues}
-See the documentation on the official web site : http://wiki.mimec.org/wiki/WebIssues/Installation\\
-Once the bugtracker is installed, copy the following module of this project to your webissues root directory :\\
-/security-bugracker/webissues-server-1.1.4\\
-Next go at this address (replace the name, port, path with rights information on your server) :\\
+See the documentation on the official web site : http://wiki.mimec.org/wiki/WebIssues/Installation. Once the bugtracker is installed, copy the following module of this project to your webissues root directory :\\
+/security-bugracker/webissues-server-1.1.4\\\\
+Next go at this address (replace the name, port, path with rights informations) :\\
 http://localhost:8080/webissues-server-1.1.4/client/securityplugin.php
 \newline
 \includegraphics[scale=0.50]{sec2.png}
 \vspace{5mm}
 \newline
-select install plugin and enter choosen values when the openvas module was installed above :\\
+Select \textit{install plugin} and enter choosen values when the openvas module was installed above :\\
 \begin{itemize}
-\item CONF\_WS\_OPENVAS\_LOGIN
-\item CONF\_WS\_OPENVAS\_PASSWORD
-\item CONF\_OPENVAS\_ALERT\_URL
+\item \scriptsize{CONF\_WS\_OPENVAS\_LOGIN}
+\item \scriptsize{CONF\_WS\_OPENVAS\_PASSWORD}
+\item \scriptsize{CONF\_OPENVAS\_ALERT\_URL}
 \end{itemize}
 \includegraphics[scale=0.50]{sec3.png}
 \vspace{5mm}
 \newline
-Now create a new openvas user on webissues.
+Now create \textit{openvas} and \textit{Dependency-check} users on webissues.
 \chapter{Use}
-
+Don't forget to use \textit{basic authentification} with a login which have the good rights on webissues when using the webservices.
   \section{add a project}
-\textbf{Don't forget to use basic authentification with a login which have the good rights on webissues when using the webservices}.\\
 Add a project with the following web service method or via the traditional him of web issues :
 \begin{lstlisting}[style=customc]
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
@@ -220,6 +218,7 @@ Add a project with the following web service method or via the traditional him o
    </soapenv:Body>
 </soapenv:Envelope>
 \end{lstlisting}
+Remember the ids returned with the response :
 \begin{lstlisting}[style=customc]
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://securitybugtracker/V1">
    <SOAP-ENV:Body>
@@ -235,8 +234,9 @@ Add a project with the following web service method or via the traditional him o
    </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 \end{lstlisting}
+\newpage
   \section{add a member}
-  Add a member for this project (the openvas account created during the installation) :
+  Add a \textit{robot} member for this project (the \textit{openvas} account created during the installation) :
 \begin{lstlisting}[style=customc]
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
@@ -262,7 +262,13 @@ Add a project with the following web service method or via the traditional him o
 \end{lstlisting}
   
   \section{add a server}
-  Add a target server for this project :
+  Add a target server for this project, you can add multiple ips separated by the , character and the values of \textit{use parameter} must be one of thoses :
+  
+\begin{itemize}
+\item Development : for a development environment server
+\item Test : for a test environment server
+\item Production : for a production environment server
+\end{itemize}
 \begin{lstlisting}[style=customc]
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
@@ -290,7 +296,7 @@ Add a project with the following web service method or via the traditional him o
 \end{lstlisting}
   
   \section{add a code}
-  Add a target code path for this project :
+  Add a target code path for this project, the \textit{code parameter} is the path of the directory which contain librairies to be scanned by the dependency-check security tool.
 \begin{lstlisting}[style=customc]
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
@@ -318,30 +324,43 @@ Add a project with the following web service method or via the traditional him o
 
   \section{scan the targets}
   \subsection{Dynamic scan with openvas}
+Run a scan with openvas security tool, select openvas value for the \textit{tool parameter}, select a specific openvas config scan if you don't want to use the default config parametered during the installation and select a filter which can be :
+\begin{itemize}
+\item info : only add issues with a severity equal or upper to info
+\item minor : only add issues with a severity equal or upper to minor
+\item medium : only add issues with a severity equal or upper to medium
+\item high : only add issues with a severity equal to high
+\end{itemize}
 \begin{lstlisting}[style=customc]
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:v1="http://securitybugtracker/V1">
    <soapenv:Header/>
    <soapenv:Body>
-      <v1:addcode>
-         <id_folder_codes>83</id_folder_codes>
-         <name>java test</name>
-         <description>java tes</description>
-         <code>/home/eric/test/libs-java</code>
-      </v1:addcode>
+      <v1:addscan>
+         <id_folder_scans>88</id_folder_scans>
+         <name>test scan soap ui</name>
+         <description>test scan soap ui</description>
+         <tool>openvas</tool>
+         <filter>medium</filter>
+         <!--Optional:-->
+         <id_config_openvas>?</id_config_openvas>
+      </v1:addscan>
    </soapenv:Body>
 </soapenv:Envelope>
 \end{lstlisting}
 \begin{lstlisting}[style=customc]
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://securitybugtracker/V1">
    <SOAP-ENV:Body>
-      <ns1:addcode_Response>
-         <result_addcode_details>
-            <id_code>1680</id_code>
-         </result_addcode_details>
-      </ns1:addcode_Response>
+      <ns1:addscan_Response>
+         <result_addscan_details>
+            <id_scan>2422</id_scan>
+         </result_addscan_details>
+      </ns1:addscan_Response>
    </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
 \end{lstlisting}
+
+  \subsection{Static scan with dependency-check}
+The static scan must me run localy, see jobs chapter.
 
   \section{Results}
 You can view the results of your precedings actions with th him of webissues :
@@ -358,7 +377,11 @@ You can view the results of your precedings actions with th him of webissues :
 \includegraphics[scale=0.50]{sec7.png}
 \vspace{5mm}
 \newline
+\chapter{Jobs}
 
+You can easily script a job which can interact with your configuration management tool for example for requesting automatically the web services and running security scans.\\You can see examples in the jobs directory :\\
+/security-bugracker/security\_tools/jobs/run\_dependencycheck.php\\
+/security-bugracker/security\_tools/jobs/run\_openvas.php\\
 % \listoffigures
 % \listoftables
 

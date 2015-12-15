@@ -598,6 +598,71 @@ class webservice_server
 		return $tab;
 	}
 
+
+	function getcodes($req){
+
+		$result_array = array();
+		$req = (array) $req;
+
+		$arrtemp = array(
+				'id_code' => 0,
+				'name' => "",
+				'code' => ""
+				);
+
+		$codesexist = false;
+
+		if($this->authws())
+		{
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+			$typeManager = new System_Api_TypeManager();
+
+			include("securityplugin.conf.php");
+
+			try 
+			{
+				$folder = $projectManager->getFolder( $req["id_folder_codes"] );
+				$codes = $issueManager->getIssues( $folder );
+
+				foreach($codes as $code)
+				{
+					$code = $issueManager->getIssue( $code["issue_id"] );
+
+					$attr_value = "";
+					$attributes = $issueManager->getAttributeValuesForIssue($code);
+					foreach($attributes as $attribute)
+					{
+						if($attribute["attr_id"] == $CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH)
+						{
+							$attr_value = $attribute["attr_value"];
+							break;
+						}
+					}
+
+					$arr = array(
+							'id_code' => $code["issue_id"],
+							'name' => $code["issue_name"],
+							'code' => $attr_value
+						    );
+
+					array_push($result_array, $arr);
+					$codesexist = true;
+				}
+			} 
+			catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		if(!$codesexist)
+			array_push($result_array, $arrtemp);
+
+
+		return $result_array;
+	}
+
+
 	function addserver($req){
 
 		$result = false;
