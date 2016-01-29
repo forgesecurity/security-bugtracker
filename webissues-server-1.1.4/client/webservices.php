@@ -163,6 +163,7 @@ class webservice_server
 			include("securityplugin.conf.php");
 
 			try {
+				$this->logp("run_openvas getparamsfromalertid id_alert = '".$req["id_alert"]."'");
 				$issuescan = $issueManager->getIssue( $req["id_alert"] );
 				$project = $projectManager->getProject( $issuescan["project_id"] );
 				$id_folder_bugs = 0;
@@ -272,6 +273,8 @@ class webservice_server
 		{
 			if($issueId)
 			{
+				$this->logp("run_openvas targets = ".$targets);
+
 				$issue = $issueManager->getIssue( $issueId );
 				$parser = new System_Api_Parser();
 				$parser->setProjectId( $issue[ 'project_id' ] );
@@ -280,6 +283,7 @@ class webservice_server
 
 				for($i = 0; $i < count($targets); $i++)
 				{
+					$this->logp("run_openvas targets $i = ".$targets[$i]);
 					if($i == 0)
 						$run_openvas->target = $targets[$i];
 					else
@@ -680,7 +684,10 @@ class webservice_server
 				$ips = explode(",", $req["ipsaddress"]);
 				foreach($ips as $ip)
 					if(!filter_var($ip, FILTER_VALIDATE_IP))
+					{
 						$ips_ok = false;
+						$this->logp( "filter validate ip not ok : ".$ip );
+					}
 
 				if($ips_ok)
 				{

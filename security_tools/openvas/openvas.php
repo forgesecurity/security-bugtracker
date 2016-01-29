@@ -56,7 +56,7 @@ if(!empty($alertscanid))
 
 	$credentials = array('login' => $CONF_WEBISSUES_OPENVAS_LOGIN, 'password' => $CONF_WEBISSUES_OPENVAS_PASSWORD);
 
-	ini_set('default_socket_timeout', 600);
+	ini_set('default_socket_timeout', 10000);
 	ini_set('soap.wsdl_cache_enabled', 0);
 	$clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 	$param = new SoapParam($getparamsfromalertid, 'tns:getparamsfromalertid');
@@ -111,6 +111,7 @@ if(!empty($alertscanid))
 
 					$param = new SoapParam($addissue, 'tns:addissue');
 					$result = $clientsoap->__call('addissue',array('addissue'=>$param));
+					sleep(1);
 				}
 			}
 		}
@@ -159,14 +160,19 @@ class openvas_webservice_server
 
 			include('openvas.conf.php');
 
+			$this->logp("run_openvas req targets = ".$req["target"]);
+
 			$configId = $CONF_OPENVAS_CONFIG_ID;
 			if(isset($req["id_config"]) && !empty($req["id_config"]))
 				$configId = $req["id_config"];
+			$this->logp("run_openvas configid = ".$configId);
 
 			$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<create_target><name>webissue".$issueId."</name><hosts>".$req["target"]."</hosts></create_target>'");
 			preg_match('|<create_target_response id=\"([^"]*)\"|', $output, $matches);
 			if(isset($matches[1]))
 				$targetid = $matches[1];
+			else
+				$this->logp("error create target = ".$output);
 
 			if(!empty($targetid))
 			{
@@ -174,7 +180,9 @@ class openvas_webservice_server
 				preg_match('|<create_alert_response id=\"([^"]*)\"|', $output, $matches);
 				if(isset($matches[1]))
 					$alertid = $matches[1];
-			}
+				else
+					$this->logp("error create alert = ".$output);
+			} 
 
 			if(!empty($alertid))
 			{
@@ -182,6 +190,8 @@ class openvas_webservice_server
 				preg_match('|<create_task_response id=\"([^"]*)\"|', $output, $matches);
 				if(isset($matches[1]))
 					$taskid = $matches[1];
+				else
+					$this->logp("error create task = ".$output);
 			}
 
 			if(!empty($taskid))
@@ -190,6 +200,8 @@ class openvas_webservice_server
 				preg_match('@<report_id>(.*)</report_id>.*@i', $output, $matches);
 				if(isset($matches[1]))
 					$reportid = $matches[1];
+				else
+					$this->logp("error create report = ".$output);
 			}
 
 			$tab = array(

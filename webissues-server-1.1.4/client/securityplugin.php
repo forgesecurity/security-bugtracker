@@ -96,7 +96,7 @@ class Client_SecurityPlugin extends System_Web_Component
 						$info2->setMetadata( 'editable', 1 );
 						$info2->setMetadata( 'multi-select', 0 );
 						$info2->setMetadata( 'min-length', 1 );
-						$info2->setMetadata( 'max-length', 30 );
+						$info2->setMetadata( 'max-length', 5000 );
 						$info2->setMetadata( 'required', 1 );
 						$info2->setMetadata( 'default', "" );
 
