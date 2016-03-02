@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/TeX Live for SUSE Linux) (format=xelatex 2015.9.16)  29 JAN 2016 11:56
+This is XeTeX, Version 3.1415926-2.5-0.9999.3 (TeX Live 2013/TeX Live for SUSE Linux) (format=xelatex 2015.9.16)  27 FEB 2016 13:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1323,6 +1323,10 @@ LaTeX Info: Redefining \nameref on input line 53.
 \@outlinefile=\write5
 \openout5 = `presentation.out'.
 
+
+
+Package hyperref Warning: Rerun to get /PageLabels entry.
+
 \symnumbers=\mathgroup6
 \sympureletters=\mathgroup7
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
@@ -1459,11 +1463,11 @@ File: background.jpg Graphic file (type QTm)
 <use  "background.jpg" > [1
 
 ]
-LaTeX Font Info:    Try loading font information for U+msa on input line 105.
+LaTeX Font Info:    Try loading font information for U+msa on input line 104.
  (/usr/share/texmf/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 105.
+LaTeX Font Info:    Try loading font information for U+msb on input line 104.
 
 (/usr/share/texmf/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -1521,9 +1525,9 @@ File: bg.jpg Graphic file (type QTm)
 ]
 Package mdframed Info: mdframed detected package amsthm 
  changed the theorem header of amsthm
-(mdframed)              on input line 301.
+(mdframed)              on input line 306.
 Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 301.
+ mdframed uses option nobreak mdframed on input line 306.
 File: bg.jpg Graphic file (type QTm)
  <use  "bg.jpg" > [11
 
@@ -1537,19 +1541,19 @@ File: bg.jpg Graphic file (type QTm)
 \tf@snm=\write8
 \openout8 = `presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 306.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 306.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 311.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 311.
  (./presentation.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 306.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 306.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 306.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 311.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 311.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 311.
  ) 
 Here is how much of TeX's memory you used:
- 34833 strings out of 493938
- 686931 string characters out of 6155882
- 734443 words of memory out of 5000000
- 37541 multiletter control sequences out of 15000+600000
- 8534 words of font info for 55 fonts, out of 8000000 for 9000
+ 34766 strings out of 493938
+ 685471 string characters out of 6155882
+ 734348 words of memory out of 5000000
+ 37475 multiletter control sequences out of 15000+600000
+ 8526 words of font info for 54 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
  49i,11n,76p,931b,915s stack positions out of 5000i,500n,10000p,200000b,80000s
 

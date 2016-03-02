@@ -327,6 +327,7 @@
 			<xsd:element name="state" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="severity" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="version" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="target" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -532,6 +533,7 @@
 	<xsd:complexType name="type_finishscan">
 		<xsd:sequence>
 			<xsd:element name="id_scan" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="data_report" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	

@@ -163,7 +163,6 @@ class webservice_server
 			include("securityplugin.conf.php");
 
 			try {
-				$this->logp("run_openvas getparamsfromalertid id_alert = '".$req["id_alert"]."'");
 				$issuescan = $issueManager->getIssue( $req["id_alert"] );
 				$project = $projectManager->getProject( $issuescan["project_id"] );
 				$id_folder_bugs = 0;
@@ -232,6 +231,15 @@ class webservice_server
 			$typeManager = new System_Api_TypeManager();
 
 			$issuescan = $issueManager->getIssue( $req["id_scan"] );
+			if(!empty($req["data_report"]))
+			{
+				$path = "./reports_tmp/html_report_".$req["id_scan"].".html";
+				file_put_contents($path, urldecode($req["data_report"]));
+				$size = filesize($path);
+				$attachment = System_Core_Attachment::fromFile( $path, $size, "report.html" );
+				$issueManager->addFile($issuescan, $attachment, "report.html", "html_report" );
+				unlink($path);
+			}
 
 			include("securityplugin.conf.php");
 
@@ -273,8 +281,6 @@ class webservice_server
 		{
 			if($issueId)
 			{
-				$this->logp("run_openvas targets = ".$targets);
-
 				$issue = $issueManager->getIssue( $issueId );
 				$parser = new System_Api_Parser();
 				$parser->setProjectId( $issue[ 'project_id' ] );
@@ -283,15 +289,12 @@ class webservice_server
 
 				for($i = 0; $i < count($targets); $i++)
 				{
-					$this->logp("run_openvas targets $i = ".$targets[$i]);
 					if($i == 0)
 						$run_openvas->target = $targets[$i];
 					else
 						$run_openvas->target = $run_openvas->target.",".$targets[$i];
 				}
 
-
-				$this->logp("run_openvas targets = ".$run_openvas->target);
 				$run_openvas->id_scan = $issueId;
 				$run_openvas->id_config = $req["id_config_openvas"];
 
@@ -684,10 +687,7 @@ class webservice_server
 				$ips = explode(",", $req["ipsaddress"]);
 				foreach($ips as $ip)
 					if(!filter_var($ip, FILTER_VALIDATE_IP))
-					{
 						$ips_ok = false;
-						$this->logp( "filter validate ip not ok : ".$ip );
-					}
 
 				if($ips_ok)
 				{
@@ -853,6 +853,7 @@ class webservice_server
 			$userManager = new System_Api_UserManager();
 
 			try {
+				include("securityplugin.conf.php");
 				$folder = $projectManager->getFolder( $req["id_folder_bugs"] );
 
 				$duplicate = false;
@@ -860,8 +861,19 @@ class webservice_server
 				foreach ($issues as $issue) {
 					if($issue["issue_name"] == $req["name"]) 
 					{
-						$duplicate = true;
-						break;
+						$issueduplicate = $issueManager->getIssue( $issue["issue_id"] );
+						$type = $typeManager->getIssueTypeForFolder( $folder );
+						$rows = $typeManager->getAttributeTypesForIssueType( $type );
+
+						foreach ( $rows as $row ) 
+						{
+							$this->logp( "attr_value = ".$row[ 'attr_value' ]." == req_target ".$req["target"]." == attr_id =".$row[ 'attr_id' ]." == true id attribute == ".$CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET );
+							if( $row[ 'attr_value' ] != $req["target"] && $row[ 'attr_id' ] == $CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET)
+							{
+								$duplicate = true;
+								break 2;
+							}
+						}
 					}
 				}
 
@@ -881,7 +893,8 @@ class webservice_server
 					$name_ws[1] = "state";
 					$name_ws[2] = "raison";
 					$name_ws[3] = "severity";
-					$name_ws[4] = "version";
+					$name_ws[4] = "target";
+					$name_ws[5] = "version";
 
 					if(empty($req["assigned"]))
 					{

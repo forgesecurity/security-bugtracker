@@ -61,6 +61,7 @@ class Client_SecurityPlugin extends System_Web_Component
 					$openvas_ws_login = $this->request->getFormField( 'openvas_ws_login' );
 					$openvas_ws_password = $this->request->getFormField( 'openvas_ws_password' );
 					$openvas_ws_endpoint = $this->request->getFormField( 'openvas_ws_endpoint' );
+					$id_type_folder_bugs = $this->request->getFormField( 'type_folder_bugs' );
 
 					if (preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_ws_login) &&
 							preg_match('/^[A-Za-z0-9\-]*$/i', $openvas_ws_password) &&
@@ -76,6 +77,42 @@ class Client_SecurityPlugin extends System_Web_Component
 						$type_folder_servers = $typeManager->getIssueType($id_type_folder_servers);
 						$type_folder_codes = $typeManager->getIssueType($id_type_folder_codes);
 						$type_folder_scans = $typeManager->getIssueType($id_type_folder_scans);
+
+
+
+						// ************************** FOLDER BUGS ***************************************** 
+						$type_folder_bugs = $typeManager->getIssueType($id_type_folder_bugs);
+
+
+						$info1 = new System_Api_DefinitionInfo();
+						$info1->setType( 'TEXT' );
+						$info1->setMetadata( 'multi-line', 0 );
+						$info1->setMetadata( 'min-length', 1 );
+						$info1->setMetadata( 'max-length', 40 );
+						$info1->setMetadata( 'required', 0 );
+						$info1->setMetadata( 'default', "" );
+
+						$id_attribute_folder_bugs_target = $typeManager->addAttributeType( $type_folder_bugs, "target", $info1->toString() );
+						/*
+						   $attributes_bugs = $typeManager->getAttributeTypesForIssueType( $type_folder_bugs );
+						   foreach ( $attributes_bugs as $attribute )
+						   $columns[ System_Api_Column::UserDefined + $attribute[ 'attr_id' ] ] = $attribute[ 'attr_name' ];
+
+						   $info = new System_Api_DefinitionInfo();
+						   $info->setType( 'VIEW' );
+
+						   $columns = array_keys( $columns );
+						   $info->setMetadata( 'columns', "1,0,".implode( ',', $columns ) );
+						   $info->setMetadata( 'sort-column', System_Api_Column::ID );
+
+						   $viewManager = new System_Api_ViewManager();
+						   try {
+						   $viewManager->setViewSetting( $type_folder_bugs, 'default_view', $info->toString() );
+						   } catch ( System_Api_Error $ex ) {
+						   $this->form->getErrorHelper()->handleError( 'viewName', $ex );
+						   }
+						 */
+						// ********************************************************************************
 
 
 
@@ -274,6 +311,8 @@ class Client_SecurityPlugin extends System_Web_Component
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID = $id_attribute_folder_scans_tasktid;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID = $id_attribute_folder_scans_reportid;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID = $id_attribute_folder_scans_alertid;\n");
+						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET = $id_attribute_folder_bugs_target;\n");
+						fputs($fp,"\$CONF_ID_TYPE_FOLDER_BUGS = $id_type_folder_bugs;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_SERVERS = $id_type_folder_servers;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_CODES = $id_type_folder_codes;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_SCANS = $id_type_folder_scans;\n\n");
@@ -329,7 +368,7 @@ class Client_SecurityPlugin extends System_Web_Component
 					$issueManager->deleteIssue( $issue );
 					$issueManager->deleteDescription( $descr );
 				}
-
+				// 	      
 				$projectManager->deleteFolder( $folder );
 			}
 

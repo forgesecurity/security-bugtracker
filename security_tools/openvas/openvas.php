@@ -19,6 +19,7 @@
 class type_finishscan
 {
 	public $id_scan;
+	public $data_report;
 }
 
 class type_getparamsfromalertid
@@ -35,6 +36,7 @@ class type_addissue
 	public $state;
 	public $severity;
 	public $version;
+	public $target;
 }	
 
 function logpp($ex)
@@ -73,6 +75,9 @@ if(!empty($alertscanid))
 	   /usr/local/bin/omp --get-report 532b4233-e3a2-4ec4-9d64-8855d8c5c70b --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393
 	 */
 	$outputxml = shell_exec ("".$CONF_OPENVAS_PATH_OMP." --get-report ".$id_report." --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP);      
+	$outputhtml = urlencode(shell_exec ("".$CONF_OPENVAS_PATH_OMP." --get-report ".$id_report." --format ".$CONF_OPENVAS_CONFIG_ID_HTML."  -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP));      
+
+
 	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<delete_target target_id=\"".$id_target."\"/>'");
 	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<delete_alert alert_id=\"".$id_alert."\"/>'");
 	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<delete_task task_id=\"".$id_task."\"/>'");
@@ -98,8 +103,8 @@ if(!empty($alertscanid))
 
 				if($threat >= $severity)
 				{
-
-					$description = "vulnerable target : ".$result->host.":".$result->port."\n\n".$result->description;
+					$target = $result->host.":".$result->port;
+					$description = "vulnerable target : $target \n\n".$result->description;
 
 					$addissue = new type_addissue();
 					$addissue->id_folder_bugs = $id_folder_bugs;
@@ -108,6 +113,8 @@ if(!empty($alertscanid))
 					$addissue->assigned = "";
 					$addissue->state = "Actif";
 					$addissue->severity = $threat;
+					$addissue->version = 1;
+					$addissue->target = $target;
 
 					$param = new SoapParam($addissue, 'tns:addissue');
 					$result = $clientsoap->__call('addissue',array('addissue'=>$param));
@@ -119,6 +126,7 @@ if(!empty($alertscanid))
 
 	$finishscan = new type_finishscan();
 	$finishscan->id_scan = $alertscanid;
+	$finishscan->data_report = $outputhtml;
 
 	$param = new SoapParam($finishscan, 'tns:finishscan');
 	$result = $clientsoap->__call('finishscan',array('finishscan'=>$param));

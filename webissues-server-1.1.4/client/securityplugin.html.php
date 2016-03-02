@@ -23,6 +23,7 @@ echo ' | ' . $this->imageAndTextLink( '/client/securityplugin.php?install=no' , 
 <?php $form->renderText( $this->tr( 'openvas_ws_login:' ), 'openvas_ws_login', array( 'size' => 80 ) ); ?>
 <?php $form->renderText( $this->tr( 'openvas_ws_password:' ), 'openvas_ws_password', array( 'size' => 80 ) ); ?>
 <?php $form->renderText( $this->tr( 'openvas_ws_endpoint:' ), 'openvas_ws_endpoint', array( 'size' => 80 ) ); ?>
+<?php $form->renderText( $this->tr( 'type_folder_bugs:' ), 'type_folder_bugs', array( 'size' => 80 ) ); ?>
 <div class="form-submit">
 <?php $form->renderSubmit( $this->tr( 'OK' ), 'ok' ); ?>
 <?php $form->renderSubmit( $this->tr( 'Cancel' ), 'cancel' ); ?>

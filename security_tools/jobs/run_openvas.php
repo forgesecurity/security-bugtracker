@@ -41,7 +41,6 @@ class type_addscan
 
 $credentials = array('login' => $CONF_WEBISSUES_OPENVAS_LOGIN, 'password' => $CONF_WEBISSUES_OPENVAS_PASSWORD);
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
-$addserver = new type_addserver();
 
 $fp1 = fopen("servers_hostnames.txt", "r");
 $fp2 = fopen("servers_ips.txt", "r");
@@ -49,9 +48,10 @@ if ($fp1 && $fp2)
 {
 	while (!feof($fp1) && !feof($fp2))
 	{
-		$hostname = fgets($fp1);
-		$ips = str_replace($CONF_FILE_IP_SEPARATOR, $CONF_WEBISSUES_IP_SEPARATOR, fgets($fp2));
+		$hostname = rtrim(fgets($fp1));
+		$ips = str_replace($CONF_FILE_IP_SEPARATOR, $CONF_WEBISSUES_IP_SEPARATOR, rtrim(fgets($fp2)));
 
+		$addserver = new type_addserver();
 		$addserver->id_folder_servers = (int) $CONF_WEBISSUES_FOLDER_SERVERS;
 		$addserver->hostname = $hostname;
 		$addserver->description = $hostname;
