@@ -16,17 +16,17 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
-include( 'run_dependencycheck.conf.php' ); 
+include( 'run_arachni.conf.php' ); 
 
 ini_set('default_socket_timeout', 600);
 ini_set('soap.wsdl_cache_enabled', 0);
 	
-class type_addcode
+class type_addurl
 {
-  public $id_folder_codes;
+  public $id_folder_web;
   public $name;
   public $description;
-  public $code;
+  public $url;
 }
 	
 class type_addscan
@@ -54,34 +54,34 @@ class type_addissue
   public $version;
 }
 	
-class type_getcodes
+class type_geturls
 {
-  public $id_folder_codes;
+  public $id_folder_web;
 }
 	
-$credentials = array('login' => $CONF_WEBISSUES_DCHECK_LOGIN, 'password' => $CONF_WEBISSUES_DCHECK_PASSWORD);
+$credentials = array('login' => $CONF_WEBISSUES_ARACHNI_LOGIN, 'password' => $CONF_WEBISSUES_ARACHNI_PASSWORD);
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 
-$addcode = new type_addcode();
+$addurl = new type_addurl();
 
-$fp1 = fopen("codes_names.txt", "r");
-$fp2 = fopen("codes_paths.txt", "r");
+$fp1 = fopen("web_names.txt", "r");
+$fp2 = fopen("web_urls.txt", "r");
 if ($fp1 && $fp2)
 {
   while (!feof($fp1) && !feof($fp2))
   {
     $name = fgets($fp1);
-    $code = fgets($fp2);
+    $url = fgets($fp2);
 
-    $addcode->id_folder_codes = $CONF_WEBISSUES_FOLDER_CODES;
-    $addcode->name = $name;
-    $addcode->description = $name;
-    $addcode->code = $code;
+    $addurl->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
+    $addurl->name = $name;
+    $addurl->description = $name;
+    $addurl->url = $url;
 		  
-    if(!empty($code))
+    if(!empty($url))
     { 
-      $param = new SoapParam($addcode, 'tns:type_addcode');
-      $result = $clientsoap->__call('addcode', array('type_addcode'=>$param));
+      $param = new SoapParam($addurl, 'tns:type_addurl');
+      $result = $clientsoap->__call('addurl', array('type_addurl'=>$param));
     }
   }
 }
@@ -91,9 +91,9 @@ fclose($fp2);
 
 $addscan = new type_addscan();
 $addscan->id_folder_scans = (int) $CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->name = "scan_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->description = "scan_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->tool = "dependency-check";
+$addscan->name = "scan_arachni_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->description = "scan_arachni__".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->tool = "arachni";
 $addscan->filter = "medium"; // $severity = 2;
 $severity = 2;
 
@@ -104,28 +104,37 @@ if($result)
 {
   $id_scan = $result->result_addscan_details->id_scan;
 
-  $getcodes = new type_getcodes();
-  $getcodes->id_folder_codes = $CONF_WEBISSUES_FOLDER_CODES;
-  $param = new SoapParam($addcode, 'tns:type_getcodes');
-  $results = $clientsoap->__call('getcodes', array('type_getcodes'=>$param));
+  $geturls = new type_geturls();
+  $geturls->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
+  $param = new SoapParam($addurl, 'tns:type_geturls');
+  $results = $clientsoap->__call('geturls', array('type_geturls'=>$param));
 	  
   if($results)
   {
-    if(isset($results->result_getcodes_details) && count($results->result_getcodes_details) > 1)
-	$results = $results->result_getcodes_details;
+    if(isset($results->result_geturls_details) && count($results->result_geturls_details) > 1)
+	$results = $results->result_geturls_details;
     
-    foreach($results as $resultcode)
+    foreach($results as $resulturl)
     {
-      $id_code = $resultcode->id_code;
-      $name = $resultcode->name;
-      $code = $resultcode->code;
+      $id_url = $resulturl->id_url;
+      $name = $resulturl->name;
+      $url = $resulturl->url;
       
-      $out = shell_exec("$CONF_DEPENDENCYCHECK_BIN --app temp --format XML --scan $code --out $code/dependency-check-report.xml"); 
-      $outputxml = file_get_contents("$code/dependency-check-report.xml");
-      $out = shell_exec("rm $code/dependency-check-report.xml");
+      echo "url arachni 1 = '$url'\n";
+      $url = chop($url);
+      echo "url arachni 2 = '$url'\n";
+      
+      $cmd = "$CONF_ARACHNI_BIN $url --report-save-path /tmp/arachni.afr";
+      echo "$cmd";
+      $out = shell_exec("$CONF_ARACHNI_BIN $url --report-save-path /tmp/arachni.afr"); 
+      $out = shell_exec("$CONF_ARACHNI_REPORT_BIN /tmp/arachni.afr --report=xml:outfile=/tmp/arachni.xml"); 
+      $outputxml = file_get_contents("/tmp/arachni.xml");
+      $out = shell_exec("rm /tmp/arachni.afr");
+      $out = shell_exec("rm /tmp/arachni.xml");
 	  
       if(!empty($outputxml))
       {
+      /*
 	$report = new SimpleXMLElement($outputxml);
 	if(isset($report->dependencies->dependency))
 	{
@@ -173,6 +182,9 @@ if($result)
 	    }
 	  }
 	}
+	*/
+	
+	echo "test";
       }
     }
 

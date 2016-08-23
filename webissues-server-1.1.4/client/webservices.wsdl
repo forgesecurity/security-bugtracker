@@ -36,6 +36,27 @@
 	<wsdl:message name="editcode_output">
 		<wsdl:part name="editcode_Response" element="tns:editcode_Response"/>
 	</wsdl:message>
+	
+	<wsdl:message name="addurl_input">
+		<wsdl:part name="addurl" element="tns:addurl"/>
+	</wsdl:message>
+	<wsdl:message name="addurl_output">
+		<wsdl:part name="addurl_Response" element="tns:addurl_Response"/>
+	</wsdl:message>
+	<wsdl:message name="geturls_input">
+		<wsdl:part name="geturls" element="tns:geturls"/>
+	</wsdl:message>
+	<wsdl:message name="geturls_output">
+		<wsdl:part name="geturls_Response" element="tns:geturls_Response"/>
+	</wsdl:message>
+	<wsdl:message name="editurl_input">
+		<wsdl:part name="editurl" element="tns:editurl"/>
+	</wsdl:message>
+	<wsdl:message name="editurl_output">
+		<wsdl:part name="editurl_Response" element="tns:editurl_Response"/>
+	</wsdl:message>
+	
+	
 	<wsdl:message name="addserver_input">
 		<wsdl:part name="addserver" element="tns:addserver"/>
 	</wsdl:message>
@@ -165,6 +186,29 @@
 			<wsdl:input message="tns:getcodes_input"/>
 			<wsdl:output message="tns:getcodes_output"/>
 		</wsdl:operation>
+		
+		
+		
+		<wsdl:operation name="addurl">
+			<wsdl:documentation>WebService for addurl
+			</wsdl:documentation>
+			<wsdl:input message="tns:addurl_input"/>
+			<wsdl:output message="tns:addurl_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="editurl">
+			<wsdl:documentation>WebService for editurl
+			</wsdl:documentation>
+			<wsdl:input message="tns:editurl_input"/>
+			<wsdl:output message="tns:editurl_output"/>
+		</wsdl:operation>
+		<wsdl:operation name="geturls">
+			<wsdl:documentation>WebService for geturls
+			</wsdl:documentation>
+			<wsdl:input message="tns:geturls_input"/>
+			<wsdl:output message="tns:geturls_output"/>
+		</wsdl:operation>
+		
+		
 		<wsdl:operation name="editserver">
 			<wsdl:documentation>WebService for editserver
 			</wsdl:documentation>
@@ -309,6 +353,38 @@
 				<soapbind:body use="literal"/>
 			</wsdl:output>
 		</wsdl:operation>
+		
+		
+		
+		<wsdl:operation name="addurl">
+			<soapbind:operation soapAction="addurl" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="editurl">
+			<soapbind:operation soapAction="editurl" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="geturls">
+			<soapbind:operation soapAction="geturls" style="document"/>
+			<wsdl:input>
+				<soapbind:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soapbind:body use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+		
+		
 		<wsdl:operation name="addserver">
 			<soapbind:operation soapAction="addserver" style="document"/>
 			<wsdl:input>
