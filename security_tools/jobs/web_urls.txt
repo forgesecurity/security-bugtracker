@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 http://test/
+=======
+http://10.0.2.15:8080/webissues-server-1.1.4/client/index.php
+>>>>>>> d6e8f1494f1bb4f1d6598c80c7277a65e9c752b0
