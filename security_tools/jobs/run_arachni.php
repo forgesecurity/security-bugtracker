@@ -1,6 +1,5 @@
 <?php
 /**************************************************************************
-<<<<<<< HEAD
  * Security Plugin Copyright (C) 2015 Eric Therond
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,29 +15,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
-=======
-* Security Plugin Copyright (C) 2015 Eric Therond
-*
-* This program is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program.  If not, see <http://www.gnu.org/licenses/>.
-**************************************************************************/
->>>>>>> d6e8f1494f1bb4f1d6598c80c7277a65e9c752b0
 
 include( 'run_arachni.conf.php' ); 
 
 ini_set('default_socket_timeout', 600);
 ini_set('soap.wsdl_cache_enabled', 0);
-<<<<<<< HEAD
 
 class type_addurl
 {
@@ -78,47 +59,6 @@ class type_geturls
 	public $id_folder_web;
 }
 
-=======
-	
-class type_addurl
-{
-  public $id_folder_web;
-  public $name;
-  public $description;
-  public $url;
-}
-	
-class type_addscan
-{
-  public $id_folder_scans;
-  public $name;
-  public $description;
-  public $tool;
-  public $filter;
-}
-	
-class type_finishscan
-{
-  public $id_scan;
-}
-	
-class type_addissue
-{
-  public $id_folder_bugs;
-  public $name;
-  public $description;
-  public $assigned;
-  public $state;
-  public $severity;
-  public $version;
-}
-	
-class type_geturls
-{
-  public $id_folder_web;
-}
-	
->>>>>>> d6e8f1494f1bb4f1d6598c80c7277a65e9c752b0
 $credentials = array('login' => $CONF_WEBISSUES_ARACHNI_LOGIN, 'password' => $CONF_WEBISSUES_ARACHNI_PASSWORD);
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 
@@ -128,7 +68,6 @@ $fp1 = fopen("web_names.txt", "r");
 $fp2 = fopen("web_urls.txt", "r");
 if ($fp1 && $fp2)
 {
-<<<<<<< HEAD
 	while (!feof($fp1) && !feof($fp2))
 	{
 		$name = fgets($fp1);
@@ -145,24 +84,6 @@ if ($fp1 && $fp2)
 			$result = $clientsoap->__call('addurl', array('type_addurl'=>$param));
 		}
 	}
-=======
-  while (!feof($fp1) && !feof($fp2))
-  {
-    $name = fgets($fp1);
-    $url = fgets($fp2);
-
-    $addurl->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
-    $addurl->name = $name;
-    $addurl->description = $name;
-    $addurl->url = $url;
-		  
-    if(!empty($url))
-    { 
-      $param = new SoapParam($addurl, 'tns:type_addurl');
-      $result = $clientsoap->__call('addurl', array('type_addurl'=>$param));
-    }
-  }
->>>>>>> d6e8f1494f1bb4f1d6598c80c7277a65e9c752b0
 }
 
 fclose($fp1);
@@ -181,7 +102,6 @@ $result = $clientsoap->__call('addscan', array('type_addscan'=>$param));
 
 if($result)
 {
-<<<<<<< HEAD
 	$id_scan = $result->result_addscan_details->id_scan;
 
 	$geturls = new type_geturls();
@@ -260,100 +180,6 @@ if($result)
 		$param = new SoapParam($finishscan, 'tns:finishscan');
 		$result = $clientsoap->__call('finishscan',array('finishscan'=>$param));
 	}
-=======
-  $id_scan = $result->result_addscan_details->id_scan;
-
-  $geturls = new type_geturls();
-  $geturls->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
-  $param = new SoapParam($addurl, 'tns:type_geturls');
-  $results = $clientsoap->__call('geturls', array('type_geturls'=>$param));
-	  
-  if($results)
-  {
-    if(isset($results->result_geturls_details) && count($results->result_geturls_details) > 1)
-	$results = $results->result_geturls_details;
-    
-    foreach($results as $resulturl)
-    {
-      $id_url = $resulturl->id_url;
-      $name = $resulturl->name;
-      $url = $resulturl->url;
-      
-      echo "url arachni 1 = '$url'\n";
-      $url = chop($url);
-      echo "url arachni 2 = '$url'\n";
-      
-      $cmd = "$CONF_ARACHNI_BIN $url --report-save-path /tmp/arachni.afr";
-      echo "$cmd";
-      $out = shell_exec("$CONF_ARACHNI_BIN $url --report-save-path /tmp/arachni.afr"); 
-      $out = shell_exec("$CONF_ARACHNI_REPORT_BIN /tmp/arachni.afr --report=xml:outfile=/tmp/arachni.xml"); 
-      $outputxml = file_get_contents("/tmp/arachni.xml");
-      $out = shell_exec("rm /tmp/arachni.afr");
-      $out = shell_exec("rm /tmp/arachni.xml");
-	  
-      if(!empty($outputxml))
-      {
-      /*
-	$report = new SimpleXMLElement($outputxml);
-	if(isset($report->dependencies->dependency))
-	{
-	  foreach ($report->dependencies->dependency as $dependency) 
-	  {
-	    if(isset($dependency->fileName))
-	    {
-	      if(isset($dependency->vulnerabilities))
-	      {
-		$lastthreat = 0;
-		$description = "";
-		foreach($dependency->vulnerabilities->vulnerability as $vulnerability)
-		{
-		  switch($vulnerability->severity)
-		  {
-		    case 'Log':$threat = 1;break;
-		    case 'Low':$threat = 1;break;
-		    case 'Medium':$threat = 2;break;
-		    case 'High':$threat = 3;break;
-		    default:$threat = 1;break; 
-		  }
-				    
-		  if($threat > $lastthreat)
-		    $lastthreat = $threat;
-				    
-		  if($threat >= $severity)
-		    $description = $vulnerability->name."\n".$vulnerability->description."\n\n";
-		}
-				    
-		if($lastthreat >= $severity)
-		{
-		  $description = "vulnerable target : $code\n\n".$description;
-		  $addissue = new type_addissue();
-		  $addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
-		  $addissue->name = "known vulnerabilities in ".$dependency->fileName;
-		  $addissue->description = $description;
-		  $addissue->assigned = "";
-		  $addissue->state = "Actif";
-		  $addissue->severity = $lastthreat;
-				    
-		  $param = new SoapParam($addissue, 'tns:addissue');
-		  $result = $clientsoap->__call('addissue',array('addissue'=>$param));
-		}
-	      }
-	    }
-	  }
-	}
-	*/
-	
-	echo "test";
-      }
-    }
-
-    $finishscan = new type_finishscan();
-    $finishscan->id_scan = $id_scan;
-		  
-    $param = new SoapParam($finishscan, 'tns:finishscan');
-    $result = $clientsoap->__call('finishscan',array('finishscan'=>$param));
-  }
->>>>>>> d6e8f1494f1bb4f1d6598c80c7277a65e9c752b0
 }
 
 ?>
