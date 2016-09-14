@@ -91,6 +91,11 @@ class webservice_server
 				$id_type = $CONF_ID_TYPE_FOLDER_CODES;
 				$id_attribute = $CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH;
 			}
+			else if($type == "web")
+			{
+				$id_type = $CONF_ID_TYPE_FOLDER_WEB;
+				$id_attribute = $CONF_ID_ATTRIBUTE_FOLDER_WEB_URL;
+			}
 
 			$folderscan = $projectManager->getFolder( $req["id_folder_scans"] );
 			$project = $projectManager->getProject( $folderscan[ 'project_id' ] );
@@ -343,6 +348,11 @@ class webservice_server
 		return $this->common_scan($req, $targets);
 	}
 
+	function run_arachni($req, $targets)
+	{
+		return $this->common_scan($req, $targets);
+	}
+
 	function common_scan($req, $targets)
 	{
 		$issueId = 0;
@@ -409,8 +419,9 @@ class webservice_server
 					$targets = $this->find_targets($req, "static");
 					$issueId = $this->run_dependencycheck($req, $targets);
 					break;
-				case "sensorlabs": 
-					$targets = $this->find_targets($req, "static");
+				case "arachni": 
+					$targets = $this->find_targets($req, "web");
+					$issueId = $this->run_arachni($req, $targets);
 					//$this->run_sensorlabs();
 					break;
 				case "openscat": 
@@ -461,6 +472,16 @@ class webservice_server
 
 	}
 
+	function deleteurl($req){
+
+		$req = (array) $req;
+		$req["id_issue"] = $req["id_url"];
+		$tab = $this->deleteissue($req);
+		return $tab;
+
+	}
+
+
 	function deleteissue($req){
 
 		$result = false;
@@ -489,6 +510,193 @@ class webservice_server
 
 		return $tab;
 	}
+
+
+	function addurl($req){
+
+		$result = false;
+		$req = (array) $req;
+		$issueId = 0;
+
+		if($this->authws())
+		{ 
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+			$typeManager = new System_Api_TypeManager();
+
+			try {
+
+
+				$this->logp( "url = ".$req["url"] );
+				//if(filter_var($req["url"], FILTER_VALIDATE_URL))
+				//{
+				$this->logp( "FILTER_VALIDATE_URL url = ".$req["url"] );
+				$folder = $projectManager->getFolder( $req["id_folder_web"] );
+
+				$duplicate = false;
+				$issues = $issueManager->getIssues($folder);
+				foreach ($issues as $issue) {
+					if($issue["issue_name"] == $req["name"]) 
+					{
+						$duplicate = true;
+						$req["id_url"] = $issue["issue_id"];
+						$res = $this->editurl($req);
+						if($res[0]["result"])
+							$issueId = $issue["issue_id"];
+
+						break;
+					}
+				}
+
+				if(!$duplicate)
+				{
+					$parser = new System_Api_Parser();
+					$parser->setProjectId( $folder[ 'project_id' ] );
+
+					include("securityplugin.conf.php");
+
+					$issueId = $issueManager->addIssue( $folder, $req["name"]);
+					$issue = $issueManager->getIssue( $issueId );
+					$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
+
+					$attributeurl = $typeManager->getAttributeTypeForIssue( $issue, $CONF_ID_ATTRIBUTE_FOLDER_WEB_URL );
+					$value = $parser->convertAttributeValue( $attributeurl[ 'attr_def' ], $req["url"] );
+					$issueManager->setValue( $issue, $attributeurl, $value );
+				}
+				//}
+
+			} catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		$tab = array(
+				array(
+					'id_url' => $issueId
+				     )
+			    );
+
+		return $tab;
+	}
+
+
+	function editurl($req){
+
+		$result = false;
+		$req = (array) $req;
+
+		if($this->authws())
+		{
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+			$typeManager = new System_Api_TypeManager();
+
+			try {
+
+				$this->logp( "url = ".$req["url"] );
+				//if(filter_var($req["url"], FILTER_VALIDATE_URL))
+				//{
+				$folder = $projectManager->getFolder( $req["id_folder_web"] );
+				$url = $issueManager->getIssue( $req["id_url"] );
+				$issueManager->moveIssue( $url, $folder );
+				$issueManager->renameIssue( $url, $req["name"] );
+				$desc = $issueManager->getDescription( $url );
+				$issueManager->editDescription( $desc, $req["description"], System_Const::TextWithMarkup );
+
+
+				$parser = new System_Api_Parser();
+				$parser->setProjectId( $folder[ 'project_id' ] );
+
+				include("securityplugin.conf.php");
+
+				$attributeurl = $typeManager->getAttributeTypeForIssue( $url, $CONF_ID_ATTRIBUTE_FOLDER_WEB_URL );
+				$value = $parser->convertAttributeValue( $attributeurl[ 'attr_def' ], $req["url"] );
+				$issueManager->setValue( $url, $attributeurl, $value );
+
+				$result = true;
+				//}
+			} 
+			catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		$tab = array(
+				array(
+					'result' => $result
+				     )
+			    );
+
+		return $tab;
+	}
+
+
+	function geturls($req){
+
+		$result_array = array();
+		$req = (array) $req;
+
+		$arrtemp = array(
+				'id_url' => 0,
+				'name' => "",
+				'url' => ""
+				);
+
+		$urlsexist = false;
+
+		if($this->authws())
+		{
+			$issueManager = new System_Api_IssueManager();
+			$projectManager = new System_Api_ProjectManager();
+			$typeManager = new System_Api_TypeManager();
+
+			include("securityplugin.conf.php");
+
+			try 
+			{
+				$folder = $projectManager->getFolder( $req["id_folder_web"] );
+				$urls = $issueManager->getIssues( $folder );
+
+				foreach($urls as $url)
+				{
+					$url = $issueManager->getIssue( $url["issue_id"] );
+
+					$attr_value = "";
+					$attributes = $issueManager->getAttributeValuesForIssue($url);
+					foreach($attributes as $attribute)
+					{
+						if($attribute["attr_id"] == $CONF_ID_ATTRIBUTE_FOLDER_WEB_URL)
+						{
+							$attr_value = $attribute["attr_value"];
+							break;
+						}
+					}
+
+					$this->logp( "geturls = ".$attr_value );
+
+					$arr = array(
+							'id_url' => $url["issue_id"],
+							'name' => $url["issue_name"],
+							'url' => $attr_value
+						    );
+
+					array_push($result_array, $arr);
+					$urlsexist = true;
+				}
+			} 
+			catch ( System_Api_Error $ex ) {
+				$this->logp( $ex );
+			}
+		}
+
+		if(!$urlsexist)
+			array_push($result_array, $arrtemp);
+
+
+		return $result_array;
+	}
+
+
 
 	function addcode($req){
 
@@ -686,8 +894,11 @@ class webservice_server
 				$ips_ok = true;
 				$ips = explode(",", $req["ipsaddress"]);
 				foreach($ips as $ip)
-					if(!filter_var($ip, FILTER_VALIDATE_IP))
+					if(!filter_var($ip, FILTER_VALIDATE_IP) && !(filter_var($ip, FILTER_VALIDATE_URL)))
+					{
 						$ips_ok = false;
+						$this->logp( $ip." doesn't match the filter" );
+					}
 
 				if($ips_ok)
 				{
@@ -797,7 +1008,7 @@ class webservice_server
 				$ips_ok = true;
 				$ips = explode(",", $req["ipsaddress"]);
 				foreach($ips as $ip)
-					if(!filter_var($ip, FILTER_VALIDATE_IP))
+					if(!filter_var($ip, FILTER_VALIDATE_IP) && !(filter_var($ip, FILTER_VALIDATE_URL)))
 						$ips_ok = false;
 
 				if($ips_ok)
@@ -1134,6 +1345,7 @@ class webservice_server
 		$folderId2 = 0;
 		$folderId3 = 0;
 		$folderId4 = 0;
+		$folderId5 = 0;
 
 		if($this->authws())
 		{
@@ -1151,12 +1363,14 @@ class webservice_server
 				include( 'securityplugin.conf.php' );
 				$type_folder_servers = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_SERVERS );
 				$type_folder_codes = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_CODES );
+				$type_folder_web = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_WEB );
 				$type_folder_scans = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_SCANS );
 
 				$folderId1 = $projectManager->addFolder( $project, $type, "Bugs" );
 				$folderId2 = $projectManager->addFolder( $project, $type_folder_servers, "Servers" );
 				$folderId3 = $projectManager->addFolder( $project, $type_folder_codes, "Codes" );
-				$folderId4 = $projectManager->addFolder( $project, $type_folder_scans, "Scans" );
+				$folderId4 = $projectManager->addFolder( $project, $type_folder_web, "Web" );
+				$folderId5 = $projectManager->addFolder( $project, $type_folder_scans, "Scans" );
 
 			} catch ( System_Api_Error $ex ) {
 				$this->logp( $ex );
@@ -1169,7 +1383,8 @@ class webservice_server
 					'id_folder_bugs' => $folderId1,
 					'id_folder_servers' => $folderId2,
 					'id_folder_codes' => $folderId3,
-					'id_folder_scans' => $folderId4
+					'id_folder_web' => $folderId4,
+					'id_folder_scans' => $folderId5
 				     )
 			    );
 

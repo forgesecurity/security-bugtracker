@@ -73,10 +73,12 @@ class Client_SecurityPlugin extends System_Web_Component
 						$id_type_folder_servers = $typeManager->addIssueType( "Servers" );
 						$id_type_folder_codes = $typeManager->addIssueType( "Codes" );
 						$id_type_folder_scans = $typeManager->addIssueType( "Scans" );
+						$id_type_folder_web = $typeManager->addIssueType( "Web" );
 
 						$type_folder_servers = $typeManager->getIssueType($id_type_folder_servers);
 						$type_folder_codes = $typeManager->getIssueType($id_type_folder_codes);
 						$type_folder_scans = $typeManager->getIssueType($id_type_folder_scans);
+						$type_folder_web = $typeManager->getIssueType($id_type_folder_web);
 
 
 
@@ -196,10 +198,44 @@ class Client_SecurityPlugin extends System_Web_Component
 
 
 
+
+
+
+						// **************************** FOLDER WEB² ************************************** 
+						$info1 = new System_Api_DefinitionInfo();
+						$info1->setType( 'TEXT' );
+						$info1->setMetadata( 'multi-line', 0 );
+						$info1->setMetadata( 'min-length', 1 );
+						$info1->setMetadata( 'max-length', 150 );
+						$info1->setMetadata( 'required', 0 );
+						$info1->setMetadata( 'default', "" );
+
+						$id_attribute_folder_web_url = $typeManager->addAttributeType( $type_folder_web, "url", $info1->toString() );
+
+						$attributes_web = $typeManager->getAttributeTypesForIssueType( $type_folder_web );
+						foreach ( $attributes_web as $attribute )
+							$columns[ System_Api_Column::UserDefined + $attribute[ 'attr_id' ] ] = $attribute[ 'attr_name' ];
+
+						$info = new System_Api_DefinitionInfo();
+						$info->setType( 'VIEW' );
+
+						$columns = array_keys( $columns );
+						$info->setMetadata( 'columns', "1,0,".implode( ',', $columns ) );
+						$info->setMetadata( 'sort-column', System_Api_Column::ID );
+
+						$viewManager = new System_Api_ViewManager();
+						try {
+							$viewManager->setViewSetting( $type_folder_web, 'default_view', $info->toString() );
+						} catch ( System_Api_Error $ex ) {
+							$this->form->getErrorHelper()->handleError( 'viewName', $ex );
+						}
+						// ********************************************************************************
+
+
 						// ************************** FOLDER SCANS **************************************
 						$info1 = new System_Api_DefinitionInfo();
 						$info1->setType( 'ENUM' );
-						$info1->setMetadata( 'items', array('openvas', 'dependency-check', 'openscat') );
+						$info1->setMetadata( 'items', array('openvas', 'dependency-check', 'arachni') );
 						$info1->setMetadata( 'editable', 0 );
 						$info1->setMetadata( 'multi-select', 0 );
 						$info1->setMetadata( 'min-length', 1 );
@@ -301,6 +337,7 @@ class Client_SecurityPlugin extends System_Web_Component
 						fputs($fp,"\$CONF_OPENVAS_WS_LOGIN = \"$openvas_ws_login\";\n");
 						fputs($fp,"\$CONF_OPENVAS_WS_PASSWORD = \"$openvas_ws_password\";\n");
 						fputs($fp,"\$CONF_OPENVAS_WS_ENDPOINT = \"$openvas_ws_endpoint\";\n");
+						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_WEB_URL = $id_attribute_folder_web_url;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH = $id_attribute_folder_codes_path;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_USE = $id_attribute_folder_servers_use;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS = $id_attribute_folder_servers_ipsaddress;\n");
@@ -315,6 +352,7 @@ class Client_SecurityPlugin extends System_Web_Component
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_BUGS = $id_type_folder_bugs;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_SERVERS = $id_type_folder_servers;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_CODES = $id_type_folder_codes;\n");
+						fputs($fp,"\$CONF_ID_TYPE_FOLDER_WEB = $id_type_folder_web;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_SCANS = $id_type_folder_scans;\n\n");
 						fputs($fp,"?>");
 						fclose($fp);
@@ -327,7 +365,9 @@ class Client_SecurityPlugin extends System_Web_Component
 
 			$type_folder_servers = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_SERVERS );
 			$type_folder_codes = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_CODES );
+			$type_folder_web = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_WEB );
 			$type_folder_scans = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_SCANS );
+			$type_folder_bugs = $typeManager->getIssueType( $CONF_ID_TYPE_FOLDER_BUGS );
 
 			$folders = $projectManager->getFoldersByIssueType( $type_folder_servers );
 			foreach ( $folders as $folder )
@@ -358,7 +398,38 @@ class Client_SecurityPlugin extends System_Web_Component
 				$projectManager->deleteFolder( $folder );
 			}
 
+
+			$folders = $projectManager->getFoldersByIssueType( $type_folder_web );
+			foreach ( $folders as $folder )
+			{
+				$issues = $issueManager->getIssues( $folder );
+				foreach ( $issues as $issue )
+				{
+					$desc = $issueManager->getDescription( $issue );
+					$issueManager->deleteIssue( $issue );
+					$issueManager->deleteDescription( $descr );
+				}
+
+				$projectManager->deleteFolder( $folder );
+			}
+
+
 			$folders = $projectManager->getFoldersByIssueType( $type_folder_scans );
+			foreach ( $folders as $folder )
+			{
+				$issues = $issueManager->getIssues( $folder );
+				foreach ( $issues as $issue )
+				{
+					$desc = $issueManager->getDescription( $issue );
+					$issueManager->deleteIssue( $issue );
+					$issueManager->deleteDescription( $descr );
+				}
+				// 	      
+				$projectManager->deleteFolder( $folder );
+			}
+
+
+			$folders = $projectManager->getFoldersByIssueType( $type_folder_bugs );
 			foreach ( $folders as $folder )
 			{
 				$issues = $issueManager->getIssues( $folder );
@@ -380,12 +451,21 @@ class Client_SecurityPlugin extends System_Web_Component
 			foreach ( $attributes_codes as $attribute )
 				$typeManager->deleteAttributeType( $attribute );
 
+			$attributes_web = $typeManager->getAttributeTypesForIssueType( $type_folder_web );
+			foreach ( $attributes_web as $attribute )
+				$typeManager->deleteAttributeType( $attribute );
+
 			$attributes_scans = $typeManager->getAttributeTypesForIssueType( $type_folder_scans );
 			foreach ( $attributes_scans as $attribute )
 				$typeManager->deleteAttributeType( $attribute );
 
+			$attributes_bugs = $typeManager->getAttributeTypesForIssueType( $type_folder_bugs );
+			foreach ( $attributes_bugs as $attribute )
+				$typeManager->deleteAttributeType( $attribute );
+
 			$typeManager->deleteIssueType( $type_folder_servers, System_Api_TypeManager::ForceDelete );
 			$typeManager->deleteIssueType( $type_folder_codes, System_Api_TypeManager::ForceDelete );
+			$typeManager->deleteIssueType( $type_folder_web, System_Api_TypeManager::ForceDelete );
 			$typeManager->deleteIssueType( $type_folder_scans, System_Api_TypeManager::ForceDelete );
 		}
 

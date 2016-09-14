@@ -124,6 +124,93 @@
 	
 	
 	
+	<xsd:element name="addurl" type="t:type_addurl"/>
+	
+	<xsd:complexType name="type_addurl">
+		<xsd:sequence>
+			<xsd:element name="id_folder_web" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="url" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="addurl_Response" type="t:type_addurl_Response"/>
+	
+	<xsd:complexType name="type_addurl_Response">
+		<xsd:sequence>
+			<xsd:element name="result_addurl_details" type="t:result_addurl_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_addurl_details">
+		<xsd:sequence>
+			<xsd:element name="id_url" type="xsd:int" nillable="false"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	
+	<xsd:element name="geturls" type="t:type_geturls"/>
+	
+	<xsd:complexType name="type_geturls">
+		<xsd:sequence>
+			<xsd:element name="id_folder_web" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="geturls_Response" type="t:type_geturls_Response"/>
+	
+	<xsd:complexType name="type_geturls_Response">
+		<xsd:sequence>
+			<xsd:element name="result_geturls_details" type="t:result_geturls_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:complexType name="result_geturls_details">
+		<xsd:sequence>
+			<xsd:element name="id_url" type="xsd:int" nillable="false"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="url" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	<xsd:element name="editurl" type="t:type_editurl"/>
+	
+	<xsd:complexType name="type_editurl">
+		<xsd:sequence>
+			<xsd:element name="id_url" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="id_folder_web" type="xsd:int" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="name" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="description" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="url" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+
+	<xsd:element name="editurl_Response" type="t:type_editurl_Response"/>
+	
+	<xsd:complexType name="type_editurl_Response">
+		<xsd:sequence>
+			<xsd:element name="result_details" type="t:result_details" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+	
+	
+	
+	
 	<xsd:element name="addserver" type="t:type_addserver"/>
 	
 	<xsd:complexType name="type_addserver">
@@ -466,6 +553,7 @@
 			<xsd:element name="id_folder_bugs" type="xsd:int" nillable="false"/>
 			<xsd:element name="id_folder_servers" type="xsd:int" nillable="false"/>
 			<xsd:element name="id_folder_codes" type="xsd:int" nillable="false"/>
+			<xsd:element name="id_folder_web" type="xsd:int" nillable="false"/>
 			<xsd:element name="id_folder_scans" type="xsd:int" nillable="false"/>
 		</xsd:sequence>
 	</xsd:complexType>
