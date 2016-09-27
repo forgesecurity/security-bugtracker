@@ -353,6 +353,11 @@ class webservice_server
 	  return $this->common_scan($req, $targets);
 	}
 	
+	function run_sslscan($req, $targets)
+	{
+	  return $this->common_scan($req, $targets);
+	}
+	
 	function common_scan($req, $targets)
 	{
 	  $issueId = 0;
@@ -422,7 +427,10 @@ class webservice_server
 		case "arachni": 
 		  $targets = $this->find_targets($req, "web");
 		  $issueId = $this->run_arachni($req, $targets);
-		  //$this->run_sensorlabs();
+		  break;
+		case "sslscan": 
+		  $targets = $this->find_targets($req, "web");
+		  $issueId = $this->run_sslscan($req, $targets);
 		  break;
 		case "openscat": 
 		  $targets = $this->find_targets($req, "static");
