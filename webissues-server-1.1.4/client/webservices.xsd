@@ -307,6 +307,8 @@
 			<xsd:element name="state" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="severity" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="version" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="cve" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="cwe" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -415,6 +417,8 @@
 			<xsd:element name="severity" type="xsd:string" nillable="false" minOccurs="1" maxOccurs="1"/>
 			<xsd:element name="version" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
 			<xsd:element name="target" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="cve" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="cwe" type="xsd:string" nillable="false" minOccurs="0" maxOccurs="1"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	

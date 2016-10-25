@@ -95,6 +95,8 @@ class Client_SecurityPlugin extends System_Web_Component
 						$info1->setMetadata( 'default', "" );
 
 						$id_attribute_folder_bugs_target = $typeManager->addAttributeType( $type_folder_bugs, "target", $info1->toString() );
+						$id_attribute_folder_bugs_cve = $typeManager->addAttributeType( $type_folder_bugs, "cve", $info1->toString() );
+						$id_attribute_folder_bugs_cwe = $typeManager->addAttributeType( $type_folder_bugs, "cwe", $info1->toString() );
 						/*
 						   $attributes_bugs = $typeManager->getAttributeTypesForIssueType( $type_folder_bugs );
 						   foreach ( $attributes_bugs as $attribute )
@@ -235,7 +237,7 @@ class Client_SecurityPlugin extends System_Web_Component
 						// ************************** FOLDER SCANS **************************************
 						$info1 = new System_Api_DefinitionInfo();
 						$info1->setType( 'ENUM' );
-						$info1->setMetadata( 'items', array('openvas', 'dependency-check', 'arachni') );
+						$info1->setMetadata( 'items', array('openvas', 'dependency-check', 'arachni', 'sslscan') );
 						$info1->setMetadata( 'editable', 0 );
 						$info1->setMetadata( 'multi-select', 0 );
 						$info1->setMetadata( 'min-length', 1 );
@@ -349,6 +351,8 @@ class Client_SecurityPlugin extends System_Web_Component
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID = $id_attribute_folder_scans_reportid;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID = $id_attribute_folder_scans_alertid;\n");
 						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET = $id_attribute_folder_bugs_target;\n");
+						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_BUGS_CVE = $id_attribute_folder_bugs_cve;\n");
+						fputs($fp,"\$CONF_ID_ATTRIBUTE_FOLDER_BUGS_CWE = $id_attribute_folder_bugs_cwe;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_BUGS = $id_type_folder_bugs;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_SERVERS = $id_type_folder_servers;\n");
 						fputs($fp,"\$CONF_ID_TYPE_FOLDER_CODES = $id_type_folder_codes;\n");
