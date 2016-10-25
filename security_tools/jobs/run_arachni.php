@@ -124,7 +124,7 @@ if($result)
 			$url = chop($url);
 			//echo "url arachni 2 = '$url'\n";
 
-			$cmd = "$CONF_ARACHNI_BIN $url --http-request-header=\"audit=DECLARIS-MFLKZEMFLKZEMLFKZE-20160917\" --http-cookie-string=\"".$CONF_COOKIES_TEST."\" --report-save-path /tmp/arachni.afr";
+			$cmd = "$CONF_ARACHNI_BIN $url --http-cookie-string=\"".$CONF_COOKIES_TEST."\" --http-cookie-string=\"".$CONF_COOKIES_TEST."\" --report-save-path /tmp/arachni.afr";
 			echo "$cmd";
 			$out = shell_exec("$cmd"); 
 			$out = shell_exec("$CONF_ARACHNI_REPORT_BIN /tmp/arachni.afr --report=xml:outfile=/tmp/arachni.xml"); 
