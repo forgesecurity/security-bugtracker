@@ -292,9 +292,9 @@ if($result)
 						if(isset($details->{'heartbleed'}) && $details->{'heartbleed'})
 						{
 							// http://heartbleed.com/
-							// CVE-2014-0160, CVSS :  5.0 MEDIUM
+							// CVE-2014-0160, CVSS :  7.5 high
 
-							$threat = 2;    
+							$threat = 3;    
 							if($threat >= $severity)
 							{
 								$addissue = new type_addissue();
