@@ -87,7 +87,7 @@ the main additions to webissues are the use of webservices to run security test 
 </SOAP-ENV:Envelope>
 ```
 
-- view detected bug with the IHM of webissues: 
+- view detected bug with the HMI of webissues: 
 
 ![ScreenShot](https://raw.githubusercontent.com/forgesecurity/security-bugtracker/master/documentation/bugs.png)
 
