@@ -126,7 +126,7 @@ if($result)
 			$url = chop($url);
 
 			$outputjson = $out = shell_exec("$CONF_SSLSCAN_BIN $url");
-			//$outputjson = file_get_contents("test.json");
+			//$outputjson = file_get_contents("test.json"); // local
 
 			if(!empty($outputjson))
 			{
