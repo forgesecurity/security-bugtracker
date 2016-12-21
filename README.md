@@ -1,6 +1,12 @@
 Security-bugtracker is a tool based on :
 - webissues bug tracker : http://webissues.mimec.org/
-- openvas security scanner : http://www.openvas.org/
+- openvas  : http://www.openvas.org/
+- dirb : http://dirb.sourceforge.net/
+- nmap : https://nmap.org/
+- arachni : www.arachni-scanner.com
+- sslscan : https://github.com/ssllabs/ssllabs-scan
+- node security platform : https://nodesecurity.io/ 
+- sensiolabs security checker : https://security.sensiolabs.org/
 - dependency check : https://github.com/jeremylong/DependencyCheck
 
 the main additions to webissues are the use of webservices to run security test tools and track bugs.

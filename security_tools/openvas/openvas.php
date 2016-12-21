@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
+ 
+include( 'openvas.conf.php' ); 
 
 class type_finishscan
 {
@@ -54,16 +56,15 @@ if(!empty($alertscanid))
 	$getparamsfromalertid = new type_getparamsfromalertid();
 	$getparamsfromalertid->id_alert = $alertscanid;
 
-	include( 'openvas.conf.php' ); 
-
-	$credentials = array('login' => $CONF_WEBISSUES_OPENVAS_LOGIN, 'password' => $CONF_WEBISSUES_OPENVAS_PASSWORD);
+	$credentials = array('login' => $GLOBALS['CONF_WEBISSUES_OPENVAS_LOGIN'], 'password' => $GLOBALS['CONF_WEBISSUES_OPENVAS_PASSWORD']);
 
 	ini_set('default_socket_timeout', 10000);
 	ini_set('soap.wsdl_cache_enabled', 0);
-	$clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
+	$clientsoap = new SoapClient($GLOBALS['CONF_WEBISSUES_WS_ENDPOINT']."?wsdl", $credentials);
 	$param = new SoapParam($getparamsfromalertid, 'tns:getparamsfromalertid');
 	$result = $clientsoap->__call('getparamsfromalertid',array('getparamsfromalertid'=>$param));
-
+	
+					
 	$id_folder_bugs = $result->getparamsfromalertid_details->id_folder_bugs;
 	$id_target = $result->getparamsfromalertid_details->id_target;
 	$id_task = $result->getparamsfromalertid_details->id_task;
@@ -74,14 +75,14 @@ if(!empty($alertscanid))
 	/*
 	   /usr/local/bin/omp --get-report 532b4233-e3a2-4ec4-9d64-8855d8c5c70b --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393
 	 */
-	$outputxml = shell_exec ("".$CONF_OPENVAS_PATH_OMP." --get-report ".$id_report." --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP);      
-	$outputhtml = urlencode(shell_exec ("".$CONF_OPENVAS_PATH_OMP." --get-report ".$id_report." --format ".$CONF_OPENVAS_CONFIG_ID_HTML."  -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP));      
+	$outputxml = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." --get-report ".$id_report." --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']);      
+	$outputhtml = urlencode(shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." --get-report ".$id_report." --format ".$GLOBALS['CONF_OPENVAS_CONFIG_ID_HTML']."  -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']));      
 
 
-	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<delete_target target_id=\"".$id_target."\"/>'");
-	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<delete_alert alert_id=\"".$id_alert."\"/>'");
-	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<delete_task task_id=\"".$id_task."\"/>'");
-	$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<delete_report report_id=\"".$id_report."\"/>'");
+	$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<delete_target target_id=\"".$id_target."\"/>'");
+	$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<delete_alert alert_id=\"".$id_alert."\"/>'");
+	$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<delete_task task_id=\"".$id_task."\"/>'");
+	$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<delete_report report_id=\"".$id_report."\"/>'");
 
 	if(!empty($outputxml))
 	{
@@ -143,9 +144,7 @@ class openvas_webservice_server
 
 	function authws()
 	{
-		include('openvas.conf.php');
-
-		if(!($_SERVER['PHP_AUTH_USER'] == $CONF_WS_OPENVAS_LOGIN && $_SERVER['PHP_AUTH_PW'] == $CONF_WS_OPENVAS_PASSWORD))
+		if(!($_SERVER['PHP_AUTH_USER'] == $GLOBALS['CONF_WS_OPENVAS_LOGIN'] && $_SERVER['PHP_AUTH_PW'] == $GLOBALS['CONF_WS_OPENVAS_PASSWORD']))
 		{
 			$this->logp( "authentification failed ");
 			return false;
@@ -166,16 +165,14 @@ class openvas_webservice_server
 			$reportid = '';
 			$alertid = '';
 
-			include('openvas.conf.php');
-
 			$this->logp("run_openvas req targets = ".$req["target"]);
 
-			$configId = $CONF_OPENVAS_CONFIG_ID;
+			$configId = $GLOBALS['CONF_OPENVAS_CONFIG_ID'];
 			if(isset($req["id_config"]) && !empty($req["id_config"]))
 				$configId = $req["id_config"];
 			$this->logp("run_openvas configid = ".$configId);
 
-			$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<create_target><name>webissue".$issueId."</name><hosts>".$req["target"]."</hosts></create_target>'");
+			$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<create_target><name>webissue".$issueId."</name><hosts>".$req["target"]."</hosts></create_target>'");
 			preg_match('|<create_target_response id=\"([^"]*)\"|', $output, $matches);
 			if(isset($matches[1]))
 				$targetid = $matches[1];
@@ -184,7 +181,7 @@ class openvas_webservice_server
 
 			if(!empty($targetid))
 			{
-				$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<create_alert><name>webissue".$issueId."</name><condition>Always</condition><event>Task run status changed<data>Done<name>status</name></data></event><method>HTTP Get<data><name>URL</name>".$CONF_OPENVAS_ALERT_URL."?alertscanid=".$issueId."</data></method></create_alert>'");
+				$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<create_alert><name>webissue".$issueId."</name><condition>Always</condition><event>Task run status changed<data>Done<name>status</name></data></event><method>HTTP Get<data><name>URL</name>".$GLOBALS['CONF_OPENVAS_ALERT_URL']."?alertscanid=".$issueId."</data></method></create_alert>'");
 				preg_match('|<create_alert_response id=\"([^"]*)\"|', $output, $matches);
 				if(isset($matches[1]))
 					$alertid = $matches[1];
@@ -194,7 +191,7 @@ class openvas_webservice_server
 
 			if(!empty($alertid))
 			{
-				$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<create_task><name>webissue".$issueId."</name><comment>test</comment><config id=\"".$configId."\"/><target id=\"".$targetid."\"/><alert id=\"".$alertid."\"/></create_task>'");
+				$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<create_task><name>webissue".$issueId."</name><comment>test</comment><config id=\"".$configId."\"/><target id=\"".$targetid."\"/><alert id=\"".$alertid."\"/></create_task>'");
 				preg_match('|<create_task_response id=\"([^"]*)\"|', $output, $matches);
 				if(isset($matches[1]))
 					$taskid = $matches[1];
@@ -204,7 +201,7 @@ class openvas_webservice_server
 
 			if(!empty($taskid))
 			{
-				$output = shell_exec ("".$CONF_OPENVAS_PATH_OMP." -u ".$CONF_OPENVAS_ADMIN_LOGIN." -w ".$CONF_OPENVAS_ADMIN_PASSWORD." -p ".$CONF_OPENVAS_PORT_OMP." --xml='<start_task task_id=\"".$taskid."\"/>'");
+				$output = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']." --xml='<start_task task_id=\"".$taskid."\"/>'");
 				preg_match('@<report_id>(.*)</report_id>.*@i', $output, $matches);
 				if(isset($matches[1]))
 					$reportid = $matches[1];

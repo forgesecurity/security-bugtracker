@@ -74,13 +74,11 @@ class Client_SecurityPlugin extends System_Web_Component
 						$id_type_folder_codes = $typeManager->addIssueType( "Codes" );
 						$id_type_folder_scans = $typeManager->addIssueType( "Scans" );
 						$id_type_folder_web = $typeManager->addIssueType( "Web" );
-
+						
 						$type_folder_servers = $typeManager->getIssueType($id_type_folder_servers);
 						$type_folder_codes = $typeManager->getIssueType($id_type_folder_codes);
 						$type_folder_scans = $typeManager->getIssueType($id_type_folder_scans);
 						$type_folder_web = $typeManager->getIssueType($id_type_folder_web);
-
-
 
 						// ************************** FOLDER BUGS ***************************************** 
 						$type_folder_bugs = $typeManager->getIssueType($id_type_folder_bugs);
