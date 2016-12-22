@@ -23,13 +23,7 @@ require_once( '../system/bootstrap.inc.php' );
 
 include( 'securityplugin.conf.php' );
 include( 'securityplugin.lang.php' );
-
-class type_run_openvas
-{
-	public $target;
-	public $id_config;
-	public $id_scan;
-}
+include( 'securityplugin.common.php' );
 
 class webservice_server
 {
@@ -40,18 +34,11 @@ class webservice_server
 			$sessionManager->login( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 		} 
 		catch ( System_Api_Error $ex ) {
-			$this->logp( $ex );
+			Common_SecurityPlugin::logp( $ex );
 			return false;
 		}
 
 		return true;
-	}
-
-	function logp($ex)
-	{
-		$fp = fopen("webservices.log","a+");
-		fputs($fp, "log (".date('l jS \of F Y h:i:s A')."): $ex\n");
-		fclose($fp);
 	}
 
 	function adduser($req){
@@ -72,71 +59,12 @@ class webservice_server
                 return $tab;
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
 		else
             throw new SoapFault("Server", $GLOBALS['FAULT_AUTHENTICATION']);
-	}
-
-	function find_targets($req, $type)
-	{
-		try
-		{
-			$issueManager = new System_Api_IssueManager();
-			$projectManager = new System_Api_ProjectManager();
-
-			$id_type = $GLOBALS['CONF_ID_TYPE_FOLDER_SERVERS'];
-			$id_attribute = $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SERVERS_IPSADDRESS'];
-			if($type == "static")
-			{
-				$id_type = $GLOBALS['CONF_ID_TYPE_FOLDER_CODES'];
-				$id_attribute = $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_CODES_PATH'];
-			}
-			else if($type == "web")
-			{
-				$id_type = $GLOBALS['CONF_ID_TYPE_FOLDER_WEB'];
-				$id_attribute = $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_WEB_URL'];
-			}
-
-			$folderscan = $projectManager->getFolder( $req["id_folder_scans"] );
-			$project = $projectManager->getProject( $folderscan[ 'project_id' ] );
-			$id_folder_targets = 0;
-			$projects[0] = $project;
-			$folders = $projectManager->getFoldersForProjects( $projects );
-			foreach ( $folders as $folder ) 
-			{
-				if($folder["type_id"] == $id_type)
-				{
-					$id_folder_targets = $folder["folder_id"];
-					break;
-				}
-			}
-
-			if($id_folder_targets > 0)
-			{
-				$nbtargets = 0;
-				$targets = array();
-				$foldertargets = $projectManager->getFolder( $id_folder_targets );
-				$targets = $issueManager->getIssues($foldertargets);
-				foreach ( $targets as $idtarget => $target ) {
-					$attributes = $issueManager->getAttributeValuesForIssue( $target );
-					foreach ( $attributes as $idattribute => $attribute ) {
-						if($attribute["attr_id"] == $id_attribute)
-						{
-							$targets[$nbtargets] = $attribute["attr_value"];
-							$nbtargets ++;
-						}
-					}
-				}
-			}
-		} catch ( System_Api_Error $ex ) {
-			$this->logp( $ex );
-            throw new SoapFault("Server", "System_Api_Error $ex");
-		}
-
-		return $targets;
 	}
 
     // Gestion des droits bon choix de test
@@ -207,7 +135,7 @@ class webservice_server
                 
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -254,141 +182,12 @@ class webservice_server
 
 			}  
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
 		else
             throw new SoapFault("Server", $GLOBALS['FAULT_AUTHENTICATION']);
-	}
-
-	function run_openvas($req, $targets){
-
-		$issueId = $this->common_scan($req, $targets);
-
-		$issueManager = new System_Api_IssueManager();
-		$typeManager = new System_Api_TypeManager();
-
-		try
-		{
-			if($issueId)
-			{
-				$issue = $issueManager->getIssue( $issueId );
-				$parser = new System_Api_Parser();
-				$parser->setProjectId( $issue[ 'project_id' ] );
-
-				$run_openvas = new type_run_openvas();
-
-				for($i = 0; $i < count($targets); $i++)
-				{
-					if($i == 0)
-						$run_openvas->target = $targets[$i];
-					else
-						$run_openvas->target = $run_openvas->target.",".$targets[$i];
-				}
-
-				$run_openvas->id_scan = $issueId;
-				$run_openvas->id_config = $req["id_config_openvas"];
-
-				ini_set('default_socket_timeout', 600);
-				ini_set('soap.wsdl_cache_enabled', 0);
-				$credentials = array('login' => $GLOBALS['CONF_OPENVAS_WS_LOGIN'], 'password' => $GLOBALS['CONF_OPENVAS_WS_PASSWORD']);
-				$clientsoap = new SoapClient($GLOBALS['CONF_OPENVAS_WS_ENDPOINT']."?wsdl", $credentials);
-				$param = new SoapParam($run_openvas, 'tns:run_openvas');
-				$result = $clientsoap->__call('run_openvas',array('run_openvas'=>$param));
-
-				$id_target = $result->result_run_openvas_details->id_target;
-				$id_task = $result->result_run_openvas_details->id_task;
-				$id_report = $result->result_run_openvas_details->id_report;
-				$id_alert = $result->result_run_openvas_details->id_alert;      
-
-				if(!empty($id_target) && !empty($id_task) && !empty($id_report) && !empty($id_alert))
-				{
-					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_TARGETID']);
-					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_target );
-					$issueManager->setValue( $issue, $attribute, $value);
-					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_TASKID']);
-					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_task );
-					$issueManager->setValue( $issue, $attribute, $value );
-					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_REPORTID']);
-					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_report );
-					$issueManager->setValue( $issue, $attribute, $value );
-					$attribute = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_ALERTID']);
-					$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $id_alert );
-					$issueManager->setValue( $issue, $attribute, $value );
-
-					$attributetime = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME'] );
-					$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], "in progress" );
-					$issueManager->setValue( $issue, $attributetime, $valuetime );
-				}
-				else
-                    throw new SoapFault("Server", $GLOBALS['ERROR_OPENVAS']);
-			}
-                throw new SoapFault("Server", $GLOBALS['ZERO_TARGETS']);
-		}
-		catch ( System_Api_Error $ex ) {
-			$this->logp( $ex );
-		}
-		
-        return $issueId;
-	}
-
-	function run_dependencycheck($req, $targets)
-	{
-		return $this->common_scan($req, $targets);
-	}
-
-	function run_arachni($req, $targets)
-	{
-		return $this->common_scan($req, $targets);
-	}
-
-	function run_sslscan($req, $targets)
-	{
-		return $this->common_scan($req, $targets);
-	}
-
-	function common_scan($req, $targets)
-	{
-        $issueId = 0;
-		$issueManager = new System_Api_IssueManager();
-		$projectManager = new System_Api_ProjectManager();
-		$typeManager = new System_Api_TypeManager();
-
-		try {
-			if(empty($req["time"]))
-				$req["time"] = "stopped";
-
-			if(count($targets) > 0)
-			{
-				$folderscan = $projectManager->getFolder( $req["id_folder_scans"] );
-				$issueId = $issueManager->addIssue( $folderscan, $req["name"]);
-				$issue = $issueManager->getIssue( $issueId );
-				$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
-
-				$parser = new System_Api_Parser();
-				$parser->setProjectId( $folderscan[ 'project_id' ] );
-
-				$attributetime = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_TIME'] );
-				$valuetime = $parser->convertAttributeValue( $attributetime[ 'attr_def' ], $req["time"] );
-
-				$attributetool = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_TOOL'] );
-				$valuetool = $parser->convertAttributeValue( $attributetool[ 'attr_def' ], $req["tool"] );
-
-				$attributeseve = $typeManager->getAttributeTypeForIssue( $issue, $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_SCANS_SEVERITY'] );
-				$valueseve = $parser->convertAttributeValue( $attributeseve[ 'attr_def' ], $req["filter"] );
-
-				$issueManager->setValue( $issue, $attributetime, $valuetime );
-				$issueManager->setValue( $issue, $attributetool, $valuetool );
-				$issueManager->setValue( $issue, $attributeseve, $valueseve );
-			}
-		}
-		catch ( System_Api_Error $ex ) {
-			$this->logp( $ex );
-            throw new SoapFault("Server", "System_Api_Error $ex");
-		}
-		
-        return $issueId;
 	}
 
 	function addscan($req){
@@ -397,51 +196,53 @@ class webservice_server
 
 		if($this->authws())
 		{
-			$issueManager = new System_Api_IssueManager();
-			$projectManager = new System_Api_ProjectManager();
-			$typeManager = new System_Api_TypeManager();
-
-			switch($req["tool"])
-			{
-				case "openvas": 
-					$targets = $this->find_targets($req, "dynamic");
-					$issueId = $this->run_openvas($req, $targets);
-					break;
-				case "dependency-check": 
-					$targets = $this->find_targets($req, "static");
-					$issueId = $this->run_dependencycheck($req, $targets);
-					break;
-				case "arachni": 
-					$targets = $this->find_targets($req, "web");
-					$issueId = $this->run_arachni($req, $targets);
-					break;
-				case "sslscan": 
-					$targets = $this->find_targets($req, "web");
-					$issueId = $this->run_sslscan($req, $targets);
-					break;
-				case "openscat": 
-					$targets = $this->find_targets($req, "static");
-					//$this->run_openscat();
-					break;
-				case "sonar": 
-					$targets = $this->find_targets($req, "static");
-					//$this->run_sonar();
-					break;
-				default: 
-                    throw new SoapFault("Server", $GLOBALS['UNKNOWN_TOOL']);
-					break;
-			}
-			
-			$tab = array(
-				array(
-					'id_scan' => $issueId
-				     )
-			    );
-
-            return $tab;
+			if(!Common_SecurityPlugin::valid_tool($req["tool"]))
+                throw new SoapFault("Server", $GLOBALS['UNKNOWN_TOOL']);
+            
+			else if(!Common_SecurityPlugin::valid_severity($req["filter"]))
+                throw new SoapFault("Server", $GLOBALS['UNKNOWN_SEVERITY']);
+                
+            else
+            {
+                switch($req["tool"])
+                {
+                    case "openvas": 
+                        $targets = Common_SecurityPlugin::find_targets($req, "dynamic");
+                        $issueId = Common_SecurityPlugin::run_openvas($req, $targets);
+                        break;
+                    case "dependency-check": 
+                        $targets = Common_SecurityPlugin::find_targets($req, "static");
+                        $issueId = Common_SecurityPlugin::run_dependencycheck($req, $targets);
+                        break;
+                    case "arachni": 
+                        $targets = Common_SecurityPlugin::find_targets($req, "web");
+                        $issueId = Common_SecurityPlugin::run_arachni($req, $targets);
+                        break;
+                    case "sslscan": 
+                        $targets = Common_SecurityPlugin::find_targets($req, "web");
+                        $issueId = Common_SecurityPlugin::run_sslscan($req, $targets);
+                        break;
+                    case "openscat": 
+                        $targets = Common_SecurityPlugin::find_targets($req, "static");
+                        //Common_SecurityPlugin::run_openscat();
+                        break;
+                    case "sonar": 
+                        $targets = Common_SecurityPlugin::find_targets($req, "static");
+                        //Common_SecurityPlugin::run_sonar();
+                        break;
+                }
+            }
 		}
 		else
             throw new SoapFault("Server", $GLOBALS['FAULT_AUTHENTICATION']);
+    
+        $tab = array(
+            array(
+            'id_scan' => $issueId
+            )
+        );       
+        
+        return $tab;
 	}
 
 	function deletescan($req){
@@ -496,7 +297,7 @@ class webservice_server
                 return $tab;
 		
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -518,10 +319,10 @@ class webservice_server
 			try {
 
 
-				$this->logp( "url = ".$req["url"] );
+				Common_SecurityPlugin::logp( "url = ".$req["url"] );
 				//if(filter_var($req["url"], FILTER_VALIDATE_URL))
 				//{
-				$this->logp( "FILTER_VALIDATE_URL url = ".$req["url"] );
+				Common_SecurityPlugin::logp( "FILTER_VALIDATE_URL url = ".$req["url"] );
 				$folder = $projectManager->getFolder( $req["id_folder_web"] );
 
 				$duplicate = false;
@@ -566,7 +367,7 @@ class webservice_server
 				//}
 
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -587,7 +388,7 @@ class webservice_server
 
 			try {
 
-				$this->logp( "url = ".$req["url"] );
+				Common_SecurityPlugin::logp( "url = ".$req["url"] );
 				//if(filter_var($req["url"], FILTER_VALIDATE_URL))
 				//{
 				$folder = $projectManager->getFolder( $req["id_folder_web"] );
@@ -613,7 +414,7 @@ class webservice_server
                 return $tab;
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -652,7 +453,7 @@ class webservice_server
 						}
 					}
 
-					$this->logp( "geturls = ".$attr_value );
+					Common_SecurityPlugin::logp( "geturls = ".$attr_value );
 
 					$arr = array(
 							'id_url' => $url["issue_id"],
@@ -666,7 +467,7 @@ class webservice_server
 				}
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -739,7 +540,7 @@ class webservice_server
                     throw new SoapFault("Server", $GLOBALS['CODES_FILTER_INVALID']);
 
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -788,7 +589,7 @@ class webservice_server
                     throw new SoapFault("Server", $GLOBALS['CODES_FILTER_INVALID']);
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -839,7 +640,7 @@ class webservice_server
 				}
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -867,7 +668,7 @@ class webservice_server
 					if(!filter_var($ip, FILTER_VALIDATE_IP) && !(filter_var($ip, FILTER_VALIDATE_URL)))
 					{
 						$ips_ok = false;
-						$this->logp( $ip." doesn't match the filter" );
+						Common_SecurityPlugin::logp( $ip." doesn't match the filter" );
                         throw new SoapFault("Server", $GLOBALS['IPS_FILTER_INVALID']);
 					}
 
@@ -921,7 +722,7 @@ class webservice_server
 				}
 
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -959,7 +760,7 @@ class webservice_server
 				
 
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -1017,7 +818,7 @@ class webservice_server
                     throw new SoapFault("Server", $GLOBALS['IPS_FILTER_INVALID']);
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -1036,27 +837,68 @@ class webservice_server
 			$typeManager = new System_Api_TypeManager();
 			$userManager = new System_Api_UserManager();
 
-			try {
-				$folder = $projectManager->getFolder( $req["id_folder_bugs"] );
-
+			try 
+			{
+                $name_ws[$GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET']] = "target";
+                $name_ws[$GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_CVE']] = "cve";
+                $name_ws[$GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_CWE']] = "cwe";
 				$duplicate = false;
+                
+				$folder = $projectManager->getFolder( $req["id_folder_bugs"] );
+                $type = $typeManager->getIssueTypeForFolder( $folder );
+                $rows = $typeManager->getAttributeTypesForIssueType( $type );
 				$issues = $issueManager->getIssues($folder);
-				foreach ($issues as $issue) {
+				
+                $parser = new System_Api_Parser();
+                $parser->setProjectId( $folder[ 'project_id' ] );
+				
+				foreach ($issues as $issue) 
+				{
+                    $issue["type_id"] = $GLOBALS['CONF_ID_TYPE_FOLDER_BUGS'];
+	
+                    $attribute_target = null;
+                    $same_cve = false;
+                    $same_name = false;
+                    
+                    $issueduplicate = $issueManager->getIssue( $issue["issue_id"] );
+                    $rowsvalues = $issueManager->getAllAttributeValuesForIssue($issue, 1);
+                    
 					if($issue["issue_name"] == $req["name"]) 
-					{
-						$issueduplicate = $issueManager->getIssue( $issue["issue_id"] );
-						$type = $typeManager->getIssueTypeForFolder( $folder );
-						$rows = $typeManager->getAttributeTypesForIssueType( $type );
-
-						foreach ( $rows as $row ) 
-						{
-							$this->logp( "attr_value = ".$row[ 'attr_value' ]." == req_cve ".$req["cve"]." == req_cwe ".$req["cwe"]." == req_target ".$req["target"]." == attr_id =".$row[ 'attr_id' ]." == true id attribute == ".$GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET'] );
-							if( $row[ 'attr_value' ] != $req["target"] && $row[ 'attr_id' ] == $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET'])
-							{
-								$duplicate = true;
-								break 2;
-							}
-						}
+                        $same_name = true;
+                    
+                    foreach ( $rowsvalues as $attribute ) 
+                    {
+                        if( !empty($req["cve"]) && $req["cve"] != $GLOBALS['CONF_ISSUE_DEFAULT_CVENAME'] && $attribute[ 'attr_value' ] == $req["cve"] && $attribute[ 'attr_id' ] == $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_CVE'])
+                            $same_cve = true;
+                        
+                        if( $attribute[ 'attr_id' ] == $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET'])
+                            $attribute_target = $attribute;
+                    }
+                    
+                    if($same_name || $same_cve)
+                    {
+                        // target is already vulnerable, just ping
+                        if(strpos($attribute_target[ 'attr_value' ], $req["target"]) !== false)
+                        {
+                            // htmlentities
+                            $issueManager->addComment( $issueduplicate, "Target ".$req["target"]." is always vulnerable at the comment date after a new scan", System_Const::TextWithMarkup);
+                        }
+                        // target is new, add the target and ping
+                        else
+                        {
+                            $issueManager->addComment( $issueduplicate, "New target ".$req["target"]." vulnerable at the comment date after a new scan", System_Const::TextWithMarkup);
+                            
+                            if($attribute_target != null)
+                            {
+                                $attribute_target[ 'attr_value' ] = $attribute_target[ 'attr_value' ]."\n".$req["target"];
+                                $value = $parser->convertAttributeValue( $attribute_target[ 'attr_def' ], $attribute_target[ 'attr_value' ] );
+                                $issueManager->setValue( $issueduplicate, $attribute_target, $value );
+                            }
+                        }
+                        
+                        $issueId = $issue["issue_id"];
+                        $duplicate = true;
+                        break;
 					}
 				}
 
@@ -1065,16 +907,6 @@ class webservice_server
 					$issueId = $issueManager->addIssue( $folder, $req["name"]);
 					$issue = $issueManager->getIssue( $issueId );
 					$issueManager->addDescription( $issue, $req["description"], System_Const::TextWithMarkup );
-
-					$type = $typeManager->getIssueTypeForFolder( $folder );
-					$rows = $typeManager->getAttributeTypesForIssueType( $type );
-
-					$parser = new System_Api_Parser();
-					$parser->setProjectId( $folder[ 'project_id' ] );
-
-					$name_ws[$GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET']] = "target";
-					$name_ws[$GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_CVE']] = "cve";
-					$name_ws[$GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_CWE']] = "cwe";
 
 					if(empty($req["assigned"]))
 					{
@@ -1092,31 +924,35 @@ class webservice_server
 						}
 					}
 
-					foreach ( $rows as $attribute ) {
+					foreach ( $rows as $attribute ) 
+					{
 						$value = $parser->convertAttributeValue( $attribute[ 'attr_def' ], $req[$name_ws[$attribute["attr_id"]]] );
 						$issueManager->setValue( $issue, $attribute, $value );
 					}
-				
-                    $tab = array(
-                            array(
-                                'id_issue' => $issueId
-                                )
-                            );
-
-                    return $tab;
                 }
                 else
-                    throw new SoapFault("Server", $GLOBALS['DUPLICATE_OBJECT']);
-                
-			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+                    //throw new SoapFault("Server", $GLOBALS['DUPLICATE_OBJECT']);
+                    Common_SecurityPlugin::logp( $GLOBALS['DUPLICATE_OBJECT'] );
+			} 
+			catch ( System_Api_Error $ex ) 
+			{
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
 		else
             throw new SoapFault("Server", $GLOBALS['FAULT_AUTHENTICATION']);
+        
+        $tab = array(
+            array(
+            'id_issue' => $issueId
+            )
+        );
+
+        return $tab;
 	}
 
+    // verifier la duplication (cve, name, target) aussi lors de l'édition
 	function editissue($req){
 
 		$req = (array) $req;
@@ -1157,7 +993,7 @@ class webservice_server
 		
 			} 
 			catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -1195,7 +1031,7 @@ class webservice_server
                 return $tab;
                 
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -1226,7 +1062,7 @@ class webservice_server
                 return $tab;
 		
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -1274,7 +1110,7 @@ class webservice_server
                 return $tab;
 		
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -1307,7 +1143,7 @@ class webservice_server
                 return $tab;
 
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}
@@ -1357,7 +1193,7 @@ class webservice_server
                 return $tab;
 
 			} catch ( System_Api_Error $ex ) {
-				$this->logp( $ex );
+				Common_SecurityPlugin::logp( $ex );
                 throw new SoapFault("Server", "System_Api_Error $ex");
 			}
 		}

@@ -86,9 +86,9 @@ class Client_SecurityPlugin extends System_Web_Component
 
 						$info1 = new System_Api_DefinitionInfo();
 						$info1->setType( 'TEXT' );
-						$info1->setMetadata( 'multi-line', 0 );
+						$info1->setMetadata( 'multi-line', 1 );
 						$info1->setMetadata( 'min-length', 1 );
-						$info1->setMetadata( 'max-length', 40 );
+						$info1->setMetadata( 'max-length', 1000 );
 						$info1->setMetadata( 'required', 0 );
 						$info1->setMetadata( 'default', "" );
 
@@ -201,7 +201,7 @@ class Client_SecurityPlugin extends System_Web_Component
 
 
 
-						// **************************** FOLDER WEB² ************************************** 
+						// **************************** FOLDER WEB ************************************** 
 						$info1 = new System_Api_DefinitionInfo();
 						$info1->setType( 'TEXT' );
 						$info1->setMetadata( 'multi-line', 0 );
@@ -334,6 +334,8 @@ class Client_SecurityPlugin extends System_Web_Component
 						// *********************************************************************************
 						$fp = fopen("securityplugin.conf.php","w");
 						fputs($fp,"<?php\n\n");
+						fputs($fp,"\$CONF_ISSUE_DEFAULT_CVENAME = \"nocve\";\n");
+						fputs($fp,"\$CONF_ISSUE_DEFAULT_CWENAME = \"nocwe\";\n");
 						fputs($fp,"\$CONF_OPENVAS_WS_LOGIN = \"$openvas_ws_login\";\n");
 						fputs($fp,"\$CONF_OPENVAS_WS_PASSWORD = \"$openvas_ws_password\";\n");
 						fputs($fp,"\$CONF_OPENVAS_WS_ENDPOINT = \"$openvas_ws_endpoint\";\n");

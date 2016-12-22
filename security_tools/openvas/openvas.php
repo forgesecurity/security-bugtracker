@@ -17,6 +17,7 @@
  **************************************************************************/
  
 include( 'openvas.conf.php' ); 
+include( '../../securityplugin.conf.php' );
 
 class type_finishscan
 {
@@ -73,7 +74,7 @@ if(!empty($alertscanid))
 	$severity = $result->getparamsfromalertid_details->severity;
 
 	/*
-	   /usr/local/bin/omp --get-report 532b4233-e3a2-4ec4-9d64-8855d8c5c70b --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u admin -w 0825839c-0d3f-4417-a118-954a78e2553c -p 9393
+	   /usr/local/bin/omp --get-report 38229f40-5088-4edd-8fe2-70a04825e744 --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u admin -w 07da0873-747d-463f-960f-b7cec649d584 -p 9393
 	 */
 	$outputxml = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." --get-report ".$id_report." --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']);      
 	$outputhtml = urlencode(shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." --get-report ".$id_report." --format ".$GLOBALS['CONF_OPENVAS_CONFIG_ID_HTML']."  -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']));      
@@ -115,8 +116,12 @@ if(!empty($alertscanid))
 					$addissue->state = "Actif";
 					$addissue->severity = $threat;
 					$addissue->version = 1;
-					$addissue->target = $target;
-
+					$addissue->target = $result->host;
+                    $addissue->cve = $CONF_ISSUE_DEFAULT_CVENAME;
+					if(isset($result->cve) && !empty($result->cve) && $result->cve != "NOCVE")
+                        $addissue->cve = $result->cve;
+					$addissue->cwe = $CONF_ISSUE_DEFAULT_CWENAME;
+					
 					$param = new SoapParam($addissue, 'tns:addissue');
 					$result = $clientsoap->__call('addissue',array('addissue'=>$param));
 					sleep(1);
@@ -158,6 +163,7 @@ class openvas_webservice_server
 		if($this->authws())
 		{
 			$req = (array) $req;
+			//vérifier validiter
 			$issueId = $req["id_scan"];
 
 			$targetid = '';

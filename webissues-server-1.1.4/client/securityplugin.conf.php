@@ -1,5 +1,7 @@
 <?php
 
+$CONF_ISSUE_DEFAULT_CVENAME = "nocve";
+$CONF_ISSUE_DEFAULT_CWENAME = "nocwe";
 $CONF_OPENVAS_WS_LOGIN = "test";
 $CONF_OPENVAS_WS_PASSWORD = "test";
 $CONF_OPENVAS_WS_ENDPOINT = "http://localhost/security-bugtracker/webissues-server-1.1.4/client/security_tools/openvas/openvas.php";
