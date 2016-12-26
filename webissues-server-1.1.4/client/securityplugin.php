@@ -74,7 +74,7 @@ class Client_SecurityPlugin extends System_Web_Component
 						$id_type_folder_codes = $typeManager->addIssueType( "Codes" );
 						$id_type_folder_scans = $typeManager->addIssueType( "Scans" );
 						$id_type_folder_web = $typeManager->addIssueType( "Web" );
-						
+
 						$type_folder_servers = $typeManager->getIssueType($id_type_folder_servers);
 						$type_folder_codes = $typeManager->getIssueType($id_type_folder_codes);
 						$type_folder_scans = $typeManager->getIssueType($id_type_folder_scans);
@@ -334,6 +334,7 @@ class Client_SecurityPlugin extends System_Web_Component
 						// *********************************************************************************
 						$fp = fopen("securityplugin.conf.php","w");
 						fputs($fp,"<?php\n\n");
+						fputs($fp,"\$CONF_SERVER_IPS_EXPLODE = \",\";\n");
 						fputs($fp,"\$CONF_ISSUE_DEFAULT_CVENAME = \"nocve\";\n");
 						fputs($fp,"\$CONF_ISSUE_DEFAULT_CWENAME = \"nocwe\";\n");
 						fputs($fp,"\$CONF_OPENVAS_WS_LOGIN = \"$openvas_ws_login\";\n");
