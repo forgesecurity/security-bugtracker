@@ -43,6 +43,8 @@ class webservice_server
 
 	function adduser($req){
 
+		$req = (array) $req;
+		
 		if(!$this->authws())
 			throw new SoapFault("Server", $GLOBALS['FAULT_AUTHENTICATION']);
 
@@ -55,7 +57,6 @@ class webservice_server
 		if(!Common_SecurityPlugin::valid_name($req["password"]))
 			throw new SoapFault("Server", $GLOBALS['NAME_FILTER_INVALID']);
 
-		$req = (array) $req;
 		$userManager = new System_Api_UserManager();
 		try {
 			$id_user = $userManager->addUser( $req["login"], $req["username"], $req["password"], false );
@@ -248,6 +249,10 @@ class webservice_server
 			case "sslscan": 
 				$targets = Common_SecurityPlugin::find_targets($req, "web");
 				$issueId = Common_SecurityPlugin::run_sslscan($req, $targets);
+				break;
+			case "zap": 
+				$targets = Common_SecurityPlugin::find_targets($req, "web");
+				$issueId = Common_SecurityPlugin::run_zap($req, $targets);
 				break;
 			case "openscat": 
 				$targets = Common_SecurityPlugin::find_targets($req, "static");

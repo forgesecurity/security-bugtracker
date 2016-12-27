@@ -50,6 +50,11 @@ class Common_SecurityPlugin
 		return Common_SecurityPlugin::common_scan($req);
 	}
 
+	public static function run_zap($req, $targets)
+	{
+		return Common_SecurityPlugin::common_scan($req);
+	}
+
 	public static function run_sslscan($req, $targets)
 	{
 		return Common_SecurityPlugin::common_scan($req);
@@ -274,6 +279,7 @@ class Common_SecurityPlugin
 			case "dependency-check": break;
 			case "arachni": break;
 			case "sslscan": break;
+			case "zap": break;
 			case "openscat": break;
 			case "sonar": break;
 			default: return false;

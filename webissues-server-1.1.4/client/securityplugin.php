@@ -235,7 +235,7 @@ class Client_SecurityPlugin extends System_Web_Component
 						// ************************** FOLDER SCANS **************************************
 						$info1 = new System_Api_DefinitionInfo();
 						$info1->setType( 'ENUM' );
-						$info1->setMetadata( 'items', array('openvas', 'dependency-check', 'arachni', 'sslscan') );
+						$info1->setMetadata( 'items', array('openvas', 'dependency-check', 'arachni', 'sslscan', 'zap') );
 						$info1->setMetadata( 'editable', 0 );
 						$info1->setMetadata( 'multi-select', 0 );
 						$info1->setMetadata( 'min-length', 1 );

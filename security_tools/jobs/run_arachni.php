@@ -92,7 +92,7 @@ fclose($fp2);
 $addscan = new type_addscan();
 $addscan->id_folder_scans = (int) $CONF_WEBISSUES_FOLDER_SCANS;
 $addscan->name = "scan_arachni_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->description = "scan_arachni__".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->description = "scan_arachni_".$CONF_WEBISSUES_FOLDER_SCANS;
 $addscan->tool = "arachni";
 $addscan->filter = "medium"; // $severity = 2;
 $severity = 2;
