@@ -61,15 +61,15 @@ if(!empty($alertscanid))
 
 	try 
 	{
-        ini_set('default_socket_timeout', 10000);
-        ini_set('soap.wsdl_cache_enabled', 0);
-        $clientsoap = new SoapClient($GLOBALS['CONF_WEBISSUES_WS_ENDPOINT']."?wsdl", $credentials);
-        $param = new SoapParam($getparamsfromalertid, 'tns:getparamsfromalertid');
-        $result = $clientsoap->__call('getparamsfromalertid',array('getparamsfromalertid'=>$param));
-    } 
-    catch (SoapFault $e) {
-        logpp($e->getMessage());
-    } 
+		ini_set('default_socket_timeout', 10000);
+		ini_set('soap.wsdl_cache_enabled', 0);
+		$clientsoap = new SoapClient($GLOBALS['CONF_WEBISSUES_WS_ENDPOINT']."?wsdl", $credentials);
+		$param = new SoapParam($getparamsfromalertid, 'tns:getparamsfromalertid');
+		$result = $clientsoap->__call('getparamsfromalertid',array('getparamsfromalertid'=>$param));
+	} 
+	catch (SoapFault $e) {
+		logpp($e->getMessage());
+	} 
 
 	$id_folder_bugs = $result->getparamsfromalertid_details->id_folder_bugs;
 	$id_target = $result->getparamsfromalertid_details->id_target;
@@ -77,11 +77,11 @@ if(!empty($alertscanid))
 	$id_report = $result->getparamsfromalertid_details->id_report;
 	$id_alert = $result->getparamsfromalertid_details->id_alert;
 	$severity = $result->getparamsfromalertid_details->severity;
-	
+
 	/*
 	   /usr/local/bin/omp --get-report 38229f40-5088-4edd-8fe2-70a04825e744 --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u admin -w 07da0873-747d-463f-960f-b7cec649d584 -p 9393
 	 */
-	 
+
 	$outputxml = shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." --get-report ".$id_report." --format a994b278-1f62-11e1-96ac-406186ea4fc5 -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']);      
 	$outputhtml = urlencode(shell_exec ("".$GLOBALS['CONF_OPENVAS_PATH_OMP']." --get-report ".$id_report." --format ".$GLOBALS['CONF_OPENVAS_CONFIG_ID_HTML']."  -u ".$GLOBALS['CONF_OPENVAS_ADMIN_LOGIN']." -w ".$GLOBALS['CONF_OPENVAS_ADMIN_PASSWORD']." -p ".$GLOBALS['CONF_OPENVAS_PORT_OMP']));      
 
@@ -126,17 +126,17 @@ if(!empty($alertscanid))
 					if(isset($result->cve) && !empty($result->cve) && $result->cve != "NOCVE")
 						$addissue->cve = $result->cve;
 					$addissue->cwe = $CONF_ISSUE_DEFAULT_CWENAME;
-					
-                    try 
-                    {
-                        $param = new SoapParam($addissue, 'tns:addissue');
-                        $result = $clientsoap->__call('addissue',array('addissue'=>$param));
-                        sleep(1);
+
+					try 
+					{
+						$param = new SoapParam($addissue, 'tns:addissue');
+						$result = $clientsoap->__call('addissue',array('addissue'=>$param));
+						sleep(1);
 					} 
-                    catch (SoapFault $e) 
-                    {
-                        logpp($e->getMessage());
-                    } 
+					catch (SoapFault $e) 
+					{
+						logpp($e->getMessage());
+					} 
 				}
 			}
 		}
@@ -146,15 +146,15 @@ if(!empty($alertscanid))
 	$finishscan->id_scan = $alertscanid;
 	$finishscan->data_report = $outputhtml;
 
-    try 
-    {
-        $param = new SoapParam($finishscan, 'tns:finishscan');
-        $result = $clientsoap->__call('finishscan',array('finishscan'=>$param));
-    } 
-    catch (SoapFault $e) 
-    {
-        logpp($e->getMessage());
-    } 
+	try 
+	{
+		$param = new SoapParam($finishscan, 'tns:finishscan');
+		$result = $clientsoap->__call('finishscan',array('finishscan'=>$param));
+	} 
+	catch (SoapFault $e) 
+	{
+		logpp($e->getMessage());
+	} 
 }
 
 class openvas_webservice_server

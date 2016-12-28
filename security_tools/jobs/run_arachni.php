@@ -16,86 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
 
-include( 'run_arachni.conf.php' ); 
+include( 'common.php' ); 
 
-ini_set('default_socket_timeout', 600);
-ini_set('soap.wsdl_cache_enabled', 0);
-
-class type_addurl
-{
-	public $id_folder_web;
-	public $name;
-	public $description;
-	public $url;
-}
-
-class type_addscan
-{
-	public $id_folder_scans;
-	public $name;
-	public $description;
-	public $tool;
-	public $filter;
-}
-
-class type_finishscan
-{
-	public $id_scan;
-}
-
-class type_addissue
-{
-	public $id_folder_bugs;
-	public $name;
-	public $description;
-	public $assigned;
-	public $state;
-	public $severity;
-	public $version;
-}
-
-class type_geturls
-{
-	public $id_folder_web;
-}
+$CONF_COOKIES_TEST = "";
 
 $credentials = array('login' => $CONF_WEBISSUES_ARACHNI_LOGIN, 'password' => $CONF_WEBISSUES_ARACHNI_PASSWORD);
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 
-$addurl = new type_addurl();
-
-$fp1 = fopen("web_names.txt", "r");
-$fp2 = fopen("web_urls.txt", "r");
-if ($fp1 && $fp2)
-{
-	while (!feof($fp1) && !feof($fp2))
-	{
-		$name = fgets($fp1);
-		$url = fgets($fp2);
-
-		$addurl->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
-		$addurl->name = $name;
-		$addurl->description = $name;
-		$addurl->url = $url;
-
-		if(!empty($url))
-		{ 
-			$param = new SoapParam($addurl, 'tns:type_addurl');
-			$result = $clientsoap->__call('addurl', array('type_addurl'=>$param));
-		}
-	}
-}
-
-fclose($fp1);
-fclose($fp2);
+add_assets_urls();
 
 $addscan = new type_addscan();
 $addscan->id_folder_scans = (int) $CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->name = "scan_arachni_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->description = "scan_arachni_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->name = "scan_".rand()."_arachni_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->description = "scan_".rand()."_arachni_".$CONF_WEBISSUES_FOLDER_SCANS;
 $addscan->tool = "arachni";
-$addscan->filter = "medium"; // $severity = 2;
-$severity = 2;
+$addscan->filter = "medium"; 
 
 $param = new SoapParam($addscan, 'tns:type_addscan');
 $result = $clientsoap->__call('addscan', array('type_addscan'=>$param));
@@ -106,7 +41,7 @@ if($result)
 
 	$geturls = new type_geturls();
 	$geturls->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
-	$param = new SoapParam($addurl, 'tns:type_geturls');
+	$param = new SoapParam($geturls, 'tns:type_geturls');
 	$results = $clientsoap->__call('geturls', array('type_geturls'=>$param));
 
 	if($results)
@@ -153,7 +88,7 @@ if($result)
 									default:$threat = 1;break; 
 								}
 
-								if($threat >= $severity)
+								if($threat >= $GLOBAL_SEVERITY)
 								{
 									$addissue = new type_addissue();
 									$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;

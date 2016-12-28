@@ -16,86 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
 
-include( 'run_dependencycheck.conf.php' ); 
-
-ini_set('default_socket_timeout', 600);
-ini_set('soap.wsdl_cache_enabled', 0);
-
-class type_addcode
-{
-	public $id_folder_codes;
-	public $name;
-	public $description;
-	public $code;
-}
-
-class type_addscan
-{
-	public $id_folder_scans;
-	public $name;
-	public $description;
-	public $tool;
-	public $filter;
-}
-
-class type_finishscan
-{
-	public $id_scan;
-}
-
-class type_addissue
-{
-	public $id_folder_bugs;
-	public $name;
-	public $description;
-	public $assigned;
-	public $state;
-	public $severity;
-	public $version;
-}
-
-class type_getcodes
-{
-	public $id_folder_codes;
-}
+include( 'common.php' ); 
 
 $credentials = array('login' => $CONF_WEBISSUES_DCHECK_LOGIN, 'password' => $CONF_WEBISSUES_DCHECK_PASSWORD);
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 
-$addcode = new type_addcode();
-
-$fp1 = fopen("codes_names.txt", "r");
-$fp2 = fopen("codes_paths.txt", "r");
-if ($fp1 && $fp2)
-{
-	while (!feof($fp1) && !feof($fp2))
-	{
-		$name = fgets($fp1);
-		$code = fgets($fp2);
-
-		$addcode->id_folder_codes = $CONF_WEBISSUES_FOLDER_CODES;
-		$addcode->name = $name;
-		$addcode->description = $name;
-		$addcode->code = $code;
-
-		if(!empty($code))
-		{ 
-			$param = new SoapParam($addcode, 'tns:type_addcode');
-			$result = $clientsoap->__call('addcode', array('type_addcode'=>$param));
-		}
-	}
-}
-
-fclose($fp1);
-fclose($fp2);
+add_assets_codes();
 
 $addscan = new type_addscan();
 $addscan->id_folder_scans = (int) $CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->name = "scan_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->description = "scan_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->name = "scan_".rand()."_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->description = "scan_".rand()."_dependency-check_".$CONF_WEBISSUES_FOLDER_SCANS;
 $addscan->tool = "dependency-check";
-$addscan->filter = "medium"; // $severity = 2;
-$severity = 2;
+$addscan->filter = "medium";
 
 $param = new SoapParam($addscan, 'tns:type_addscan');
 $result = $clientsoap->__call('addscan', array('type_addscan'=>$param));
@@ -106,7 +39,7 @@ if($result)
 
 	$getcodes = new type_getcodes();
 	$getcodes->id_folder_codes = $CONF_WEBISSUES_FOLDER_CODES;
-	$param = new SoapParam($addcode, 'tns:type_getcodes');
+	$param = new SoapParam($getcodes, 'tns:type_getcodes');
 	$results = $clientsoap->__call('getcodes', array('type_getcodes'=>$param));
 
 	if($results)
@@ -151,11 +84,11 @@ if($result)
 									if($threat > $lastthreat)
 										$lastthreat = $threat;
 
-									if($threat >= $severity)
+									if($threat >= $GLOBAL_SEVERITY)
 										$description = $vulnerability->name."\n".$vulnerability->description."\n\n";
 								}
 
-								if($lastthreat >= $severity)
+								if($lastthreat >= $GLOBAL_SEVERITY)
 								{
 									$description = "vulnerable target : $code\n\n".$description;
 									$addissue = new type_addissue();

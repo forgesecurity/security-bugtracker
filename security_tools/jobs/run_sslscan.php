@@ -16,88 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  **************************************************************************/
 
-include( 'run_sslscan.conf.php' ); 
-
-ini_set('default_socket_timeout', 600);
-ini_set('soap.wsdl_cache_enabled', 0);
-
-class type_addurl
-{
-	public $id_folder_web;
-	public $name;
-	public $description;
-	public $url;
-}
-
-class type_addscan
-{
-	public $id_folder_scans;
-	public $name;
-	public $description;
-	public $tool;
-	public $filter;
-}
-
-class type_finishscan
-{
-	public $id_scan;
-}
-
-class type_addissue
-{
-	public $id_folder_bugs;
-	public $name;
-	public $description;
-	public $assigned;
-	public $state;
-	public $target;
-	public $cve;
-	public $cvss;
-	public $severity;
-	public $version;
-}
-
-class type_geturls
-{
-	public $id_folder_web;
-}
+include( 'common.php' ); 
 
 $credentials = array('login' => $CONF_WEBISSUES_SSLSCAN_LOGIN, 'password' => $CONF_WEBISSUES_SSLSCAN_PASSWORD);
 $clientsoap = new SoapClient($CONF_WEBISSUES_WS_ENDPOINT."?wsdl", $credentials);
 
-$addurl = new type_addurl();
-
-$fp1 = fopen("web_names.txt", "r");
-$fp2 = fopen("web_urls.txt", "r");
-if ($fp1 && $fp2)
-{
-	while (!feof($fp1) && !feof($fp2))
-	{
-		$name = fgets($fp1);
-		$url = fgets($fp2);
-
-		$addurl->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
-		$addurl->name = $name;
-		$addurl->description = $name;
-		$addurl->url = $url;
-
-		if(!empty($url))
-		{ 
-			$param = new SoapParam($addurl, 'tns:type_addurl');
-			$result = $clientsoap->__call('addurl', array('type_addurl'=>$param));
-		}
-	}
-}
-fclose($fp1);
-fclose($fp2);
+add_assets_urls();
 
 $addscan = new type_addscan();
 $addscan->id_folder_scans = (int) $CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->name = "scan_sslscan_".$CONF_WEBISSUES_FOLDER_SCANS;
-$addscan->description = "scan_sslscan__".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->name = "scan_".rand()."_sslscan_".$CONF_WEBISSUES_FOLDER_SCANS;
+$addscan->description = "scan_".rand()."_sslscan__".$CONF_WEBISSUES_FOLDER_SCANS;
 $addscan->tool = "sslscan";
 $addscan->filter = "medium";
-$severity = 2;
 
 $param = new SoapParam($addscan, 'tns:type_addscan');
 $result = $clientsoap->__call('addscan', array('type_addscan'=>$param));
@@ -110,7 +41,7 @@ if($result)
 
 	$geturls = new type_geturls();
 	$geturls->id_folder_web = $CONF_WEBISSUES_FOLDER_WEB;
-	$param = new SoapParam($addurl, 'tns:type_geturls');
+	$param = new SoapParam($geturls, 'tns:type_geturls');
 	$results = $clientsoap->__call('geturls', array('type_geturls'=>$param));
 
 	if($results)
@@ -125,7 +56,7 @@ if($result)
 			$url = $resulturl->url;
 			$url = chop($url);
 
-			$outputjson = $out = shell_exec("$CONF_SSLSCAN_BIN $url");
+			$outputjson = shell_exec("$CONF_SSLSCAN_BIN $url");
 			//$outputjson = file_get_contents("test.json"); // local
 
 			if(!empty($outputjson))
@@ -143,7 +74,7 @@ if($result)
 							// purely client side vulnerability : https://blog.qualys.com/ssllabs/2013/09/10/is-beast-still-a-threat
 							// CVE-2011-3389, CVSS : 4.3 MEDIUM
 							$threat = 2; // medium	    
-							if($threat >= $severity)
+							if($threat >= $GLOBAL_SEVERITY)
 							{
 								$addissue = new type_addissue();
 								$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
@@ -166,7 +97,7 @@ if($result)
 							// it allows both TLS and SSLv2 : https://drownattack.com/
 							// CVE-2016-0800, CVSS : 5.9 Medium 
 							$threat = 2; // Medium	    
-							if($threat >= $severity)
+							if($threat >= $GLOBAL_SEVERITY)
 							{
 								$addissue = new type_addissue();
 								$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
@@ -193,7 +124,7 @@ if($result)
 							// https://weakdh.org/sysadmin.html
 							// CVE-2015-4000, CVSS : 3.7 Low
 							$threat = 1;    
-							if($threat >= $severity)
+							if($threat >= $GLOBAL_SEVERITY)
 							{
 								$addissue = new type_addissue();
 								$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
@@ -217,7 +148,7 @@ if($result)
 							// https://censys.io/blog/freak
 							// CVE-2015-0204, CVSS :  4.3 MEDIUM 
 							$threat = 2;    
-							if($threat >= $severity)
+							if($threat >= $GLOBAL_SEVERITY)
 							{
 								$addissue = new type_addissue();
 								$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
@@ -244,7 +175,7 @@ if($result)
 							// CVE-2014-3566, CVSS : 3.1 Low 
 
 							$threat = 1;    
-							if($threat >= $severity)
+							if($threat >= $GLOBAL_SEVERITY)
 							{
 								$addissue = new type_addissue();
 								$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
@@ -271,7 +202,7 @@ if($result)
 							// CVE-2014-0224, CVSS : 6.8 MEDIUM 
 
 							$threat = 2;    
-							if($threat >= $severity)
+							if($threat >= $GLOBAL_SEVERITY)
 							{
 								$addissue = new type_addissue();
 								$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;
@@ -295,7 +226,7 @@ if($result)
 							// CVE-2014-0160, CVSS :  7.5 high
 
 							$threat = 3;    
-							if($threat >= $severity)
+							if($threat >= $GLOBAL_SEVERITY)
 							{
 								$addissue = new type_addissue();
 								$addissue->id_folder_bugs = $CONF_WEBISSUES_FOLDER_BUGS;

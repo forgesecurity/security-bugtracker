@@ -50,6 +50,11 @@ class Common_SecurityPlugin
 		return Common_SecurityPlugin::common_scan($req);
 	}
 
+	public static function run_sonar($req, $targets)
+	{
+		return Common_SecurityPlugin::common_scan($req);
+	}
+
 	public static function run_zap($req, $targets)
 	{
 		return Common_SecurityPlugin::common_scan($req);

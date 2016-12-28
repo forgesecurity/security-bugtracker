@@ -44,7 +44,7 @@ class webservice_server
 	function adduser($req){
 
 		$req = (array) $req;
-		
+
 		if(!$this->authws())
 			throw new SoapFault("Server", $GLOBALS['FAULT_AUTHENTICATION']);
 
@@ -260,7 +260,7 @@ class webservice_server
 				break;
 			case "sonar": 
 				$targets = Common_SecurityPlugin::find_targets($req, "static");
-				//Common_SecurityPlugin::run_sonar();
+				$issueId = Common_SecurityPlugin::run_sonar($req, $targets);
 				break;
 		}
 
@@ -625,12 +625,17 @@ class webservice_server
 		if(!$this->authws())
 			throw new SoapFault("Server", $GLOBALS['FAULT_AUTHENTICATION']);
 
+		if(!Common_SecurityPlugin::valid_id($req["id_folder_codes"]))
+			throw new SoapFault("Server", $GLOBALS['ID_FILTER_INVALID']);
+
 		$issueManager = new System_Api_IssueManager();
 		$projectManager = new System_Api_ProjectManager();
 		$typeManager = new System_Api_TypeManager();
 
 		try 
 		{
+			Common_SecurityPlugin::logp( "GET CODES = ".$req["id_folder_codes"]  );
+
 			$folder = $projectManager->getFolder( $req["id_folder_codes"] );
 			$codes = $issueManager->getIssues( $folder );
 
@@ -908,9 +913,12 @@ class webservice_server
 				if(strtolower($issue["issue_name"]) == strtolower($req["name"])) 
 					$same_name = true;
 
+				$req["cve"] = strtolower($req["cve"]);
+				$req["cwe"] = strtolower($req["cwe"]);
+
 				foreach ( $rowsvalues as $attribute ) 
 				{
-					if( !empty($req["cve"]) && strtolower($req["cve"]) != strtolower($GLOBALS['CONF_ISSUE_DEFAULT_CVENAME']) && strtolower($attribute[ 'attr_value' ]) == strtolower($req["cve"]) && $attribute[ 'attr_id' ] == $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_CVE'])
+					if( !empty($req["cve"]) && $req["cve"] != strtolower($GLOBALS['CONF_ISSUE_DEFAULT_CVENAME']) && strtolower($attribute[ 'attr_value' ]) == $req["cve"] && $attribute[ 'attr_id' ] == $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_CVE'])
 						$same_cve = true;
 
 					if( $attribute[ 'attr_id' ] == $GLOBALS['CONF_ID_ATTRIBUTE_FOLDER_BUGS_TARGET'])

@@ -62,7 +62,7 @@ skipabove=\baselineskip]{TitleBox}
     {\huge \inserttitle} 
     
     Eric Therond \href{mailto: contact@designsecurity.org}{{\FA \faEnvelope}  contact@designsecurity.org}\\
-    {\footnotesize \href{https://fr.linkedin.com/in/eric-therond-2b320ba1}{{\FA \faLinkedinSign} Eric Therond}
+    {\footnotesize \href{https://fr.linkedin.com/in/eric-therond-2b320ba1}{{\FA \faLinkedin} Eric Therond}
     \href{http://www.designsecurity.org}{{\FA} http://www.designsecurity.org}
     }
    \end{TitleBox}
@@ -184,6 +184,29 @@ skipabove=\baselineskip]{TitleBox}
 \item Each server can have multiple ips.
 \item These servers will be scan by dynamic analysis tools.
 \item By default the tool is OpenVas.
+\end{itemize}
+\end{block}
+
+  \end{frame}
+}
+
+
+{
+  \usebackgroundtemplate{\includegraphics[width=2.0\paperwidth]{bg.jpg}}
+  \begin{frame}[plain] 
+
+\setbeamercolor{block title}{use=structure,fg=white,bg=black!60}
+\setbeamercolor{block body}{use=structure,fg=black,bg=white!60!white}
+
+\begin{block}{Run a scan}
+\begin{center}
+\includegraphics[scale=0.7]{openvasdiagram.png}
+\end{center}
+\end{block}
+
+\begin{block}{Detailed Solution}
+\begin{itemize}
+\item Project servers are added with the HIM or WebService.
 \end{itemize}
 \end{block}
 
